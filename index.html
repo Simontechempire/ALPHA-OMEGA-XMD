@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALPHA AND OMEGA WOLF XMD</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#FFD700;font-family:monospace;text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.logo{font-size:70px;animation:glow 2s infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 10px gold}50%{text-shadow:0 0 30px gold,0 0 50px orange}}
+h1{font-size:28px;color:#fff;margin:10px 0;letter-spacing:3px}
+h2{font-size:20px;color:gold;margin-bottom:20px}
+.box{border:2px solid gold;border-radius:20px;padding:20px;width:90%;max-width:380px;background:linear-gradient(145deg,#111,#000);box-shadow:0 0 20px rgba(255,215,0,0.3)}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #333}
+.row:last-child{border:none}
+.label{color:#888}.value{color:#fff;font-weight:bold}
+.online{color:#00ff00;font-weight:bold;animation:blink 1s infinite}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0.3}}
+.pfp{width:180px;height:180px;border-radius:50%;border:4px solid gold;margin:20px 0;box-shadow:0 0 30px gold;object-fit:cover}
+.footer{margin-top:20px;color:#555;font-size:12px}
+.btn{background:gold;color:#000;padding:12px 30px;border-radius:30px;text-decoration:none;font-weight:bold;display:inline-block;margin:10px;box-shadow:0 0 15px gold}
+</style>
+</head>
+<body>
+<div class="logo">🐺 𓃵 🐺</div>
+<h1>ALPHA AND OMEGA</h1>
+<h2>⚡ WOLF XMD ⚡</h2>
+
+<img src="https://files.catbox.moe/gqz6zv.jpg" class="pfp" alt="WOLF PFP">
+
+<div class="box">
+<div class="row"><span class="label">Bot Name:</span><span class="value">ALPHA AND OMEGA</span></div>
+<div class="row"><span class="label">Version:</span><span class="value">1.0.0 PREMIUM</span></div>
+<div class="row"><span class="label">Commands:</span><span class="value">500 TITAN</span></div>
+<div class="row"><span class="label">Owner:</span><span class="value">239166265317</span></div>
+<div class="row"><span class="label">Company:</span><span class="value">Simon Tech Inc</span></div>
+<div class="row"><span class="label">Platform:</span><span class="value">WhatsApp</span></div>
+<div class="row"><span class="label">RAM:</span><span class="value">2GB Optimized</span></div>
+<div class="row"><span class="label">Status:</span><span class="value online">ACTIVE 🟢</span></div>
+</div>
+
+<a class="btn" href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S">JOIN CHANNEL</a>
+
+<div class="footer">
+🐺 WOLF NEVER SLEEPS 🐺<br>
+Powered by Simon Tech Inc<br>
+Prefix: . | Pairing: Enabled
+</div>
+
+<script>
+// Auto reload to check bot
+setInterval(()=>{fetch('/health').then(r=>r.json()).then(d=>console.log('WOLF OK',d)).catch(()=>{})},30000)
+</script>
+</body>
+</html>

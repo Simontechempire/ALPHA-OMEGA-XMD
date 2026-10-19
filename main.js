@@ -1,16 +1,97 @@
-// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN HANDLER - ONE FILE = 500 CMD
-// 2GB PT PANEL OPTIMIZED
+// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN HANDLER - 700 CMD TITAN - CONNECTED
+// 2GB PT PANEL OPTIMIZED - REAL HANDLERS
 const settings = require('./settings')
 const { WOLF_MENU } = require('./lib/menu.js')
+const fs = require('fs')
+const path = require('path')
+const chalk = require('chalk')
+
+// Global DB
+global.wolfDB = global.wolfDB || { 
+  auto: { 
+    autovv: true, 
+    antidelete: true, 
+    autoread: false, 
+    autoreadgc: false,
+    autoreadpc: false,
+    autotyping: false, 
+    autorecording: false,
+    autoreact: false,
+    autoviewstatus: true,
+    reactEmoji: '🐺',
+    autobio: false,
+    autobioText: '🐺 ALPHA AND OMEGA WOLF XMD | {time}'
+  }, 
+  nsfw: {}, 
+  owners: ["239166265317@s.whatsapp.net", "239166265317"], 
+  mode: 'public', 
+  prefix: settings.prefix || '.',
+  deletedCache: {}
+}
+global.wolfEco = global.wolfEco || { users: {} }
 
 module.exports = async (sock) => {
-  console.log(`🐺 WOLF ONE-FILE HANDLER READY - 500 CMD IN ONE PLACE`)
+  console.log(chalk.cyan(`🐺 WOLF ONE-FILE + PLUGINS HANDLER READY`))
+
+  // ===== LOAD ALL 15 PLUGIN FILES =====
+  const pluginsPath = path.join(__dirname, 'plugins')
+  if (!fs.existsSync(pluginsPath)) fs.mkdirSync(pluginsPath, { recursive: true })
+
+  async function loadPlugins() {
+    const files = fs.readdirSync(pluginsPath).filter(f => f.endsWith('.js'))
+    let allCommands = {}
+    console.log(chalk.cyan(`\n📦 Loading ${files.length} plugin files from plugins/...\n`))
+    for (let file of files) {
+      try {
+        const filePath = path.join(pluginsPath, file)
+        delete require.cache[require.resolve(filePath)]
+        const plugin = require(filePath)
+        if (plugin.command && plugin.execute) {
+          for (let cmd of plugin.command) {
+            allCommands[cmd.toLowerCase()] = plugin.execute
+          }
+          console.log(chalk.green(`✅ ${file} - ${plugin.command.length} cmds`))
+        }
+      } catch (e) {
+        console.log(chalk.red(`❌ ${file}: ${e.message}`))
+      }
+    }
+    console.log(chalk.magenta(`\n🐺 PLUGINS TOTAL: ${Object.keys(allCommands).length} CMDS\n`))
+    return allCommands
+  }
+
+  let pluginCommands = await loadPlugins()
+
+  // Auto reload on file change
+  fs.watch(pluginsPath, async () => {
+    console.log(chalk.yellow('🔄 Plugins changed, reloading...'))
+    pluginCommands = await loadPlugins()
+  })
 
   sock.ev.on('messages.upsert', async ({ messages }) => {
     const m = messages[0]
     if (!m.message) return
     if (m.key.remoteJid === 'status@broadcast') return
 
+    // ===== AUTO FEATURES =====
+    try {
+      const isViewOnce = m.message.viewOnceMessage || m.message.viewOnceMessageV2 || m.message.viewOnceMessageV2Extension
+      if (global.wolfDB.auto.autovv && isViewOnce) {
+        const viewMsg = (m.message.viewOnceMessage || m.message.viewOnceMessageV2 || m.message.viewOnceMessageV2Extension).message
+        await sock.sendMessage(m.key.remoteJid, { forward: viewMsg }, { quoted: m }).catch(()=>{})
+        await sock.sendMessage(m.key.remoteJid, { text: `👁️ *AUTO VV BYPASSED* View-once auto saved! 🐺` }, { quoted: m }).catch(()=>{})
+      }
+      if (global.wolfDB.auto.autoread) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autoreadgc && m.key.remoteJid.endsWith('@g.us')) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autotyping) await sock.sendPresenceUpdate('composing', m.key.remoteJid).catch(()=>{})
+      if (global.wolfDB.auto.autorecording) await sock.sendPresenceUpdate('recording', m.key.remoteJid).catch(()=>{})
+      if (global.wolfDB.auto.autoreact) await sock.sendMessage(m.key.remoteJid, { react: { text: global.wolfDB.auto.reactEmoji || '🐺', key: m.key } }).catch(()=>{})
+      if (global.wolfDB.auto.antidelete) {
+        global.wolfDB.deletedCache[m.key.id] = { message: m.message, key: m.key, time: Date.now() }
+      }
+    } catch {}
+
+    // ===== COMMAND PARSER =====
     const body = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption || ""
     if (!body.startsWith(settings.prefix)) return
 
@@ -18,14 +99,14 @@ module.exports = async (sock) => {
     const command = args.shift().toLowerCase()
     const q = args.join(" ")
 
-    const reply = async (text) => {
-      await sock.sendMessage(m.key.remoteJid, { text: text }, { quoted: m })
+    const reply = async (text, opts={}) => {
+      await sock.sendMessage(m.key.remoteJid, { text: text, ...opts }, { quoted: m })
     }
 
-    const isOwner = m.key.remoteJid === settings.ownerNumber + "@s.whatsapp.net" || m.key.participant === settings.ownerNumber + "@s.whatsapp.net" || settings.owner.includes("239166265317")
+    const isOwner = m.key.remoteJid === settings.ownerNumber + "@s.whatsapp.net" || m.key.participant === settings.ownerNumber + "@s.whatsapp.net" || settings.owner?.includes("239166265317") || m.key.fromMe
 
     try {
-      // ==== MAIN MENU ====
+      // ==== CORE MENU / PING / ALIVE - KEEP YOUR ORIGINAL ====
       if (command === 'menu' || command === 'help' || command === 'allcmd') {
         await sock.sendMessage(m.key.remoteJid, { 
           image: { url: settings.pfpUrl }, 
@@ -33,24 +114,22 @@ module.exports = async (sock) => {
         }, { quoted: m })
         return
       }
-
-      // ==== PING / ALIVE ====
       if (command === 'ping' || command === 'speed') {
         const start = Date.now()
         await reply(`🐺 PINGING WOLF...\n`)
         const end = Date.now()
-        await reply(`⚡ WOLF SPEED: ${end - start}ms\n🟢 ACTIVE\n🐺 ALPHA AND OMEGA`)
+        await reply(`⚡ WOLF SPEED: ${end - start}ms\n🟢 ACTIVE\n🐺 ALPHA AND OMEGA\n📦 Plugins: ${Object.keys(pluginCommands).length} cmds`)
         return
       }
       if (command === 'alive') {
         await sock.sendMessage(m.key.remoteJid, {
           image: { url: settings.pfpUrl },
-          caption: `🐺 *ALPHA AND OMEGA IS ALIVE!*\n\n⚡ Version: 1.0.0 PREMIUM\n📚 Commands: 500\n👑 Owner: ${settings.ownerNumber}\n🏢 Simon Tech Inc\n🟢 Status: ONLINE\n\n*WOLF NEVER SLEEPS*`
+          caption: `🐺 *ALPHA AND OMEGA IS ALIVE!*\n\n⚡ Version: 2.5.0 PREMIUM\n📚 Commands: ${Object.keys(pluginCommands).length}+ Real\n👑 Owner: ${settings.ownerNumber}\n🏢 Simon Tech Inc\n🟢 Status: ONLINE\n📦 15 Plugins Connected\n\n*WOLF NEVER SLEEPS*`
         }, { quoted: m })
         return
       }
       if (command === 'owner') {
-        await reply(`👑 OWNER INFO\n\nName: Simon Tech Inc\nNumber: ${settings.ownerNumber}\nCompany: Simon Tech Inc\nChannel: ${settings.channelLink}`)
+        await reply(`👑 OWNER INFO\n\nName: Simon Tech Inc\nNumber: ${settings.ownerNumber}\nCompany: Simon Tech Inc\nChannel: ${settings.channelLink}\n\n📦 Plugins: ${Object.keys(pluginCommands).length} active`)
         return
       }
       if (command === 'runtime' || command === 'uptime') {
@@ -59,64 +138,69 @@ module.exports = async (sock) => {
         const h = Math.floor((up % 86400) / 3600)
         const mm = Math.floor((up % 3600) / 60)
         const s = Math.floor(up % 60)
-        await reply(`⏰ *RUNTIME*\n\n${d}d ${h}h ${mm}m ${s}s\n\n🐺 WOLF XMD`)
+        await reply(`⏰ *RUNTIME*\n\n${d}d ${h}h ${mm}m ${s}s\n\n🐺 WOLF XMD - ${Object.keys(pluginCommands).length} cmds`)
         return
       }
 
-      // ==== AI (50 CMDS EXAMPLE) ====
+      // ==== TRY PLUGIN COMMANDS FIRST - REAL HANDLERS ====
+      if (pluginCommands[command]) {
+        if (global.wolfDB.mode === 'self' && !isOwner) return
+        console.log(chalk.yellow(`[PLUGIN CMD] ${command} - ${q.slice(0,30)}`))
+        await pluginCommands[command](sock, m, {
+          command,
+          text: q,
+          args,
+          reply,
+          isOwner,
+          prefix: settings.prefix
+        })
+        return
+      }
+
+      // ==== FALLBACK - YOUR ORIGINAL PLACEHOLDER LOGIC ====
       if (['ai','gpt','chatgpt','gemini','ask'].includes(command)) {
         if (!q) return reply(`🤖 Usage: .${command} <question>\nEx: .${command} who is WOLF?`)
-        await reply(`🤖 *WOLF AI*\n\nQ: ${q}\n\nA: This is WOLF AI response. Connect your API in settings.js for real AI.\n\n🐺 ALPHA AND OMEGA`)
+        await reply(`🤖 *WOLF AI*\n\nQ: ${q}\n\nA: Connect your API in settings.js for real AI. But try .gpt from plugins for real AI!\n\n🐺 ALPHA AND OMEGA`)
         return
       }
-
-      // ==== FUN ====
       if (command === 'joke') { await reply(`😂 WOLF JOKE:\n\nWhy did the wolf join WOLF XMD?\nBecause he wanted to be ALPHA! 🐺`); return }
       if (command === 'quote') { await reply(`💭 "WOLF NEVER SLEEPS - ALPHA AND OMEGA" 🐺`); return }
       if (command === 'dice' || command === 'roll') { await reply(`🎲 You rolled: ${Math.floor(Math.random()*6)+1}`); return }
       if (command === 'coin' || command === 'flip') { await reply(`🪙 ${Math.random()>0.5?'HEAD':'TAIL'} 🐺`); return }
-      if (command === '8ball') { const ans=["YES 🐺","NO","MAYBE","ASK WOLF","100% YES","NEVER"]; await reply(`🎱 ${q}?\n\nAnswer: ${ans[Math.floor(Math.random()*ans.length)]}`); return }
-
-      // ==== TOOLS ====
-      if (command === 'calc' || command === 'calculator') {
-        try { const r=eval(q); await reply(`🧮 ${q} = ${r}`) } catch { await reply("❌ Invalid math") }
-        return
-      }
-      if (command === 'password' || command === 'pass') {
-        await reply(`🔑 Password: WOLF-${Math.random().toString(36).slice(2,10).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`)
-        return
-      }
-
-      // ==== DOWNLOADS ====
-      if (['play','song','video','ytmp3','ytmp4','tiktok','fb','ig','mediafire'].includes(command)) {
-        if(!q) return reply(`📥 Usage: .${command} <link/query>`)
-        await reply(`📥 *WOLF DOWNLOADER*\n\nRequest: ${q}\n\nDownloading... (Add your API for real download)\n\n🐺 WOLF XMD`)
-        return
-      }
-
-      // ==== GROUP ====
-      if (['tagall','hidetag','kick','promote','demote','mute','unmute','groupinfo'].includes(command)) {
-        await reply(`👥 Group Command: .${command} ${q}\n\nAdmin feature - WOLF XMD`)
-        return
-      }
-
-      // ==== OWNER ONLY ====
       if (command === 'restart') {
         if (!isOwner) return reply(settings.mess.owner)
         await reply(`🔄 Restarting WOLF XMD...`)
         process.exit(0)
       }
 
-      // ==== GENERIC HANDLER FOR ALL OTHER 500 CMDS ====
-      const ALL_CMDS = ["menu","help","ping","alive","runtime","owner","botinfo","support","about","version","speed","uptime","status","repository","script","dashboard","listcmd","allcmd","command","prefix","system","server","host","platform","device","users","groups","chats","time","date","timezone","language","feedback","report","suggest","contact","donate","terms","privacy","disclaimer","credits","thanks","rules","guide","tutorial","faq","statusbot","check","info","ai","gpt","chatgpt","gemini","llama","deepseek","claude","copilot","perplexity","ask","imagine","translate","summarize","define","explain","rewrite","grammar","paraphrase","essay","story","poem","code","debug","javascript","python","html","css","nodejs","sql","regex","math","solve","homework","quiz","tutor","languageai","emailai","caption","bioai","businessai","marketingai","resumeai","interviewai","ideas","plan","recipeai","travelai","sentiment","aiclear","sticker","s","toimg","take","blur","enhance","removebg","photo","meme","logo","attp","ttp","emojimix","circle","crop","resize","rotate","flip","greyscale","sepia","wanted","trigger","wasted","jail","passed","beautiful","facepalm","deletebg","remini","upscale","compress","png","jpg","webp","gif","tojpeg","tomp4","togif","stickerinfo","stickerpack","extract","pixelate","invert","brightness","contrast","sharpen","sketch","cartoon","anime","wallpaperai","play","song","video","ytmp3","ytmp4","tiktok","facebook","instagram","mediafire","spotify","youtube","twitter","xvideo","pinterest","threads","reddit","gdrive","mega","soundcloud","audiomack","lyrics","shazam","ytaudio","ytvideo","ytsearch","ttsearch","igstory","igprofile","fbvideo","fbphoto","twvideo","pinsearch","pinvideo","pinaudio","direct","fetch","download","dl","media","audio","document","fileinfo","filesize","compressvideo","convertmp3","convertmp4","trim","mergeaudio","videoinfo","playlist"]
-
-      if (ALL_CMDS.includes(command) || command.length > 1) {
-        // Only reply if it's a known style command to avoid spam
-        await reply(`🐺 *${command.toUpperCase()}*\n\n✅ Command active in WOLF XMD!\n\nQuery: ${q || "No query"}\n\n⚡ 500 CMD TITAN\n👑 Simon Tech Inc\n🔗 ${settings.channelLink}`)
+      // Generic reply for unknown
+      if (command.length > 1) {
+        await reply(`🐺 *${command.toUpperCase()}*\n\n❌ Not found in ${Object.keys(pluginCommands).length} cmds\n\nTry .menu to see all cmds\n\n⚡ WOLF XMD`)
       }
 
     } catch (e) {
-      console.log(`WOLF Error ${command}:`, e.message)
+      console.log(chalk.red(`WOLF Error ${command}:`), e.message)
     }
   })
-}
+
+  // ===== ANTI DELETE =====
+  sock.ev.on('messages.update', async updates => {
+    for (let upd of updates) {
+      try {
+        if (upd.update.message === null && global.wolfDB.auto.antidelete) {
+          const cached = global.wolfDB.deletedCache?.[upd.key.id]
+          if (cached) {
+            const participant = upd.key.participant || upd.key.remoteJid
+            await sock.sendMessage(upd.key.remoteJid, { 
+              text: `🚫 *ANTI-DELETE*\n@${participant.split('@')[0]} deleted a message! Recovered:`,
+              mentions: [participant]
+            }).catch(()=>{})
+            await sock.sendMessage(upd.key.remoteJid, { forward: cached.message }).catch(()=>{})
+          }
+        }
+      } catch {}
+    }
+  })
+
+  console.log(chalk.green(`🐺 main.js READY - ${Object.keys(pluginCommands).length} PLUGIN CMDS CONNECTED!`))
+  }

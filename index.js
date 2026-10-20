@@ -1,37 +1,70 @@
-// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN ENTRY
-// Owner: 239166265317 | Company: Simon Tech Inc
-// PFP: https://files.catbox.moe/gqz6zv.jpg
-// Channel: https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S
+// 🐺 ALPHA AND OMEGA WOLF XMD - INDEX.JS FINAL - DASHBOARD + PAIR
+const express = require('express')
+const path = require('path')
+const fs = require('fs-extra')
 
 console.clear()
 console.log(`
 ╔══════════════════════════════════════╗
 ║  🐺 𓃵 ALPHA AND OMEGA 𓃵 🐺       ║
-║          ⚡ WOLF XMD ⚡             ║
-║  Version: 1.0.0 PREMIUM - 500 CMD  ║
+║  Version: 2.5.0 - 710 CMD TITAN    ║
 ║  Owner: 239166265317                ║
-║  Company: Simon Tech Inc            ║
-║  RAM: 2GB PT OPTIMIZED              ║
-║  PFP: https://files.catbox.moe/gqz6zv.jpg ║
+║  Dashboard + Pair: ENABLED          ║
 ╚══════════════════════════════════════╝
-
-🚀 Starting WOLF...
 `)
 
-const { AlphaOmegaConnection } = require('./connection.js')
+const app = express()
+app.use(express.json())
 
-// Start
+app.get('/', (req,res)=>{
+  const p = path.join(__dirname, 'index.html')
+  if(fs.existsSync(p)) res.sendFile(p)
+  else res.send('🐺 WOLF ONLINE - 710 CMDS - Add index.html')
+})
+
+app.get('/health', (req,res)=> res.json({ status:'ONLINE', bot:'WOLF XMD', cmds:710, owner:'239166265317', uptime:process.uptime() }))
+
+app.get('/getcode', async (req,res)=>{
+  try{
+    const number = req.query.number?.replace(/[^0-9]/g,'')
+    if(!number) return res.json({ error:'Number required' })
+    console.log(`🐺 Pair: ${number}`)
+
+    const { default: makeWASocket, useMultiFileAuthState, makeCacheableSignalKeyStore, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys')
+    const P = require('pino')
+    const { state } = await useMultiFileAuthState('session')
+    const { version } = await fetchLatestBaileysVersion()
+    const sock = makeWASocket({
+      version,
+      auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, P({ level: 'silent' })) },
+      logger: P({ level: 'silent' }),
+      printQRInTerminal: false,
+      browser: ['WOLF PAIR','Chrome','2.5.0']
+    })
+
+    if(!sock.authState.creds.registered){
+      await new Promise(r=>setTimeout(r,1500))
+      let code = await sock.requestPairingCode(number)
+      code = code?.match(/.{1,4}/g)?.join("-") || code
+      console.log(`🔑 CODE ${code} for ${number}`)
+      res.json({ code })
+    } else {
+      res.json({ error:'Already paired - delete session folder' })
+    }
+  }catch(e){
+    res.json({ error:e.message })
+  }
+})
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT, ()=> console.log(`🌐 Dashboard: ${PORT} - Open / for PAIR tab`))
+
+// START WOLF
+const { AlphaOmegaConnection } = require('./connection.js')
 AlphaOmegaConnection().catch(err => {
-  console.log("❌ Start Error:", err)
-  console.log("🔄 Retrying in 5s...")
+  console.log("❌ Error:", err.message)
   setTimeout(() => AlphaOmegaConnection(), 5000)
 })
 
-// Anti crash
-process.on('uncaughtException', (err) => {
-  console.log('Uncaught Exception:', err.message)
-})
-
-process.on('unhandledRejection', (reason) => {
-  console.log('Unhandled Rejection:', reason)
-})
+process.on('uncaughtException', e=> console.log('Exception:', e.message))
+process.on('unhandledRejection', e=> console.log('Rejection:', e))

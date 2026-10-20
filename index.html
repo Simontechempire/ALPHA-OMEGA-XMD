@@ -3,30 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALPHA AND OMEGA WOLF XMD - 700 CMDS</title>
+<title>ALPHA AND OMEGA WOLF XMD - PAIR</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#FFD700;font-family:monospace;text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
 .logo{font-size:70px;animation:glow 2s infinite}
 @keyframes glow{0%,100%{text-shadow:0 0 10px gold}50%{text-shadow:0 0 30px gold,0 0 50px orange}}
 h1{font-size:28px;color:#fff;margin:10px 0;letter-spacing:3px}
-h2{font-size:20px;color:gold;margin-bottom:20px}
+h2{font-size:18px;color:gold;margin-bottom:15px}
 .box{border:2px solid gold;border-radius:20px;padding:20px;width:95%;max-width:420px;background:linear-gradient(145deg,#111,#000);box-shadow:0 0 25px rgba(255,215,0,0.4);margin:10px 0}
-.row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #333;font-size:14px}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #333;font-size:13px}
 .row:last-child{border:none}
 .label{color:#888}.value{color:#fff;font-weight:bold}
 .online{color:#00ff00;font-weight:bold;animation:blink 1s infinite}
 @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0.3}}
-.pfp{width:180px;height:180px;border-radius:50%;border:4px solid gold;margin:20px 0;box-shadow:0 0 30px gold;object-fit:cover;animation:rotate 20s linear infinite}
-@keyframes rotate{0%{box-shadow:0 0 30px gold}50%{box-shadow:0 0 50px orange}100%{box-shadow:0 0 30px gold}}
-.footer{margin-top:20px;color:#555;font-size:12px;line-height:18px}
-.btn{background:gold;color:#000;padding:12px 30px;border-radius:30px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px;box-shadow:0 0 15px gold;transition:0.3s}
-.btn:hover{transform:scale(1.05);box-shadow:0 0 25px gold}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0;width:95%;max-width:420px}
-.card{border:1px solid #333;border-radius:12px;padding:12px;background:#0a0a0a}
-.card b{color:gold;font-size:20px;display:block}
-.card span{color:#888;font-size:11px}
-.cmd-list{font-size:11px;color:#aaa;text-align:left;padding:10px;max-height:120px;overflow-y:auto;background:#080808;border-radius:10px;margin-top:10px}
+.pfp{width:160px;height:160px;border-radius:50%;border:4px solid gold;margin:15px 0;box-shadow:0 0 30px gold;object-fit:cover}
+.btn{background:gold;color:#000;padding:12px 28px;border-radius:30px;text-decoration:none;font-weight:bold;display:inline-block;margin:6px;box-shadow:0 0 15px gold;border:none;font-size:14px;cursor:pointer}
+.btn2{background:#111;color:gold;border:1px solid gold}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid gold;background:#000;color:#fff;margin:10px 0;font-size:16px;text-align:center;letter-spacing:1px}
+.code{font-size:28px;color:#0f0;background:#000;border:2px dashed #0f0;padding:15px;border-radius:15px;margin:15px 0;letter-spacing:5px;font-weight:bold}
+.tabs{display:flex;gap:8px;margin:15px 0}
+.tab{flex:1;padding:10px;border-radius:20px;border:1px solid gold;background:#111;color:gold;cursor:pointer}
+.tab.active{background:gold;color:#000;font-weight:bold}
+.hidden{display:none}
+.footer{margin-top:15px;color:#555;font-size:11px}
 </style>
 </head>
 <body>
@@ -34,69 +34,82 @@ h2{font-size:20px;color:gold;margin-bottom:20px}
 <h1>ALPHA AND OMEGA</h1>
 <h2>⚡ WOLF XMD 700 CMD TITAN ⚡</h2>
 
-<img src="https://files.catbox.moe/gqz6zv.jpg" class="pfp" alt="WOLF PFP">
+<div class="tabs">
+<button class="tab active" onclick="showTab('dash')">📊 DASHBOARD</button>
+<button class="tab" onclick="showTab('pair')">🔑 PAIR</button>
+</div>
 
+<!-- DASHBOARD TAB -->
+<div id="dash">
+<img src="https://files.catbox.moe/gqz6zv.jpg" class="pfp">
 <div class="box">
-<div class="row"><span class="label">Bot Name:</span><span class="value">ALPHA AND OMEGA</span></div>
+<div class="row"><span class="label">Bot:</span><span class="value">ALPHA AND OMEGA</span></div>
 <div class="row"><span class="label">Version:</span><span class="value">2.5.0 PREMIUM</span></div>
 <div class="row"><span class="label">Commands:</span><span class="value">710 TITAN</span></div>
-<div class="row"><span class="label">Plugins:</span><span class="value">15 Files Connected</span></div>
+<div class="row"><span class="label">Plugins:</span><span class="value">15 Connected</span></div>
 <div class="row"><span class="label">Owner:</span><span class="value">239166265317</span></div>
-<div class="row"><span class="label">Company:</span><span class="value">Simon Tech Inc</span></div>
-<div class="row"><span class="label">Platform:</span><span class="value">WhatsApp Multi-Device</span></div>
-<div class="row"><span class="label">RAM:</span><span class="value">2GB PT Optimized</span></div>
-<div class="row"><span class="label">Prefix:</span><span class="value">. (dot)</span></div>
-<div class="row"><span class="label">Status:</span><span class="value online">ACTIVE 🟢 ONLINE</span></div>
+<div class="row"><span class="label">Status:</span><span class="value online">ACTIVE 🟢</span></div>
+<div class="row"><span class="label">Uptime:</span><span class="value" id="uptime">Loading...</span></div>
 </div>
-
-<div class="grid">
-<div class="card"><b>15</b><span>Plugin Files</span></div>
-<div class="card"><b>710+</b><span>Real Commands</span></div>
-<div class="card"><b>👁️ VV</b><span>ViewOnce Bypass</span></div>
-<div class="card"><b>🤖 AUTO</b><span>50 Auto Features</span></div>
-</div>
-
-<div class="box">
-<div style="color:gold;font-weight:bold;margin-bottom:8px">🔥 FEATURES ACTIVE</div>
-<div class="cmd-list">
-✅ 50 Admin Cmds - Real<br>
-✅ 50 Downloader Cmds - Real API<br>
-✅ 50 Converter Cmds - Real<br>
-✅ 50 Sticker Cmds - Real<br>
-✅ 50 Group Cmds - Real<br>
-✅ 50 Search Cmds - Real<br>
-✅ 50 Fun Cmds - Real<br>
-✅ 50 Tools Cmds - Real<br>
-✅ 50 Economy Cmds - Real<br>
-✅ 50 NSFW Cmds - Family Safe Toggle<br>
-✅ 50 Logo Maker Cmds - Real TextPro<br>
-✅ 50 Owner/System Cmds - Real<br>
-✅ 10 VV Bypass Cmds - Real ViewOnce<br>
-✅ 50 Auto Features - Real<br>
-🐺 TOTAL 710+ - ALL REAL HANDLERS
-</div>
-</div>
-
 <a class="btn" href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S">JOIN CHANNEL</a>
-<a class="btn" href="/health" style="background:#111;color:gold;border:1px solid gold">HEALTH CHECK</a>
+</div>
+
+<!-- PAIR TAB -->
+<div id="pair" class="hidden">
+<div class="box">
+<div style="color:gold;font-weight:bold;margin-bottom:10px">🔑 PAIR WOLF XMD</div>
+<p style="font-size:12px;color:#888;margin-bottom:10px">Enter your WhatsApp number with country code without +</p>
+<input id="num" placeholder="239166265317" value="239166265317">
+<button class="btn" onclick="getCode()">GET PAIRING CODE</button>
+<div id="result" style="margin-top:15px"></div>
+<div style="font-size:11px;color:#666;text-align:left;margin-top:15px;background:#080808;padding:10px;border-radius:10px">
+<b>Steps:</b><br>
+1. Click GET PAIRING CODE<br>
+2. Open WhatsApp<br>
+3. Settings > Linked Devices<br>
+4. Link a Device<br>
+5. Link with phone number instead<br>
+6. Enter the 8-digit code
+</div>
+</div>
+</div>
 
 <div class="footer">
-🐺 WOLF NEVER SLEEPS 🐺<br>
-Powered by Simon Tech Inc<br>
-Owner: 239166265317 | 700 Cmds Titan<br>
-Auto VV | AntiDelete | AutoReact | 15 Plugins<br>
-<span style="color:gold">ALPHA AND OMEGA WOLF XMD 2.5.0</span>
+🐺 WOLF NEVER SLEEPS - Simon Tech Inc<br>
+Prefix: . | Pairing: Enabled | 710 Cmds
 </div>
 
 <script>
-// Health check + uptime
+function showTab(t){
+  document.getElementById('dash').classList.toggle('hidden', t!=='dash')
+  document.getElementById('pair').classList.toggle('hidden', t!=='pair')
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'))
+  event.target.classList.add('active')
+  if(t==='dash') document.querySelectorAll('.tab')[0].classList.add('active')
+  if(t==='pair') document.querySelectorAll('.tab')[1].classList.add('active')
+}
+async function getCode(){
+  const num = document.getElementById('num').value.replace(/[^0-9]/g,'')
+  if(!num){ alert('Enter number'); return }
+  document.getElementById('result').innerHTML = '⏳ Requesting code for '+num+'... Please wait 5 sec'
+  try{
+    const res = await fetch('/getcode?number='+num)
+    const data = await res.json()
+    if(data.code){
+      document.getElementById('result').innerHTML = '<p>✅ CODE GENERATED</p><div class="code">'+data.code+'</div><p style="color:#0f0;font-size:12px">Valid for 60 seconds - Enter fast!</p>'
+    } else {
+      document.getElementById('result').innerHTML = '❌ '+ (data.error || 'Failed. Check console logs')
+    }
+  }catch(e){
+    document.getElementById('result').innerHTML = '❌ Network error: '+e.message
+  }
+}
 let start = Date.now()
 setInterval(()=>{
   let up = Math.floor((Date.now()-start)/1000)
   let h = Math.floor(up/3600), m = Math.floor((up%3600)/60), s = up%60
-  document.title = `WOLF ONLINE ${h}h ${m}m ${s}s - 700 CMDS`
-  fetch('/health').then(r=>r.json()).then(d=>console.log('WOLF OK',d)).catch(()=>{})
-},5000)
+  document.getElementById('uptime').innerText = h+'h '+m+'m '+s+'s'
+},1000)
 </script>
 </body>
-  </html>
+</html>

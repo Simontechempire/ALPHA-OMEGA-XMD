@@ -1,2 +1,2 @@
-// PT.JS - CALLS CONNECTION.JS
-require('./connection.js');
+module.exports = require('./connection.js');
+if(require.main===module) require('./connection.js').startConnection();

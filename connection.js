@@ -96,4 +96,4 @@ async function AlphaOmegaConnection() {
     if (connection === 'close') { global.isConnected = false; const code = lastDisconnect?.error?.output?.statusCode; const rec = code !== DisconnectReason.loggedOut; if(rec) setTimeout(()=>AlphaOmegaConnection(), 3000); else { try{ fs.removeSync('session') }catch{} setTimeout(()=>AlphaOmegaConnection(), 3000) } }
   })
 }
-module.exports = { AlphaOmegaConnection }
+module.exports = { startConnection, AlphaOmegaConnection: startConnection };

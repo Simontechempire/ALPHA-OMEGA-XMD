@@ -1,11 +1,10 @@
-// 🐺 ALPHA AND OMEGA WOLF XMD - CONNECTION - 700 CMDS CONNECTED
-// Owner: 239166265317 | PFP: https://files.catbox.moe/gqz6zv.jpg
+// 🐺 ALPHA AND OMEGA WOLF XMD - CONNECTION FINAL - RENDER SAFE - 700 CMDS
+// Owner: 239166265317 | No auto-pair - uses dashboard /getcode
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore } = require('@whiskeysockets/baileys')
 const P = require('pino')
 const fs = require('fs')
 const settings = require('./settings')
 
-// Global DB for all plugins
 global.wolfDB = global.wolfDB || { 
   auto: { 
     autovv: true, 
@@ -23,7 +22,7 @@ global.wolfDB = global.wolfDB || {
     autobioText: '🐺 ALPHA AND OMEGA WOLF XMD | {time}'
   }, 
   nsfw: {}, 
-  owners: ["239166265317@s.whatsapp.net"], 
+  owners: ["239166265317@s.whatsapp.net","239166265317"], 
   mode: 'public', 
   prefix: '.',
   deletedCache: {}
@@ -47,34 +46,18 @@ async function AlphaOmegaConnection() {
     syncFullHistory: false
   })
 
-  // PAIRING CODE FOR 239166265317
+  // RENDER FIX: Don't auto-request pairing code here!
+  // Pairing is now done via dashboard /getcode API
   if (!sock.authState.creds.registered) {
-    const phoneNumber = settings.ownerNumber.replace(/[^0-9]/g, '')
-    console.log(`\n🐺 WOLF XMD - Requesting Pairing Code...\n`)
-    console.log(`📱 Owner Number: ${phoneNumber}\n`)
-    
-    await new Promise(r => setTimeout(r, 3000))
-    
-    try {
-      let code = await sock.requestPairingCode(phoneNumber)
-      code = code?.match(/.{1,4}/g)?.join("-") || code
-      console.log(`
-╔════════════════════════════════════╗
-║  🔑 YOUR PAIRING CODE: ${code}  ║
-╚════════════════════════════════════╝
-
-👉 STEPS:
-1. Open WhatsApp on phone 239166265317
-2. Go to Settings > Linked Devices
-3. Click "Link a Device"
-4. Click "Link with phone number instead"
-5. Enter Code: ${code}
-
-🐺 WOLF WAITING FOR CONNECTION...
-      `)
-    } catch (e) {
-      console.log("❌ Pairing Error:", e.message)
-    }
+    console.log(`
+╔══════════════════════════════════════╗
+║  🐺 WOLF NOT PAIRED YET            ║
+║  Go to: / on your dashboard        ║
+║  Click PAIR tab                     ║
+║  Enter: ${settings.ownerNumber}     ║
+║  Get CODE and enter in WhatsApp    ║
+╚══════════════════════════════════════╝
+    `)
   }
 
   sock.ev.on('creds.update', saveCreds)
@@ -83,13 +66,14 @@ async function AlphaOmegaConnection() {
     const { connection, lastDisconnect } = update
     
     if (connection === 'close') {
-      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
-      console.log('🔴 Connection closed, reason:', lastDisconnect?.error)
+      const statusCode = lastDisconnect?.error?.output?.statusCode
+      const shouldReconnect = statusCode !== DisconnectReason.loggedOut
+      console.log('🔴 Connection closed:', lastDisconnect?.error?.message || statusCode)
       if (shouldReconnect) {
-        console.log('🔄 Reconnecting WOLF in 3s...')
-        setTimeout(() => AlphaOmegaConnection(), 3000)
+        console.log('🔄 Reconnecting WOLF in 5s...')
+        setTimeout(() => AlphaOmegaConnection(), 5000)
       } else {
-        console.log('❌ Logged out, delete session folder')
+        console.log('❌ Logged out - Delete session folder and re-pair via dashboard /')
       }
     } else if (connection === 'open') {
       console.log(`
@@ -97,27 +81,21 @@ async function AlphaOmegaConnection() {
 🐺 ALPHA AND OMEGA CONNECTED!
 ⚡ WOLF XMD - 700 CMD TITAN READY
 📱 Owner: ${settings.ownerNumber}
-🟢 Status: ACTIVE ON 2GB PT
-✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅
-
-🔗 Auto-joining Channel...
-Link: ${settings.channelLink}
+🟢 Status: ACTIVE - RENDER READY
+✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅ ✅
       `)
       
       try {
         await sock.newsletterFollow("120363405065075853@newsletter").catch(()=>{})
-        console.log("✅ Channel Follow Attempted!")
-      } catch (e) {
-        console.log("Channel join error (ignore):", e.message)
-      }
+      } catch {}
 
-      // Load main handler with ALL plugins
+      // Load main handler with ALL 15 plugins
       require('./main.js')(sock)
       
       try {
         await sock.sendMessage(settings.ownerNumber + "@s.whatsapp.net", {
           image: { url: settings.pfpUrl },
-          caption: `🐺 *ALPHA AND OMEGA CONNECTED!*\n\n⚡ WOLF XMD 700 CMD TITAN\n✅ Active on 2GB PT Panel\n🟢 Status: ONLINE\n📦 15 Plugins Loaded\n🎯 700+ Cmds Active\n\nOwner: ${settings.ownerNumber}\nCompany: Simon Tech Inc\n\n*WOLF NEVER SLEEPS*`
+          caption: `🐺 *ALPHA AND OMEGA CONNECTED!*\n\n⚡ WOLF XMD 710 CMD TITAN\n✅ Active on Render - No PT Panel\n🟢 Status: ONLINE\n📦 15 Plugins Loaded\n🎯 710+ Cmds Active\n\nDashboard: ${process.env.RENDER_EXTERNAL_URL || 'Your Render Link'}\nOwner: ${settings.ownerNumber}\n\n*WOLF NEVER SLEEPS*`
         })
       } catch {}
     }

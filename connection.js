@@ -1,4 +1,4 @@
-// 🐺 CONNECTION.JS - WOLF XMD - FINAL WORKING - NO FS-EXTRA BUG
+// 🐺 CONNECTION.JS - WOLF XMD FINAL - NO DUPLICATE EXPORT
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, Browsers } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const chalk = require('chalk');
@@ -11,14 +11,13 @@ const config = { botName: "WOLF XMD", ownerNumber: "239166265317", prefix: ".", 
 let global_sock = null;
 let isConnected = false;
 let pairingCode = null;
-let currentPhone = null;
 let lastPairTime = 0;
 let appStarted = false;
 let commands = {};
 
 function loadPlugins(){
   const pPath = path.join(__dirname, 'plugins');
-  if(!fs.existsSync(pPath)) { fs.mkdirSync(pPath, {recursive:true}); return {}; }
+  if(!fs.existsSync(pPath)) return {};
   let map = {};
   let count = 0;
   const files = fs.readdirSync(pPath).filter(f=>f.endsWith('.js'));
@@ -30,10 +29,7 @@ function loadPlugins(){
       const list = Array.isArray(mod) ? mod : [mod];
       for(const pl of list){
         if(pl && pl.command && pl.execute){
-          for(const c of pl.command){
-            map[c.toLowerCase()] = pl.execute;
-            map[c.toLowerCase().replace(/[^a-z0-9]/g,'')] = pl.execute;
-          }
+          for(const c of pl.command){ map[c.toLowerCase()] = pl.execute; map[c.toLowerCase().replace(/[^a-z0-9]/g,'')] = pl.execute; }
           count++;
         } else if(pl && pl.name && pl.execute){
           map[pl.name.toLowerCase()] = pl.execute;
@@ -51,16 +47,9 @@ async function startConnection(){
   if(!appStarted){
     const app = express();
     app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
     app.use(express.static(__dirname));
-
-    app.get('/', (req,res)=>{
-      const idx = path.join(__dirname, 'index.html');
-      if(fs.existsSync(idx)) return res.sendFile(idx);
-      return res.send(`<h1>🐺 WOLF XMD TITAN</h1><p>${Object.keys(commands).length} CMDS</p><p>Owner 239166265317</p>`);
-    });
+    app.get('/', (req,res)=>{ const idx = path.join(__dirname, 'index.html'); if(fs.existsSync(idx)) return res.sendFile(idx); res.send(`<h1>🐺 WOLF XMD TITAN ${Object.keys(commands).length} CMDS</h1>`); });
     app.get('/api/status', (req,res)=> res.json({ bot:"WOLF XMD", owner:"239166265317", isConnected, pairingCode, cmds: Object.keys(commands).length }));
-
     async function getCode(phone){
       phone = (phone||'').toString().replace(/[^0-9]/g,'');
       if(!phone) throw new Error('Number required');
@@ -72,22 +61,13 @@ async function startConnection(){
       lastPairTime = now;
       const code = await global_sock.requestPairingCode(phone);
       pairingCode = code;
-      currentPhone = phone;
       console.log(chalk.green.bold(`🔑 CODE ${phone}: ${code}`));
       return code;
     }
-
-    app.post('/api/pair', async(req,res)=>{
-      try{ const code = await getCode(req.body.phone || req.body.number); res.json({success:true, code, phone: currentPhone}); }
-      catch(e){ res.json({success:false, message:e.message}); }
-    });
-    app.get('/getcode', async(req,res)=>{
-      try{ const code = await getCode(req.query.number || req.query.phone); res.json({success:true, code, phone: currentPhone, codeFormatted: code.match(/.{1,4}/g).join("-")}); }
-      catch(e){ res.json({success:false, message:e.message}); }
-    });
-
+    app.post('/api/pair', async(req,res)=>{ try{ const code = await getCode(req.body.phone||req.body.number); res.json({success:true, code}); }catch(e){ res.json({success:false, message:e.message}); } });
+    app.get('/getcode', async(req,res)=>{ try{ const code = await getCode(req.query.number||req.query.phone); res.json({success:true, code, codeFormatted: code.match(/.{1,4}/g).join("-")}); }catch(e){ res.json({success:false, message:e.message}); } });
     const PORT = config.PORT || 10000;
-    app.listen(PORT, '0.0.0.0', ()=> console.log(chalk.cyan(`🌐 Dashboard on ${PORT}`)));
+    app.listen(PORT, '0.0.0.0', ()=> console.log(chalk.cyan(`🌐 Dashboard ${PORT}`)));
     appStarted = true;
   }
 
@@ -98,19 +78,15 @@ async function startConnection(){
   global_sock = sock;
   global.sock = sock;
   sock.ev.on('creds.update', saveCreds);
-
   sock.ev.on('connection.update', async({connection, lastDisconnect})=>{
-    if(connection==='open'){ isConnected=true; pairingCode=null; console.log(chalk.green.bold(`\n✅ WOLF CONNECTED - ${Object.keys(commands).length} CMDS\n`)); }
+    if(connection==='open'){ isConnected=true; pairingCode=null; console.log(chalk.green.bold(`\n✅ WOLF LINKED ${Object.keys(commands).length} CMDS\n`)); }
     if(connection==='close'){
-      isConnected=false;
-      global_sock=null;
+      isConnected=false; global_sock=null;
       const code = lastDisconnect?.error?.output?.statusCode;
-      console.log(chalk.red(`Closed ${code}`));
       if(code===DisconnectReason.loggedOut){ try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} }
       setTimeout(()=> startConnection(), 3000);
     }
   });
-
   sock.ev.on('messages.upsert', async({messages})=>{
     try{
       const m = messages[0];
@@ -123,16 +99,13 @@ async function startConnection(){
       const exec = commands[raw] || commands[cmd];
       if(!exec) return;
       console.log(chalk.yellow(`▶️ ${cmd}`));
-      await exec(sock, m, {command:cmd, text:args.join(' '), args, reply: async(txt)=> await sock.sendMessage(m.key.remoteJid, {text:txt}, {quoted:m}), isOwner: m.key.remoteJid.includes('239166265317') || m.key.fromMe, prefix:'.'});
+      await exec(sock, m, {command:cmd, text:args.join(' '), args, reply: async(txt)=> await sock.sendMessage(m.key.remoteJid, {text:txt}, {quoted:m}), isOwner: true, prefix:'.'});
     }catch(e){ console.log(`Exec err ${e.message}`); }
   });
 }
 
-// EXPORTS - MUST BE AT BOTTOM
-module.exports.startConnection = startConnection;
-module.exports.AlphaOmegaConnection = startConnection;
-
-// AUTO START IF RUN DIRECTLY: node connection.js
 if(require.main === module){
   startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
-  }
+}
+
+module.exports = { startConnection };

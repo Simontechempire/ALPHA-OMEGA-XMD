@@ -1,12 +1,11 @@
-// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN HANDLER - 700 CMD TITAN - CONNECTED
-// 2GB PT PANEL OPTIMIZED - REAL HANDLERS
+// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN.JS FINAL - 700 CMD TITAN - RENDER READY
+// Owner: 239166265317 | Simon Tech Inc | 15 Plugins
 const settings = require('./settings')
 const { WOLF_MENU } = require('./lib/menu.js')
 const fs = require('fs')
 const path = require('path')
 const chalk = require('chalk')
 
-// Global DB
 global.wolfDB = global.wolfDB || { 
   auto: { 
     autovv: true, 
@@ -18,6 +17,7 @@ global.wolfDB = global.wolfDB || {
     autorecording: false,
     autoreact: false,
     autoviewstatus: true,
+    autolikestatus: false,
     reactEmoji: '🐺',
     autobio: false,
     autobioText: '🐺 ALPHA AND OMEGA WOLF XMD | {time}'
@@ -31,16 +31,15 @@ global.wolfDB = global.wolfDB || {
 global.wolfEco = global.wolfEco || { users: {} }
 
 module.exports = async (sock) => {
-  console.log(chalk.cyan(`🐺 WOLF ONE-FILE + PLUGINS HANDLER READY`))
+  console.log(chalk.cyan(`🐺 WOLF MAIN HANDLER READY - RENDER EDITION`))
 
-  // ===== LOAD ALL 15 PLUGIN FILES =====
   const pluginsPath = path.join(__dirname, 'plugins')
   if (!fs.existsSync(pluginsPath)) fs.mkdirSync(pluginsPath, { recursive: true })
 
   async function loadPlugins() {
     const files = fs.readdirSync(pluginsPath).filter(f => f.endsWith('.js'))
     let allCommands = {}
-    console.log(chalk.cyan(`\n📦 Loading ${files.length} plugin files from plugins/...\n`))
+    console.log(chalk.cyan(`\n📦 Loading ${files.length} plugin files...\n`))
     for (let file of files) {
       try {
         const filePath = path.join(pluginsPath, file)
@@ -48,7 +47,11 @@ module.exports = async (sock) => {
         const plugin = require(filePath)
         if (plugin.command && plugin.execute) {
           for (let cmd of plugin.command) {
-            allCommands[cmd.toLowerCase()] = plugin.execute
+            const clean = cmd.toLowerCase().trim()
+            allCommands[clean] = plugin.execute
+            // also clean version without symbols
+            const clean2 = clean.replace(/[^a-z0-9]/g,'')
+            if(clean2) allCommands[clean2] = plugin.execute
           }
           console.log(chalk.green(`✅ ${file} - ${plugin.command.length} cmds`))
         }
@@ -56,17 +59,11 @@ module.exports = async (sock) => {
         console.log(chalk.red(`❌ ${file}: ${e.message}`))
       }
     }
-    console.log(chalk.magenta(`\n🐺 PLUGINS TOTAL: ${Object.keys(allCommands).length} CMDS\n`))
+    console.log(chalk.magenta(`\n🐺 TOTAL: ${Object.keys(allCommands).length} CMDS LOADED\n`))
     return allCommands
   }
 
   let pluginCommands = await loadPlugins()
-
-  // Auto reload on file change
-  fs.watch(pluginsPath, async () => {
-    console.log(chalk.yellow('🔄 Plugins changed, reloading...'))
-    pluginCommands = await loadPlugins()
-  })
 
   sock.ev.on('messages.upsert', async ({ messages }) => {
     const m = messages[0]
@@ -79,103 +76,82 @@ module.exports = async (sock) => {
       if (global.wolfDB.auto.autovv && isViewOnce) {
         const viewMsg = (m.message.viewOnceMessage || m.message.viewOnceMessageV2 || m.message.viewOnceMessageV2Extension).message
         await sock.sendMessage(m.key.remoteJid, { forward: viewMsg }, { quoted: m }).catch(()=>{})
-        await sock.sendMessage(m.key.remoteJid, { text: `👁️ *AUTO VV BYPASSED* View-once auto saved! 🐺` }, { quoted: m }).catch(()=>{})
       }
       if (global.wolfDB.auto.autoread) await sock.readMessages([m.key]).catch(()=>{})
       if (global.wolfDB.auto.autoreadgc && m.key.remoteJid.endsWith('@g.us')) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autoreadpc && !m.key.remoteJid.endsWith('@g.us')) await sock.readMessages([m.key]).catch(()=>{})
       if (global.wolfDB.auto.autotyping) await sock.sendPresenceUpdate('composing', m.key.remoteJid).catch(()=>{})
       if (global.wolfDB.auto.autorecording) await sock.sendPresenceUpdate('recording', m.key.remoteJid).catch(()=>{})
       if (global.wolfDB.auto.autoreact) await sock.sendMessage(m.key.remoteJid, { react: { text: global.wolfDB.auto.reactEmoji || '🐺', key: m.key } }).catch(()=>{})
       if (global.wolfDB.auto.antidelete) {
         global.wolfDB.deletedCache[m.key.id] = { message: m.message, key: m.key, time: Date.now() }
+        // Clean old
+        for (let id in global.wolfDB.deletedCache) {
+          if (Date.now() - global.wolfDB.deletedCache[id].time > 3600000) delete global.wolfDB.deletedCache[id]
+        }
       }
     } catch {}
 
     // ===== COMMAND PARSER =====
-    const body = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption || ""
+    const body = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption || m.message.viewOnceMessage?.message?.imageMessage?.caption || m.message.viewOnceMessage?.message?.videoMessage?.caption || m.message.viewOnceMessageV2?.message?.imageMessage?.caption || m.message.viewOnceMessageV2?.message?.videoMessage?.caption || ""
     if (!body.startsWith(settings.prefix)) return
 
     const args = body.slice(settings.prefix.length).trim().split(/ +/)
-    const command = args.shift().toLowerCase()
+    const command = args.shift().toLowerCase().replace(/[^a-z0-9]/g,'') || args[0]
+    const rawCommand = body.slice(settings.prefix.length).trim().split(/ +/)[0].toLowerCase()
     const q = args.join(" ")
 
     const reply = async (text, opts={}) => {
       await sock.sendMessage(m.key.remoteJid, { text: text, ...opts }, { quoted: m })
     }
 
-    const isOwner = m.key.remoteJid === settings.ownerNumber + "@s.whatsapp.net" || m.key.participant === settings.ownerNumber + "@s.whatsapp.net" || settings.owner?.includes("239166265317") || m.key.fromMe
+    const isOwner = m.key.fromMe || m.key.remoteJid.includes('239166265317') || (m.key.participant && m.key.participant.includes('239166265317')) || global.wolfDB.owners.includes(m.key.remoteJid) || global.wolfDB.owners.includes(m.key.participant)
 
     try {
-      // ==== CORE MENU / PING / ALIVE - KEEP YOUR ORIGINAL ====
-      if (command === 'menu' || command === 'help' || command === 'allcmd') {
-        await sock.sendMessage(m.key.remoteJid, { 
-          image: { url: settings.pfpUrl }, 
-          caption: WOLF_MENU 
-        }, { quoted: m })
+      // CORE
+      if (['menu','help','allcmd'].includes(rawCommand) || ['menu','help','allcmd'].includes(command)) {
+        await sock.sendMessage(m.key.remoteJid, { image: { url: settings.pfpUrl }, caption: WOLF_MENU }, { quoted: m })
         return
       }
-      if (command === 'ping' || command === 'speed') {
+      if (['ping','speed'].includes(command) || ['ping','speed'].includes(rawCommand)) {
         const start = Date.now()
-        await reply(`🐺 PINGING WOLF...\n`)
+        await reply(`🐺 PINGING WOLF...`)
         const end = Date.now()
-        await reply(`⚡ WOLF SPEED: ${end - start}ms\n🟢 ACTIVE\n🐺 ALPHA AND OMEGA\n📦 Plugins: ${Object.keys(pluginCommands).length} cmds`)
+        await reply(`⚡ WOLF SPEED: ${end - start}ms\n🟢 ONLINE\n📦 ${Object.keys(pluginCommands).length} cmds\n🐺 ALPHA AND OMEGA`)
         return
       }
-      if (command === 'alive') {
+      if (command === 'alive' || rawCommand === 'alive') {
         await sock.sendMessage(m.key.remoteJid, {
           image: { url: settings.pfpUrl },
           caption: `🐺 *ALPHA AND OMEGA IS ALIVE!*\n\n⚡ Version: 2.5.0 PREMIUM\n📚 Commands: ${Object.keys(pluginCommands).length}+ Real\n👑 Owner: ${settings.ownerNumber}\n🏢 Simon Tech Inc\n🟢 Status: ONLINE\n📦 15 Plugins Connected\n\n*WOLF NEVER SLEEPS*`
         }, { quoted: m })
         return
       }
-      if (command === 'owner') {
-        await reply(`👑 OWNER INFO\n\nName: Simon Tech Inc\nNumber: ${settings.ownerNumber}\nCompany: Simon Tech Inc\nChannel: ${settings.channelLink}\n\n📦 Plugins: ${Object.keys(pluginCommands).length} active`)
+      if (command === 'owner' || rawCommand === 'owner') {
+        await reply(`👑 OWNER\nName: Simon Tech Inc\nNumber: ${settings.ownerNumber}\nChannel: ${settings.channelLink}\n📦 ${Object.keys(pluginCommands).length} cmds active`)
         return
       }
-      if (command === 'runtime' || command === 'uptime') {
+      if (['runtime','uptime'].includes(command) || ['runtime','uptime'].includes(rawCommand)) {
         const up = process.uptime()
-        const d = Math.floor(up / 86400)
-        const h = Math.floor((up % 86400) / 3600)
-        const mm = Math.floor((up % 3600) / 60)
-        const s = Math.floor(up % 60)
-        await reply(`⏰ *RUNTIME*\n\n${d}d ${h}h ${mm}m ${s}s\n\n🐺 WOLF XMD - ${Object.keys(pluginCommands).length} cmds`)
+        const d = Math.floor(up / 86400), h = Math.floor((up % 86400) / 3600), mm = Math.floor((up % 3600) / 60), s = Math.floor(up % 60)
+        await reply(`⏰ *RUNTIME*\n${d}d ${h}h ${mm}m ${s}s\n🐺 WOLF XMD - ${Object.keys(pluginCommands).length} cmds`)
         return
       }
 
-      // ==== TRY PLUGIN COMMANDS FIRST - REAL HANDLERS ====
-      if (pluginCommands[command]) {
+      // PLUGIN CMDS - REAL HANDLERS
+      const finalCmd = pluginCommands[rawCommand] ? rawCommand : command
+      if (pluginCommands[finalCmd]) {
         if (global.wolfDB.mode === 'self' && !isOwner) return
-        console.log(chalk.yellow(`[PLUGIN CMD] ${command} - ${q.slice(0,30)}`))
-        await pluginCommands[command](sock, m, {
-          command,
-          text: q,
-          args,
-          reply,
-          isOwner,
-          prefix: settings.prefix
-        })
+        console.log(chalk.yellow(`[PLUGIN] ${finalCmd} - ${q.slice(0,30)}`))
+        await pluginCommands[finalCmd](sock, m, { command: finalCmd, text: q, args, reply, isOwner, prefix: settings.prefix })
         return
       }
 
-      // ==== FALLBACK - YOUR ORIGINAL PLACEHOLDER LOGIC ====
+      // FALLBACK
       if (['ai','gpt','chatgpt','gemini','ask'].includes(command)) {
-        if (!q) return reply(`🤖 Usage: .${command} <question>\nEx: .${command} who is WOLF?`)
-        await reply(`🤖 *WOLF AI*\n\nQ: ${q}\n\nA: Connect your API in settings.js for real AI. But try .gpt from plugins for real AI!\n\n🐺 ALPHA AND OMEGA`)
+        if (!q) return reply(`🤖 Usage: .${command} <question>`)
+        await reply(`🤖 *WOLF AI*\nQ: ${q}\n\nConnect API in settings.js or use .gpt from plugins for real AI!\n🐺`)
         return
-      }
-      if (command === 'joke') { await reply(`😂 WOLF JOKE:\n\nWhy did the wolf join WOLF XMD?\nBecause he wanted to be ALPHA! 🐺`); return }
-      if (command === 'quote') { await reply(`💭 "WOLF NEVER SLEEPS - ALPHA AND OMEGA" 🐺`); return }
-      if (command === 'dice' || command === 'roll') { await reply(`🎲 You rolled: ${Math.floor(Math.random()*6)+1}`); return }
-      if (command === 'coin' || command === 'flip') { await reply(`🪙 ${Math.random()>0.5?'HEAD':'TAIL'} 🐺`); return }
-      if (command === 'restart') {
-        if (!isOwner) return reply(settings.mess.owner)
-        await reply(`🔄 Restarting WOLF XMD...`)
-        process.exit(0)
-      }
-
-      // Generic reply for unknown
-      if (command.length > 1) {
-        await reply(`🐺 *${command.toUpperCase()}*\n\n❌ Not found in ${Object.keys(pluginCommands).length} cmds\n\nTry .menu to see all cmds\n\n⚡ WOLF XMD`)
       }
 
     } catch (e) {
@@ -183,7 +159,7 @@ module.exports = async (sock) => {
     }
   })
 
-  // ===== ANTI DELETE =====
+  // ANTI DELETE
   sock.ev.on('messages.update', async updates => {
     for (let upd of updates) {
       try {
@@ -202,5 +178,5 @@ module.exports = async (sock) => {
     }
   })
 
-  console.log(chalk.green(`🐺 main.js READY - ${Object.keys(pluginCommands).length} PLUGIN CMDS CONNECTED!`))
-  }
+  console.log(chalk.green(`🐺 main.js READY - ${Object.keys(pluginCommands).length} CMDS - RENDER SAFE!`))
+}

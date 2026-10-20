@@ -4,8 +4,8 @@
   "description": "🐺 ALPHA AND OMEGA WOLF XMD - 700+ CMD TITAN - Simon Tech Inc",
   "main": "pt.js",
   "scripts": {
-    "start": "node pt.js",
-    "dev": "node pt.js"
+    "start": "node connection.js",
+    "dev": "node connection.js"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.8",

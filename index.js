@@ -1,3 +1,9 @@
-// 🐺 INDEX.JS -> CALLS CONNECTION.JS LINKER
-const { startConnection } = require('./connection.js');
-startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 5000) });
+// 🐺 INDEX.JS - STARTER
+console.log('🐺 WOLF XMD - index.js -> connection.js');
+try {
+  const conn = require('./connection.js');
+  const start = conn.startConnection || conn.AlphaOmegaConnection;
+  start().catch(e=>{ console.log('Start fail:', e.message); setTimeout(()=>start(), 5000) });
+} catch(e){
+  console.log('index.js load error:', e.message);
+}

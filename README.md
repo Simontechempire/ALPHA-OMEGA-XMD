@@ -297,7 +297,6 @@ Note: Available commands depend on the commands implemented and enabled in your 
 
 ---
 
-### 🟢 LIVE SYSTEM OUTLINE - LINE BY LINE
 
 
 ㅤㅤㅤㅤ━━━━━━━━━━━━━━━━━━━━━━━━━━━━

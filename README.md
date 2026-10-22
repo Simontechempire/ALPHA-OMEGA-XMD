@@ -1,5 +1,38 @@
 # ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=28&duration=2000&pause=800&color=FFD700&center=true&vCenter=true&multiline=false&width=850&height=80&lines=ALPHA-AND-OMEGA-WOLF-XMD;710+TITAN+COMMANDS+ONLINE;WOLF+NEVER+SLEEPS" />
+</p>
 
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=700&size=18&duration=3000&pause=500&color=00FF41&center=true&vCenter=true&width=700&lines=%F0%9F%9F%A2+STATUS%3A+ONLINE+ACTIVE;⚡+VERSION%3A+2.5.0+TITAN;🔥+PLUGINS%3A+15+CONNECTED;👑+OWNER%3A+SIMON+TECH+INC" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/WOLF%20XMD-2.5.0%20TITAN-FFD700?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  <img src="https://img.shields.io/badge/STATUS-ONLINE%20🟢-00FF41?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/COMMANDS-710%20TITAN-FF4500?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PLUGINS-15%20CONNECTED-1E90FF?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/POWER-LOYALTY-FF1493?style=for-the-badge" />
+</p>
+
+---
+
+### 🌈 LIVE COLOUR OUTLINE
+
+```diff
++ [00:00:01] 🐺 BOOTING ALPHA AND OMEGA WOLF XMD...
++ [00:00:02] 📦 Plugins: 15/15 Connected ✅
++ [00:00:03] ⚙️ Commands: 710/710 TITAN Loaded ✅
++ [00:00:04] 🔑 Pair System: Enabled ✅
+
+@@ 🔥 WOLF TITAN SYSTEM ACTIVE @@
++ [00:00:05] 🛡️ Anti-Ban: Active 🟢
++ [00:00:06] 👑 Owner: 239166265317
+- [00:00:07] 💎 Version: 2.5.0 PREMIUM TITAN
+- [00:00:08] 🌐 Platform: Render / VPS
++ [00:00:09] 📶 Status: ONLINE 🟢 ACTIVE
++ [00:00:10] ⏰ Uptime: 24/7
++ [00:00:11] ✅ ALPHA AND OMEGA WOLF XMD IS ONLINE!
 # 𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃
 
 ㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 🤖

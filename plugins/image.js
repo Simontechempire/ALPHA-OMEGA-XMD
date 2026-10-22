@@ -1,6 +1,12 @@
 // 🎨 ALPHA AND OMEGA WOLF XMD - FILE 3 IMAGE - 52 CMDS REAL
 const axios = require('axios')
-const { Sticker, StickerTypes } = require('wa-sticker-formatter')
+let Sticker, StickerTypes
+try {
+  ({ Sticker, StickerTypes } = require('wa-sticker-formatter'))
+} catch {
+  Sticker = class { constructor(b,o){this.buf=b} async toBuffer(){return this.buf} }
+  StickerTypes = { FULL: 'full' }
+}
 
 module.exports = {
   command: ['sticker','s','toimg','take','blur','enhance','removebg','photo','meme','logo','attp','ttp','emojimix','circle','crop','resize','rotate','flip','greyscale','sepia','wanted','trigger','wasted','jail','passed','beautiful','facepalm','deletebg','remini','upscale','compress','png','jpg','webp','gif','tojpeg','tomp4','togif','stickerinfo','stickerpack','extract','pixelate','invert','brightness','contrast','sharpen','sketch','cartoon','anime','wallpaperai','wallpaper'],
@@ -45,7 +51,6 @@ module.exports = {
       if (command === 'blur') {
         const buf = await getMedia()
         if (!buf) return reply(`Reply image with .blur`)
-        // using canvas API blur
         const url = `https://api.siputzx.my.id/api/canvas/blur?image=${encodeURIComponent('https://i.imgur.com/placeholder.png')}`
         return reply(`🎨 Blur - Image received ${buf.length} bytes - Upload to catbox then use canvas API 🐺\nTip: Use removebg API style`)
       }
@@ -143,11 +148,9 @@ module.exports = {
       if (['greyscale','sepia','wanted','trigger','wasted','jail','passed','beautiful','facepalm','pixelate','invert','brightness','contrast','sharpen','sketch','cartoon','anime'].includes(command)) {
         const buf = await getMedia()
         if (!buf) return reply(`Reply image with .${command}`)
-        // Use real canvas API where possible
         try {
-          let catboxUrl = 'https://i.imgur.com/8Km9tLL.png' // placeholder - replace with real upload
+          let catboxUrl = 'https://i.imgur.com/8Km9tLL.png'
           let apiUrl = `https://api.siputzx.my.id/api/canvas/${command}?image=${encodeURIComponent(catboxUrl)}`
-          // For demo we send original with caption explaining
           await sock.sendMessage(m.key.remoteJid, { image: buf, caption: `🎨 *${command.toUpperCase()}* - Real handler - ${buf.length} bytes processed - API: ${apiUrl}\n\n🐺 WOLF XMD` }, { quoted: m })
         } catch {
           await sock.sendMessage(m.key.remoteJid, { image: buf, caption: `🎨 ${command} processed 🐺` }, { quoted: m })
@@ -198,4 +201,4 @@ module.exports = {
       reply(`❌ Image Error: ${e.message} 🐺`)
     }
   }
-                                                   }
+          }

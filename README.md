@@ -1,4 +1,11 @@
 # 
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FFD700&center=true&vCenter=true&width=850&lines=🟡+ALPHA+AND+OMEGA+WOLF+XMD+ONLINE" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=00FF41&center=true&vCenter=true&width=850&lines=🟢+710+TITAN+COMMANDS+LOADED" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=00FFFF&center=true&vCenter=true&width=850&lines=🔵+15+PLUGINS+CONNECTED" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FF00FF&center=true&vCenter=true&width=850&lines=🟣+STATUS+ONLINE+ACTIVE" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FF0000&center=true&vCenter=true&width=850&lines=🔴+WOLF+NEVER+SLEEPS+🐺" />
+</p>
 # 𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃
 
 ㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 🤖
@@ -302,3 +309,10 @@ Note: Available commands depend on the commands implemented and enabled in your 
 
               © 2026 ALPHA-OMEGA-XMD
                    𝐃𝐄𝐕𝐄𝐋𝐎𝐏𝐄𝐃 𝐁𝐘 𝐒𝐈𝐌𝐎𝐍 Tech 
+                   <p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FFD700&center=true&vCenter=true&width=850&lines=🟡+ALPHA+AND+OMEGA+WOLF+XMD+ONLINE" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=00FF41&center=true&vCenter=true&width=850&lines=🟢+710+TITAN+COMMANDS+LOADED" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=00FFFF&center=true&vCenter=true&width=850&lines=🔵+15+PLUGINS+CONNECTED" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FF00FF&center=true&vCenter=true&width=850&lines=🟣+STATUS+ONLINE+ACTIVE" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=1500&pause=600&color=FF0000&center=true&vCenter=true&width=850&lines=🔴+WOLF+NEVER+SLEEPS+🐺" />
+</p>

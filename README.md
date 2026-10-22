@@ -1,4 +1,6 @@
-<a href="https://alpha-omega-xmd.onrender.com"><img src="https://img.shields.io/badge/PAIR%20SESSION-000000?style=for-the-badge&logo=whatsapp&logoColor=white"/></a>
+<p align="center">
+<a href="https://alpha-omega-xmd.onrender.com"><img src="https://img.shields.io/badge/PAIR%20SESSION-CLICK%20HERE-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&labelColor=black" width="500"/></a>
+</p>
 
 
 

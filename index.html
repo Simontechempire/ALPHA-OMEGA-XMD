@@ -3,113 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALPHA AND OMEGA WOLF XMD - PAIR</title>
+<title>ALPHA & OMEGA WOLF XMD - TITAN 710</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800;900&family=JetBrains+Mono:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#FFD700;font-family:monospace;text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
-.logo{font-size:70px;animation:glow 2s infinite}
-@keyframes glow{0%,100%{text-shadow:0 0 10px gold}50%{text-shadow:0 0 30px gold,0 0 50px orange}}
-h1{font-size:28px;color:#fff;margin:10px 0;letter-spacing:3px}
-h2{font-size:18px;color:gold;margin-bottom:15px}
-.box{border:2px solid gold;border-radius:20px;padding:20px;width:95%;max-width:420px;background:linear-gradient(145deg,#111,#000);box-shadow:0 0 25px rgba(255,215,0,0.4);margin:10px 0}
-.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #333;font-size:13px}
+:root{--gold:#FFD700;--orange:#FF8C00;--green:#00ff41;--bg:#050505}
+body{background:#000;color:#fff;font-family:'Poppins',sans-serif;min-height:100vh;overflow-x:hidden;position:relative}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(255,215,0,0.12),transparent 60%),radial-gradient(ellipse at bottom,rgba(255,140,0,0.08),transparent 70%),#000;z-index:-2}
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.header{padding:25px 15px 10px;text-align:center;position:relative}
+.logo-wrap{position:relative;display:inline-block}
+.logo{font-size:88px;filter:drop-shadow(0 0 25px gold) drop-shadow(0 0 50px orange);animation:float 4s ease-in-out infinite,glow 2.5s ease-in-out infinite alternate}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+@keyframes glow{0%{filter:drop-shadow(0 0 15px gold)}100%{filter:drop-shadow(0 0 40px gold) drop-shadow(0 0 80px orange)}}
+.ring{position:absolute;inset:-15px;border:2px dashed rgba(255,215,0,0.25);border-radius:50%;animation:spin 12s linear infinite}
+.ring2{position:absolute;inset:-30px;border:1px solid rgba(255,215,0,0.1);border-radius:50%;animation:spin 20s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.title{font-family:'Orbitron';font-weight:900;font-size:34px;letter-spacing:5px;background:linear-gradient(100deg,#fff 20%,gold 40%,orange 60%,#fff 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% auto;animation:shine 3s linear infinite}
+@keyframes shine{to{background-position:200% center}}
+.subtitle{font-family:'Orbitron';font-size:12px;letter-spacing:7px;color:gold;margin-top:6px;opacity:0.9;font-weight:600}
+.badge-row{margin:14px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{background:linear-gradient(145deg,rgba(255,215,0,0.12),rgba(255,140,0,0.08));border:1px solid rgba(255,215,0,0.3);color:gold;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;backdrop-filter:blur(10px)}
+.tabs{max-width:480px;width:95%;margin:18px auto;display:flex;gap:10px;background:rgba(15,15,15,0.7);backdrop-filter:blur(20px);padding:6px;border-radius:30px;border:1px solid rgba(255,215,0,0.15)}
+.tab{flex:1;padding:11px 5px;border-radius:20px;border:none;background:transparent;color:#777;font-family:'Orbitron';font-size:11px;font-weight:700;cursor:pointer;transition:0.4s;letter-spacing:1px}
+.tab.active{background:linear-gradient(90deg,gold,orange);color:#000;box-shadow:0 0 20px rgba(255,215,0,0.6);transform:scale(1.03)}
+.glass{max-width:480px;width:95%;margin:0 auto 18px;background:linear-gradient(165deg,rgba(20,20,20,0.9),rgba(8,8,8,0.95));backdrop-filter:blur(25px);border:1px solid rgba(255,215,0,0.18);border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.8),0 0 40px rgba(255,215,0,0.1),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;overflow:hidden}
+.glass::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,gold,transparent);animation:slide 3s ease-in-out infinite}
+@keyframes slide{0%{left:-100%}50%{left:100%}100%{left:100%}}
+.pfp-wrap{position:relative;width:132px;height:132px;margin:0 auto 14px}
+.pfp{width:100%;height:100%;border-radius:50%;border:3px solid gold;object-fit:cover;box-shadow:0 0 30px gold,0 0 60px rgba(255,215,0,0.3)}
+.live{position:absolute;bottom:2px;right:8px;background:#00ff41;width:22px;height:22px;border-radius:50%;border:3px solid #111;display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 0 15px #00ff41;animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #00ff41}70%{box-shadow:0 0 0 14px rgba(0,255,65,0)}100%{box-shadow:0 0 0 0 rgba(0,255,65,0)}}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,0,0.12);border-radius:16px;padding:12px;text-align:center;transition:0.3s}
+.card:hover{background:rgba(255,215,0,0.06);transform:translateY(-2px)}
+.card b{font-family:'Orbitron';font-size:20px;color:gold;display:block}
+.card span{font-size:10px;color:#666;letter-spacing:1px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px}
 .row:last-child{border:none}
-.label{color:#888}.value{color:#fff;font-weight:bold}
-.online{color:#00ff00;font-weight:bold;animation:blink 1s infinite}
-@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0.3}}
-.pfp{width:160px;height:160px;border-radius:50%;border:4px solid gold;margin:15px 0;box-shadow:0 0 30px gold;object-fit:cover}
-.btn{background:gold;color:#000;padding:12px 28px;border-radius:30px;text-decoration:none;font-weight:bold;display:inline-block;margin:6px;box-shadow:0 0 15px gold;border:none;font-size:14px;cursor:pointer}
-.btn2{background:#111;color:gold;border:1px solid gold}
-input{width:100%;padding:12px;border-radius:12px;border:1px solid gold;background:#000;color:#fff;margin:10px 0;font-size:16px;text-align:center;letter-spacing:1px}
-.code{font-size:28px;color:#0f0;background:#000;border:2px dashed #0f0;padding:15px;border-radius:15px;margin:15px 0;letter-spacing:5px;font-weight:bold}
-.tabs{display:flex;gap:8px;margin:15px 0}
-.tab{flex:1;padding:10px;border-radius:20px;border:1px solid gold;background:#111;color:gold;cursor:pointer}
-.tab.active{background:gold;color:#000;font-weight:bold}
-.hidden{display:none}
-.footer{margin-top:15px;color:#555;font-size:11px}
+.label{color:#666;font-family:'JetBrains Mono';font-size:12px}.value{color:#fff;font-weight:600}
+.online{color:#00ff41;text-shadow:0 0 8px #00ff41}
+.btn{width:100%;padding:15px;border-radius:14px;border:none;font-family:'Orbitron';font-weight:800;letter-spacing:1px;cursor:pointer;transition:0.3s;margin-top:10px;font-size:13px}
+.btn-gold{background:linear-gradient(90deg,gold,#ffae00);color:#000;box-shadow:0 8px 25px rgba(255,215,0,0.35)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 12px 35px gold}
+.btn-dark{background:rgba(255,255,255,0.04);color:gold;border:1px solid rgba(255,215,0,0.25)}
+.btn-dark:hover{background:rgba(255,215,0,0.08)}
+input{width:100%;padding:15px;border-radius:14px;border:1px solid rgba(255,215,0,0.25);background:rgba(0,0,0,0.6);color:#fff;text-align:center;font-family:'JetBrains Mono';font-size:17px;letter-spacing:3px;outline:none;transition:0.3s}
+input:focus{border-color:gold;box-shadow:0 0 20px rgba(255,215,0,0.25)}
+.code{font-family:'Orbitron';font-weight:900;font-size:34px;color:#00ff41;background:linear-gradient(145deg,rgba(0,255,65,0.08),rgba(0,255,65,0.03));border:2px dashed #00ff41;padding:20px;border-radius:18px;margin:18px 0;letter-spacing:10px;text-shadow:0 0 20px #00ff41;animation:codeglow 1.5s ease-in-out infinite alternate}
+@keyframes codeglow{0%{box-shadow:0 0 10px rgba(0,255,65,0.2)}100%{box-shadow:0 0 30px rgba(0,255,65,0.4)}}
+.cmds{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;max-height:220px;overflow-y:auto}
+.cmd{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:8px 10px;font-size:11px;font-family:'JetBrains Mono';color:#888;text-align:left}
+.cmd b{color:gold}
+.hidden{display:none!important}
+.footer{text-align:center;padding:18px;font-size:10px;color:#444;letter-spacing:2px;line-height:18px}
+.music{position:fixed;top:15px;right:15px;width:38px;height:38px;border-radius:50%;background:rgba(255,215,0,0.12);border:1px solid gold;color:gold;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);z-index:10}
 </style>
 </head>
 <body>
-<div class="logo">🐺 𓃵 🐺</div>
-<h1>ALPHA AND OMEGA</h1>
-<h2>⚡ WOLF XMD 700 CMD TITAN ⚡</h2>
+<canvas id="particles"></canvas>
+<div class="music" onclick="toggleMusic()" id="musicBtn">🔊</div>
+
+<div class="header">
+<div class="logo-wrap"><div class="ring"></div><div class="ring2"></div><div class="logo">🐺</div></div>
+<div class="title">ALPHA & OMEGA</div>
+<div class="subtitle">WOLF XMD • TITAN 710 • PREMIUM</div>
+<div class="badge-row"><span class="badge">⚡ BAILEYS MD</span><span class="badge">🟢 ANTI-BAN</span><span class="badge">🔥 710 CMDS</span><span class="badge">💎 SIMON MD</span></div>
+</div>
 
 <div class="tabs">
-<button class="tab active" onclick="showTab('dash')">📊 DASHBOARD</button>
-<button class="tab" onclick="showTab('pair')">🔑 PAIR</button>
+<button class="tab active" onclick="showTab('dash',this)">📊 DASH</button>
+<button class="tab" onclick="showTab('pair',this)">🔑 PAIR</button>
+<button class="tab" onclick="showTab('cmds',this)">⚙️ CMDS</button>
 </div>
 
-<!-- DASHBOARD TAB -->
-<div id="dash">
-<img src="https://files.catbox.moe/gqz6zv.jpg" class="pfp">
-<div class="box">
-<div class="row"><span class="label">Bot:</span><span class="value">ALPHA AND OMEGA</span></div>
-<div class="row"><span class="label">Version:</span><span class="value">2.5.0 PREMIUM</span></div>
-<div class="row"><span class="label">Commands:</span><span class="value">710 TITAN</span></div>
-<div class="row"><span class="label">Plugins:</span><span class="value">15 Connected</span></div>
-<div class="row"><span class="label">Owner:</span><span class="value">239166265317</span></div>
-<div class="row"><span class="label">Status:</span><span class="value online">ACTIVE 🟢</span></div>
-<div class="row"><span class="label">Uptime:</span><span class="value" id="uptime">Loading...</span></div>
+<div id="dash" class="glass">
+<div class="pfp-wrap"><img src="https://files.catbox.moe/gqz6zv.jpg" class="pfp"><div class="live">●</div></div>
+<div class="grid4">
+<div class="card"><b>710</b><span>TOTAL CMDS</span></div>
+<div class="card"><b>15</b><span>PLUGIN FILES</span></div>
+<div class="card"><b id="uptime">00:00:00</b><span>UPTIME</span></div>
+<div class="card"><b>2.5.0</b><span>TITAN VER</span></div>
 </div>
-<a class="btn" href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S">JOIN CHANNEL</a>
+<div class="row"><span class="label">Bot Name</span><span class="value">ALPHA OMEGA WOLF</span></div>
+<div class="row"><span class="label">Owner</span><span class="value">239166265317 • Simon</span></div>
+<div class="row"><span class="label">Prefix</span><span class="value">. [dot]</span></div>
+<div class="row"><span class="label">Mode</span><span class="value">Public / Private</span></div>
+<div class="row"><span class="label">Platform</span><span class="value">Render • VPS • Panel</span></div>
+<div class="row"><span class="label">Status</span><span class="value online">● ONLINE & STABLE</span></div>
+<button class="btn btn-gold" onclick="window.open('https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S')">JOIN WHATSAPP CHANNEL</button>
+<button class="btn btn-dark" onclick="showTab('pair',document.querySelectorAll('.tab')[1])">GENERATE PAIR CODE →</button>
 </div>
 
-<!-- PAIR TAB -->
-<div id="pair" class="hidden">
-<div class="box">
-<div style="color:gold;font-weight:bold;margin-bottom:10px">🔑 PAIR WOLF XMD</div>
-<p style="font-size:12px;color:#888;margin-bottom:10px">Enter your WhatsApp number with country code without +</p>
+<div id="pair" class="glass hidden">
+<div style="text-align:center;font-family:'Orbitron';font-weight:800;color:gold;letter-spacing:2px;margin-bottom:12px">🔑 PAIR CODE GENERATOR</div>
+<p style="font-size:11px;color:#666;text-align:center;margin-bottom:14px">Enter number with country code. Example: 239166265317<br>No + , no spaces, no 0 at start if using country code</p>
 <input id="num" placeholder="239166265317" value="239166265317">
-<button class="btn" onclick="getCode()">GET PAIRING CODE</button>
-<div id="result" style="margin-top:15px"></div>
-<div style="font-size:11px;color:#666;text-align:left;margin-top:15px;background:#080808;padding:10px;border-radius:10px">
-<b>Steps:</b><br>
-1. Click GET PAIRING CODE<br>
-2. Open WhatsApp<br>
-3. Settings > Linked Devices<br>
-4. Link a Device<br>
-5. Link with phone number instead<br>
-6. Enter the 8-digit code
-</div>
+<button class="btn btn-gold" onclick="getCode()">⚡ GENERATE 8-DIGIT CODE</button>
+<div id="result" style="margin-top:14px;text-align:center"></div>
+<div style="font-size:11px;color:#555;background:rgba(0,0,0,0.45);padding:14px;border-radius:14px;margin-top:16px;line-height:20px;border:1px solid rgba(255,255,255,0.04);text-align:left">
+<b style="color:gold">📌 LINK STEPS:</b><br>
+1️⃣ Click GENERATE<br>
+2️⃣ Open WhatsApp → Settings<br>
+3️⃣ Linked Devices → Link Device<br>
+4️⃣ Choose "Link with phone number"<br>
+5️⃣ Paste 8-digit code fast (60s expiry)<br>
+6️⃣ Bot will connect → Done 🐺
 </div>
 </div>
 
-<div class="footer">
-🐺 WOLF NEVER SLEEPS - Simon Tech Inc<br>
-Prefix: . | Pairing: Enabled | 710 Cmds
+<div id="cmds" class="glass hidden">
+<div style="font-family:'Orbitron';font-weight:800;color:gold;letter-spacing:2px;margin-bottom:12px;text-align:center">⚙️ 710 TITAN COMMANDS</div>
+<div class="cmds">
+<div class="cmd"><b>.tagall</b> - tag all members</div><div class="cmd"><b>.hidetag</b> - hidden tag</div>
+<div class="cmd"><b>.kick</b> - remove user</div><div class="cmd"><b>.add</b> - add user</div>
+<div class="cmd"><b>.promote</b> - make admin</div><div class="cmd"><b>.demote</b> - remove admin</div>
+<div class="cmd"><b>.mute/.unmute</b> - group lock</div><div class="cmd"><b>.gcstatus</b> - group status box</div>
+<div class="cmd"><b>.welcome</b> - set welcome</div><div class="cmd"><b>.goodbye</b> - set goodbye</div>
+<div class="cmd"><b>.vv</b> - view once opener</div><div class="cmd"><b>.antidelete</b> - save deleted</div>
+<div class="cmd"><b>.poll</b> - create poll</div><div class="cmd"><b>.approve</b> - approve requests</div>
+<div class="cmd"><b>.kickall</b> - kick non-admins</div><div class="cmd"><b>.promoteall</b> - all admin</div>
+<div class="cmd"><b>.setgrouppic</b> - change dp</div><div class="cmd"><b>.revoke</b> - new link</div>
 </div>
+<button class="btn btn-dark" onclick="showTab('dash',document.querySelectorAll('.tab')[0])">← BACK TO DASHBOARD</button>
+</div>
+
+<div class="footer">🐺 WOLF NEVER SLEEPS - SIMON TECH INC © 2026<br>Power • Loyalty • Excellence | 710 Cmds Titan | Made for Alpha & Omega Army</div>
 
 <script>
-function showTab(t){
-  document.getElementById('dash').classList.toggle('hidden', t!=='dash')
-  document.getElementById('pair').classList.toggle('hidden', t!=='pair')
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'))
-  event.target.classList.add('active')
-  if(t==='dash') document.querySelectorAll('.tab')[0].classList.add('active')
-  if(t==='pair') document.querySelectorAll('.tab')[1].classList.add('active')
+function showTab(t,el){
+document.getElementById('dash').classList.add('hidden');document.getElementById('pair').classList.add('hidden');document.getElementById('cmds').classList.add('hidden');
+document.getElementById(t).classList.remove('hidden');
+document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');
 }
 async function getCode(){
-  const num = document.getElementById('num').value.replace(/[^0-9]/g,'')
-  if(!num){ alert('Enter number'); return }
-  document.getElementById('result').innerHTML = '⏳ Requesting code for '+num+'... Please wait 5 sec'
-  try{
-    const res = await fetch('/getcode?number='+num)
-    const data = await res.json()
-    if(data.code){
-      document.getElementById('result').innerHTML = '<p>✅ CODE GENERATED</p><div class="code">'+data.code+'</div><p style="color:#0f0;font-size:12px">Valid for 60 seconds - Enter fast!</p>'
-    } else {
-      document.getElementById('result').innerHTML = '❌ '+ (data.error || 'Failed. Check console logs')
-    }
-  }catch(e){
-    document.getElementById('result').innerHTML = '❌ Network error: '+e.message
-  }
+const num=document.getElementById('num').value.replace(/[^0-9]/g,'');if(!num){alert('Enter number');return}
+document.getElementById('result').innerHTML='<div style="color:gold">⏳ Generating TITAN code for '+num+'...<br><small style="color:#666">Encrypting session - wait 4 sec</small></div>';
+try{const res=await fetch('/getcode?number='+num);const data=await res.json();if(data.code){document.getElementById('result').innerHTML='<div style="color:#00ff41;font-size:12px;letter-spacing:1px">✅ TITAN CODE GENERATED - VALID 60s</div><div class="code">'+data.code+'</div><div style="color:#00ff41;font-size:11px">Copy fast - Wolf expires quick 🐺</div>';new Audio('https://files.catbox.moe/1c8x7g.mp3').play().catch(()=>{});}else{document.getElementById('result').innerHTML='<div style="color:#ff4444">❌ '+(data.error||'Failed - Check logs')+'</div>'}}catch(e){document.getElementById('result').innerHTML='<div style="color:#ff4444">❌ Network: '+e.message+'</div>'}
 }
-let start = Date.now()
-setInterval(()=>{
-  let up = Math.floor((Date.now()-start)/1000)
-  let h = Math.floor(up/3600), m = Math.floor((up%3600)/60), s = up%60
-  document.getElementById('uptime').innerText = h+'h '+m+'m '+s+'s'
-},1000)
+let start=Date.now();setInterval(()=>{let up=Math.floor((Date.now()-start)/1000);let h=String(Math.floor(up/3600)).padStart(2,'0'),m=String(Math.floor((up%3600)/60)).padStart(2,'0'),s=String(up%60).padStart(2,'0');let el=document.getElementById('uptime');if(el)el.innerText=h+':'+m+':'+s},1000);
+const canvas=document.getElementById('particles');const ctx=canvas.getContext('2d');canvas.width=innerWidth;canvas.height=innerHeight;let parts=[];for(let i=0;i<60;i++){parts.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,dx:(Math.random()-0.5)*0.5,dy:(Math.random()-0.5)*0.5})}
+function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);parts.forEach(p=>{p.x+=p.dx;p.y+=p.dy;if(p.x<0||p.x>canvas.width)p.dx*=-1;if(p.y<0||p.y>canvas.height)p.dy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(255,215,0,0.25)';ctx.fill()});requestAnimationFrame(anim)}anim();
+let music=false;function toggleMusic(){music=!music;document.getElementById('musicBtn').innerText=music?'🔇':'🔊'}
+window.onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight}
 </script>
 </body>
-</html>
+  </html>

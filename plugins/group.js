@@ -22,6 +22,23 @@ module.exports = {
         await sock.groupParticipantsUpdate(m.key.remoteJid, [target], 'remove')
         return reply(`✅ Kicked @${target.split('@')[0]}`, { mentions: [target] })
       }
+      // .gcstatus
+if (command === 'gcstatus') {
+  const txt = `╭━━━〔 🏰 GROUP STATUS 〕━━━╮
+┃
+┃ 👥 *Group Name:* ${metadata.subject}
+┃ 🆔 *Group ID:* ${m.key.remoteJid}
+┃ 👤 *Total Members:* ${participants.length}
+┃
+╰━━━━━━━━━━━━━━━━━━━━╯`
+
+  await sock.sendMessage(
+    m.key.remoteJid,
+    { text: txt },
+    { quoted: m }
+  )
+  return
+}
 
       // .add
       if (command === 'add') {

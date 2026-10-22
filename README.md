@@ -3,6 +3,17 @@
 # 𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃
 
 ㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 🤖
+<p align="center">
+  <img src="https://files.catbox.moe/gqz6zv.jpg" width="250" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 30px gold;" />
+</p>
+
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=2500&pause=1000&color=FFD700&center=true&vCenter=true&width=800&lines=ALPHA+AND+OMEGA+WOLF+XMD;VERSION+2.5.0+TITAN+PREMIUM;710+COMMANDS+LOADED;STATUS+%3A+ONLINE+%F0%9F%9F%A2;WOLF+NEVER+SLEEPS+%F0%9F%90%BA" />
+</p>
+
+<h1 align="center">🐺 ALPHA AND OMEGA WOLF XMD - ONLINE 🟢</h1>
+
+### 🟢 LIVE OUTLINE - PASSING LINE BY LINE
 
 ㅤㅤㅤㅤ<p align="center">
   <img src="https://files.catbox.moe/gqz6zv.jpg" width="320" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 40px gold;" />

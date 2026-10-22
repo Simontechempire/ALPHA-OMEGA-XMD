@@ -1,53 +1,245 @@
-# ALPHA-OMEGA-XMD
-🐺 ALPHA AND OMEGA WOLF XMD 🤖
+# ㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤㅤ
 
-Welcome to ALPHA-OMEGA-XMD, a powerful and customizable WhatsApp bot designed to make messaging easier, faster, and more entertaining. 🚀
+# 𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃
 
-This bot includes a collection of useful commands for group management, automation, entertainment, and everyday WhatsApp activities. It is built to provide users with a smooth messaging experience while offering flexible features for personal chats and group conversations. Built on Baileys Multi-Device, stable, fast, no ban.
+ㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 🤖
 
-✨ FEATURES
+ㅤㅤㅤㅤ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-- 🤖 Core System - Auto Read, Auto Typing, Auto Presence, Anti-Call, Always Online
-- 👥 Group Management - kick, add, promote, demote, tagall, hidetag, everyone, tagadmin, tagmember, groupinfo, groupname, groupdesc, membercount, members, listmember, listadmin, listonline
-- 🛡️ Admin & Moderation - mute, unmute, open, close, group, revoke, newlink, resetlink, invite, join, leave, setname, setsubject, setdesc, setgrouppic, getgrouppic, kickall, promoteall, demoteall
-- 😂 Fun & Utility - poll, vote, vv (viewonce opener), welcome, goodbye, setwelcome, setgoodbye, delwelcome, delgoodbye, welcomeon/off, goodbyeon/off
-- 📱 Status & Media - gstatus / gcstatus with box design, getgrouppic, antidelete on/off, auto status view
-- 🔄 Automation - Auto Welcome/Goodbye with placeholders @user @group @desc, Auto Approve/Reject Requests, Anti-Delete Message Recovery
-- ⚙️ Technical - 50+ Commands in Single File 5 Method, Fast Command Loader, Persistent JSON Database (database/group.json), Render Ready, No Global Memory Loss
-- 🐺 Powerful WOLF XMD Alpha Method - Developed by SIMON MD
+ㅤㅤㅤㅤㅤㅤ⚡ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 ⚡
 
-📌 GETTING STARTED
+Welcome to 𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃, a powerful and customizable WhatsApp bot designed to make messaging easier, faster, smarter, and more entertaining. 🚀🐺
 
-1. Fork & Star this repository
-2. Clone: `git clone https://github.com/yourname/ALPHA-OMEGA-XMD`
-3. Install dependencies: `npm install`
-4. Configure: Edit `config.js` - set owner number, prefix (.), bot name
-5. Start: `npm start` - Choose Pairing Code option
-6. Link: Enter code in WhatsApp > Linked Devices > Link with Phone Number
-7. Enjoy: Bot connects - type .menu, .gcstatus, .tagall
+Built with Baileys Multi-Device technology, this bot brings together group management, automation, moderation, media tools, entertainment, and useful WhatsApp features in one powerful system.
 
-🚀 DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-- Render: Connect GitHub repo, Build Command: `npm install`, Start Command: `node index.js`, Add ENV: `SESSION_ID`
-- Heroku: Create App, Add Buildpack Nodejs, Deploy from GitHub
-- VPS/Panel: Upload files, `npm install`, `pm2 start index.js --name alpha`
-- Replit: Import from GitHub, Run
+                  ✨ 𝐅𝐄𝐀𝐓𝐔𝐑𝐄𝐒 ✨
 
-🔧 COMMAND LIST
+🤖 𝐂𝐎𝐑𝐄 𝐒𝐘𝐒𝐓𝐄𝐌
+> Auto Read
+> Auto Typing
+> Auto Presence
+> Anti-Call
+> Always Online
 
-Group: .kick @user, .add 234xxx, .promote @, .demote @, .tagall hi, .hidetag, .admins, .groupinfo, .mute/.unmute, .revoke, .join link, .leave, .setname, .setdesc, .setgrouppic (reply image), .getgrouppic, .membercount, .listmember, .tagadmin, .kickall CONFIRM, .approve, .requests, .poll Q | A | B, .gcstatus
+👥 𝐆𝐑𝐎𝐔𝐏 𝐌𝐀𝐍𝐀𝐆𝐄𝐌𝐄𝐍𝐓
+> Kick Members
+> Add Members
+> Promote Admins
+> Demote Admins
+> Tag All Members
+> Hide Tag
+> Everyone Tag
+> Tag Admins
+> Tag Members
+> Group Information
+> Change Group Name
+> Change Group Description
+> Member Count
+> List Members
+> List Admins
+> List Online Members
 
-⚠️ IMPORTANT
+🛡️ 𝐀𝐃𝐌𝐈𝐍 & 𝐌𝐎𝐃𝐄𝐑𝐀𝐓𝐈𝐎𝐍
+> Mute and Unmute
+> Open and Close Group
+> Revoke Group Link
+> Generate New Group Link
+> Reset Group Link
+> Invite Members
+> Join and Leave Groups
+> Set Group Name
+> Set Group Subject
+> Set Group Description
+> Set Group Picture
+> Get Group Picture
+> Kick All Members
+> Promote All Members
+> Demote All Admins
 
-Keep your session credentials (creds.json / SESSION_ID) private. Never share publicly. Use moderation commands responsibly, ensure bot is admin for kick/add/mute actions. This bot is for educational purpose, respect WhatsApp's Terms of Service. Developer not responsible for ban.
+😂 𝐅𝐔𝐍 & 𝐔𝐓𝐈𝐋𝐈𝐓𝐘
+> Create Polls
+> Vote Commands
+> View Once Media Tool
+> Welcome Messages
+> Goodbye Messages
+> Set Welcome Message
+> Set Goodbye Message
+> Delete Welcome Message
+> Delete Goodbye Message
+> Enable/Disable Welcome
+> Enable/Disable Goodbye
 
-❤️ CREDITS & SUPPORT
+📱 𝐒𝐓𝐀𝐓𝐔𝐒 & 𝐌𝐄𝐃𝐈𝐀
+> Group Status
+> GC Status
+> Anti-Delete
+> Status Viewing
+> Message Recovery Tools
 
-Developed for the ALPHA-OMEGA-XMD community.
-Developer: Simon MD
-Base Library: @whiskeysockets/baileys
-Method: Alpha Single File 50 CMDS Real
-Support: WhatsApp Channel + GitHub Issues
+🔄 𝐀𝐔𝐓𝐎𝐌𝐀𝐓𝐈𝐎𝐍
+> Automatic Welcome
+> Automatic Goodbye
+> Auto Approve Requests
+> Auto Reject Requests
+> Automatic Status Viewing
+> Message Delete Detection
 
-🐺 ALPHA AND OMEGA
-Power, Loyalty, and Excellence! WOLF XMD Never Dies!
+⚙️ 𝐒𝐘𝐒𝐓𝐄𝐌 & 𝐓𝐄𝐂𝐇𝐍𝐈𝐂𝐀𝐋
+> 50+ Command Setup
+> Fast Command Loader
+> Persistent JSON Database
+> Group Data Storage
+> Render Deployment Support
+> VPS and Panel Support
+> Easy Configuration
+> Modular Command System
+
+🐺 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 𝐀𝐋𝐏𝐇𝐀 𝐌𝐄𝐓𝐇𝐎𝐃
+> Developed by SIMON MD
+> Built for flexibility and customization
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                  📌 𝐆𝐄𝐓𝐓𝐈𝐍𝐆 𝐒𝐓𝐀𝐑𝐓𝐄𝐃
+
+① 𝐅𝐎𝐑𝐊 & 𝐒𝐓𝐀𝐑
+Fork the repository and give it a star to support the project.
+
+② 𝐂𝐋𝐎𝐍𝐄 𝐓𝐇𝐄 𝐑𝐄𝐏𝐎
+git clone https://github.com/yourname/ALPHA-OMEGA-XMD
+
+③ 𝐈𝐍𝐒𝐓𝐀𝐋𝐋 𝐃𝐄𝐏𝐄𝐍𝐃𝐄𝐍𝐂𝐈𝐄𝐒
+npm install
+
+④ 𝐂𝐎𝐍𝐅𝐈𝐆𝐔𝐑𝐄 𝐓𝐇𝐄 𝐁𝐎𝐓
+Open config.js and configure the owner number, command prefix, bot name, and other settings.
+
+⑤ 𝐒𝐓𝐀𝐑𝐓 𝐓𝐇𝐄 𝐁𝐎𝐓
+npm start
+
+⑥ 𝐂𝐎𝐍𝐍𝐄𝐂𝐓 𝐖𝐇𝐀𝐓𝐒𝐀𝐏𝐏
+Follow the pairing instructions provided by your bot.
+
+⑦ 𝐄𝐍𝐉𝐎𝐘 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃
+Try commands such as:
+.menu
+.gcstatus
+.tagall
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                  🚀 𝐃𝐄𝐏𝐋𝐎𝐘𝐌𝐄𝐍𝐓
+
+☁️ 𝐑𝐄𝐍𝐃𝐄𝐑
+Build Command:
+npm install
+
+Start Command:
+node index.js
+
+💻 𝐕𝐏𝐒 / 𝐏𝐀𝐍𝐄𝐋
+Install dependencies:
+npm install
+
+Start the bot:
+npm start
+
+⚡ 𝐏𝐌𝟐
+pm2 start index.js --name alpha
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                  🔧 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐋𝐈𝐒𝐓
+
+👥 𝐆𝐑𝐎𝐔𝐏 𝐂𝐎𝐌𝐌𝐀𝐍𝐃𝐒
+
+.kick @user
+.add 234xxx
+.promote @user
+.demote @user
+.tagall
+.hidetag
+.admins
+.groupinfo
+.membercount
+.listmember
+.tagadmin
+.tagmember
+.kickall
+
+🛡️ 𝐌𝐎𝐃𝐄𝐑𝐀𝐓𝐈𝐎𝐍
+
+.mute
+.unmute
+.open
+.close
+.revoke
+.newlink
+.resetlink
+.join
+.leave
+.setname
+.setdesc
+.setgrouppic
+.getgrouppic
+
+🔄 𝐑𝐄𝐐𝐔𝐄𝐒𝐓𝐒 & 𝐏𝐎𝐋𝐋𝐒
+
+.approve
+.requests
+.poll
+.vote
+
+📱 𝐒𝐓𝐀𝐓𝐔𝐒
+
+.gstatus
+.gcstatus
+
+🤖 𝐆𝐄𝐍𝐄𝐑𝐀𝐋
+
+.menu
+
+Note: Available commands depend on the commands implemented and enabled in your bot.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                  ⚠️ 𝐈𝐌𝐏𝐎𝐑𝐓𝐀𝐍𝐓 𝐍𝐎𝐓𝐈𝐂𝐄
+
+🔐 Keep your session credentials private.
+
+🚫 Never publish creds.json, SESSION_ID, or other authentication secrets.
+
+👑 Give the bot administrator privileges only when necessary for group-management features.
+
+🛡️ Use moderation commands responsibly and respect other group members.
+
+📌 Follow WhatsApp's Terms of Service. No bot can guarantee immunity from account restrictions or bans.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                  ❤️ 𝐂𝐑𝐄𝐃𝐈𝐓𝐒 & 𝐒𝐔𝐏𝐏𝐎𝐑𝐓
+
+👨‍💻 Developer: SIMON MD
+
+🐺 Project: ALPHA-OMEGA-XMD
+
+📦 Base Library: Baileys
+
+⚡ Method: Alpha Single File 50 CMDS Real
+
+💬 Support: GitHub Issues and the project's official support channels.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ㅤㅤㅤㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 🐺
+
+ㅤㅤㅤㅤㅤㅤ⚡ 𝐏𝐎𝐖𝐄𝐑 • 𝐋𝐎𝐘𝐀𝐋𝐓𝐘 • 𝐄𝐗𝐂𝐄𝐋𝐋𝐄𝐍𝐂𝐄 ⚡
+
+ㅤㅤㅤㅤㅤㅤ🔥 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 𝐍𝐄𝐕𝐄𝐑 𝐃𝐈𝐄𝐒! 🔥
+
+ㅤㅤㅤㅤ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+              © 2026 ALPHA-OMEGA-XMD
+                   𝐃𝐄𝐕𝐄𝐋𝐎𝐏𝐄𝐃 𝐁𝐘 𝐒𝐈𝐌𝐎𝐍 𝐌𝐃

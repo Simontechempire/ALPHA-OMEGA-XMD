@@ -15,10 +15,6 @@
 
 
 
-ㅤㅤㅤㅤ<p align="center">
-  <img src="https://files.catbox.moe/gqz6zv.jpg" width="320" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 40px gold;" />
-</p>
-
 <h1 align="center">🐺 ALPHA AND OMEGA WOLF XMD 🐺</h1>
 <h3 align="center">⚡ TITAN 710 COMMANDS • PREMIUM • ANTI-BAN ⚡</h3>
 
@@ -281,8 +277,30 @@ Note: Available commands depend on the commands implemented and enabled in your 
 ㅤㅤㅤㅤㅤㅤ⚡ 𝐏𝐎𝐖𝐄𝐑 • 𝐋𝐎𝐘𝐀𝐋𝐓𝐘 • 𝐄𝐗𝐂𝐄𝐋𝐋𝐄𝐍𝐂𝐄 ⚡
 
 ㅤㅤㅤㅤㅤㅤ🔥 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 𝐍𝐄𝐕𝐄𝐑 𝐃𝐈𝐄𝐒! 🔥
+<p align="center">
+  <img src="https://files.catbox.moe/gqz6zv.jpg" width="260" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 40px gold;" />
+</p>
+
+<h1 align="center">𝐀𝐋𝐏𝐇𝐀-𝐎𝐌𝐄𝐆𝐀-𝐗𝐌𝐃</h1>
+<h3 align="center">🐺 ALPHA AND OMEGA WOLF XMD 🤖</h3>
+
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=2500&pause=1000&color=FFD700&center=true&vCenter=true&width=800&lines=ALPHA+AND+OMEGA+WOLF+XMD;VERSION+2.5.0+TITAN+PREMIUM;710+COMMANDS+LOADED;STATUS+%3A+ONLINE+%F0%9F%9F%A2;WOLF+NEVER+SLEEPS+%F0%9F%90%BA" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/WOLF%20XMD-2.5.0%20TITAN-gold?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  <img src="https://img.shields.io/badge/STATUS-ACTIVE%20🟢-00ff41?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/CMDS-710%20TITAN-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PLUGINS-15%20CONNECTED-blue?style=for-the-badge" />
+</p>
+
+---
+
+### 🟢 LIVE SYSTEM OUTLINE - LINE BY LINE
+
 
 ㅤㅤㅤㅤ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
               © 2026 ALPHA-OMEGA-XMD
-                   𝐃𝐄𝐕𝐄𝐋𝐎𝐏𝐄𝐃 𝐁𝐘 𝐒𝐈𝐌𝐎𝐍 𝐌𝐃
+                   𝐃𝐄𝐕𝐄𝐋𝐎𝐏𝐄𝐃 𝐁𝐘 𝐒𝐈𝐌𝐎𝐍 Tech 

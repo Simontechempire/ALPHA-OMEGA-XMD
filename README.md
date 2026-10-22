@@ -108,7 +108,7 @@ Built with Baileys Multi-Device technology, this bot brings together group manag
 Fork the repository and give it a star to support the project.
 
 ② 𝐂𝐋𝐎𝐍𝐄 𝐓𝐇𝐄 𝐑𝐄𝐏𝐎
-git clone https://github.com/yourname/ALPHA-OMEGA-XMD
+git clone https://github.com/Simontechempire/ALPHA-OMEGA-XMD.git
 
 ③ 𝐈𝐍𝐒𝐓𝐀𝐋𝐋 𝐃𝐄𝐏𝐄𝐍𝐃𝐄𝐍𝐂𝐈𝐄𝐒
 npm install

@@ -10,7 +10,7 @@
   <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=900&size=26&duration=2500&pause=1000&color=FFD700&center=true&vCenter=true&width=800&lines=ALPHA+AND+OMEGA+WOLF+XMD;VERSION+2.5.0+TITAN+PREMIUM;710+COMMANDS+LOADED;STATUS+%3A+ONLINE+%F0%9F%9F%A2;WOLF+NEVER+SLEEPS+%F0%9F%90%BA" />
 </p>
 
-<h1 align="center">🐺 ALPHA AND OMEGA WOLF XMD - ONLINE 🟢</h1>
+
 
 
 

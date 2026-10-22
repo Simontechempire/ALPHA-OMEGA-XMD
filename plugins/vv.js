@@ -1,108 +1,93 @@
-// 👁️ ALPHA AND OMEGA WOLF XMD - VV 10 CMDS REAL
+// 👁️ ALPHA AND OMEGA WOLF XMD - VV 10 CMDS FIXED
+const { downloadMediaMessage } = require('@whiskeysockets/baileys')
+
 module.exports = {
   command: ['vv','viewonce','vv2','vv3','vvimage','vvvideo','vvaudio','vvall','autovv','antiviewonce'],
 
   execute: async (sock, m, { command, text, reply }) => {
-    global.wolfDB = global.wolfDB || { auto: { autovv: true } }
+    global.wolfDB = global.wolfDB || { auto: { autovv: true }, owners: [] }
     const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage
 
     try {
-      // .autovv / .antiviewonce toggle
       if (['autovv','antiviewonce'].includes(command)) {
-        if (!text) return reply(`👁️ AutoVV: ${global.wolfDB.auto.autovv ? 'ON 🟢' : 'OFF 🔴'}\nUsage: .autovv on/off\n\nWhen ON, all view-once auto opened! 🐺`)
-        global.wolfDB.auto.autovv = text === 'on'
-        return reply(`✅ AutoVV ${text === 'on' ? 'ENABLED 🟢 - All view-once will be auto bypassed!' : 'DISABLED 🔴'} 🐺`)
+        if (!text) return reply(`👁️ AutoVV: ${global.wolfDB.auto.autovv ? 'ON 🟢' : 'OFF 🔴'}\nUsage: .autovv on/off\n🐺`)
+        global.wolfDB.auto.autovv = text.toLowerCase() === 'on'
+        return reply(`✅ AutoVV ${global.wolfDB.auto.autovv ? 'ENABLED 🟢' : 'DISABLED 🔴'} 🐺`)
       }
 
-      // .vvall - list all viewonce logic
       if (command === 'vvall') {
-        return reply(`👁️ *VV ALL - VIEW ONCE LIST*\n\nCommands:\n.vv - Reply viewonce to bypass\n.vv2 - Bypass + save to phone\n.vv3 - Bypass + forward to owner\n.vvimage - Extract image only\n.vvvideo - Extract video only\n.vvaudio - Extract audio only\n.autovv on/off - Auto bypass\n\n🐺 ALPHA AND OMEGA`)
+        return reply(`👁️ *VV ALL*\n.vv - bypass\n.vv2 - save with info\n.vv3 - forward to owner\n.vvimage - image only\n.vvvideo - video only\n.vvaudio - audio only\n.autovv on/off\n\n🐺 ALPHA AND OMEGA`)
       }
 
-      // Check for viewOnce message
-      let viewOnceData = null
-      let mediaMessage = null
-
-      // 1. Check quoted message is viewOnce
+      // Get viewOnce container
+      let quotedMsg = null
       if (quoted) {
-        if (quoted.viewOnceMessage) { viewOnceData = quoted.viewOnceMessage; mediaMessage = quoted.viewOnceMessage.message }
-        else if (quoted.viewOnceMessageV2) { viewOnceData = quoted.viewOnceMessageV2; mediaMessage = quoted.viewOnceMessageV2.message }
-        else if (quoted.viewOnceMessageV2Extension) { viewOnceData = quoted.viewOnceMessageV2Extension; mediaMessage = quoted.viewOnceMessageV2Extension.message }
-        else mediaMessage = quoted // maybe already extracted
+        quotedMsg = quoted.viewOnceMessage?.message || quoted.viewOnceMessageV2?.message || quoted.viewOnceMessageV2Extension?.message || quoted
+      } else if (m.message?.viewOnceMessage) {
+        quotedMsg = m.message.viewOnceMessage.message
+      } else if (m.message?.viewOnceMessageV2) {
+        quotedMsg = m.message.viewOnceMessageV2.message
       }
 
-      // 2. Check current message itself is viewOnce (if bot receives)
-      if (!mediaMessage && m.message?.viewOnceMessage) { mediaMessage = m.message.viewOnceMessage.message; viewOnceData = m.message.viewOnceMessage }
-      if (!mediaMessage && m.message?.viewOnceMessageV2) { mediaMessage = m.message.viewOnceMessageV2.message; viewOnceData = m.message.viewOnceMessageV2 }
-
-      if (!mediaMessage) {
-        return reply(`👁️ *VV - VIEW ONCE BYPASS*\n\n❌ Reply to a view-once image/video/voice with .${command}\n\nEx: Reply view-once pic with .vv\n\n🐺 WOLF XMD - VV READY`)
+      if (!quotedMsg) {
+        return reply(`👁️ *VV - VIEW ONCE BYPASS*\n\n❌ Reply to a view-once image/video/voice with .${command}\n\n🐺 WOLF XMD`)
       }
 
-      // Extract media type
-      const type = Object.keys(mediaMessage)[0] // imageMessage, videoMessage, audioMessage
-      const media = mediaMessage[type]
+      const type = Object.keys(quotedMsg)[0]
+      if (!['imageMessage','videoMessage','audioMessage'].includes(type)) {
+        return reply(`❌ Not viewOnce media. Found: ${type}`)
+      }
 
-      // .vv - normal bypass
+      // FIX: Download buffer instead of sending raw object
+      const buffer = await downloadMediaMessage({ message: quotedMsg }, 'buffer', {}, { logger: undefined, reuploadRequest: sock.updateMediaMessage })
+
       if (command === 'vv' || command === 'viewonce') {
-        if (type === 'imageMessage') {
-          await sock.sendMessage(m.key.remoteJid, { image: media, caption: `👁️ *VV BYPASS - IMAGE OPENED*\n\nOriginal was view-once\nNow saved! 🐺\n\nALPHA AND OMEGA WOLF XMD` }, { quoted: m })
-        } else if (type === 'videoMessage') {
-          await sock.sendMessage(m.key.remoteJid, { video: media, caption: `👁️ *VV BYPASS - VIDEO OPENED*\n\n🐺 WOLF XMD` }, { quoted: m })
-        } else if (type === 'audioMessage') {
-          await sock.sendMessage(m.key.remoteJid, { audio: media, mimetype: 'audio/mp4', ptt: media.ptt || false }, { quoted: m })
-        } else {
-          await sock.sendMessage(m.key.remoteJid, { forward: mediaMessage }, { quoted: m })
-        }
-        return reply(`✅ *VIEW ONCE BYPASSED!* 👁️\nType: ${type.replace('Message','')}\nSaved above! 🐺`)
+        if (type === 'imageMessage') await sock.sendMessage(m.chat, { image: buffer, caption: `👁️ *VV BYPASS - IMAGE OPENED*\n\n🐺 ALPHA AND OMEGA WOLF XMD` }, { quoted: m })
+        if (type === 'videoMessage') await sock.sendMessage(m.chat, { video: buffer, caption: `👁️ *VV BYPASS - VIDEO OPENED*\n\n🐺 WOLF XMD` }, { quoted: m })
+        if (type === 'audioMessage') await sock.sendMessage(m.chat, { audio: buffer, mimetype: 'audio/mp4', ptt: quotedMsg[type].ptt || false }, { quoted: m })
+        return reply(`✅ *VIEW ONCE BYPASSED!* 👁️ Type: ${type.replace('Message','')} 🐺`)
       }
 
-      // .vv2 - bypass + save with info
       if (command === 'vv2') {
-        if (type === 'imageMessage') {
-          await sock.sendMessage(m.key.remoteJid, { image: media, caption: `👁️ *VV2 - SAVED*\n\nFile: viewonce-image.jpg\nSize: ${media.fileLength || 'unknown'}\nViewOnce: Bypassed ✅\n\n🐺 WOLF XMD - SAVED TO CHAT` }, { quoted: m })
-        } else if (type === 'videoMessage') {
-          await sock.sendMessage(m.key.remoteJid, { video: media, caption: `👁️ *VV2 - VIDEO SAVED*\n\n🐺` }, { quoted: m })
-        }
-        return reply(`✅ VV2 - Media saved + forwarded with details! 🐺`)
+        if (type === 'imageMessage') await sock.sendMessage(m.chat, { image: buffer, caption: `👁️ *VV2 - SAVED*\nSize: ${quotedMsg[type].fileLength || 'unknown'}\n🐺 WOLF XMD` }, { quoted: m })
+        if (type === 'videoMessage') await sock.sendMessage(m.chat, { video: buffer, caption: `👁️ *VV2 - VIDEO SAVED* 🐺` }, { quoted: m })
+        if (type === 'audioMessage') await sock.sendMessage(m.chat, { audio: buffer, mimetype: 'audio/mp4' }, { quoted: m })
+        return
       }
 
-      // .vv3 - bypass + forward to owner
       if (command === 'vv3') {
-        const owner = global.wolfDB?.owners?.[0] || sock.user.id
+        const owner = global.wolfDB.owners?.[0] || sock.user.id
         if (type === 'imageMessage') {
-          await sock.sendMessage(owner, { image: media, caption: `👁️ VV3 from ${m.key.remoteJid}\nBypassed view-once` })
-          await sock.sendMessage(m.key.remoteJid, { image: media, caption: `👁️ VV3 - Also forwarded to owner! 🐺` }, { quoted: m })
+          await sock.sendMessage(owner, { image: buffer, caption: `👁️ VV3 from ${m.chat}` })
+          await sock.sendMessage(m.chat, { image: buffer, caption: `👁️ VV3 - Also forwarded to owner! 🐺` }, { quoted: m })
         } else {
-          await sock.sendMessage(owner, { forward: mediaMessage })
-          await sock.sendMessage(m.key.remoteJid, { text: `✅ VV3 - Forwarded to owner + here! 🐺` })
+          await sock.sendMessage(owner, { [type.replace('Message','')]: buffer })
+          await sock.sendMessage(m.chat, { text: `✅ VV3 - Forwarded to owner + here! 🐺` })
         }
         return
       }
 
-      // .vvimage - only images
       if (command === 'vvimage') {
-        if (type !== 'imageMessage') return reply(`❌ This is not image view-once. Type: ${type}`)
-        await sock.sendMessage(m.key.remoteJid, { image: media, caption: `👁️ VVIMAGE - Extracted!\n\n🐺` }, { quoted: m })
-        return reply(`✅ Image extracted! 🐺`)
+        if (type !== 'imageMessage') return reply(`❌ Not image. Type: ${type}`)
+        await sock.sendMessage(m.chat, { image: buffer, caption: `👁️ VVIMAGE - Extracted! 🐺` }, { quoted: m })
+        return
       }
 
-      // .vvvideo - only videos
       if (command === 'vvvideo') {
-        if (type !== 'videoMessage') return reply(`❌ Not video view-once. Type: ${type}`)
-        await sock.sendMessage(m.key.remoteJid, { video: media, caption: `👁️ VVVIDEO - Extracted! 🐺` }, { quoted: m })
-        return reply(`✅ Video extracted! 🐺`)
+        if (type !== 'videoMessage') return reply(`❌ Not video. Type: ${type}`)
+        await sock.sendMessage(m.chat, { video: buffer, caption: `👁️ VVVIDEO - Extracted! 🐺` }, { quoted: m })
+        return
       }
 
-      // .vvaudio - only audio
       if (command === 'vvaudio') {
-        if (type !== 'audioMessage') return reply(`❌ Not audio view-once. Type: ${type}`)
-        await sock.sendMessage(m.key.remoteJid, { audio: media, mimetype: 'audio/mp4', ptt: media.ptt || false }, { quoted: m })
-        return reply(`✅ Audio extracted! 🐺`)
+        if (type !== 'audioMessage') return reply(`❌ Not audio. Type: ${type}`)
+        await sock.sendMessage(m.chat, { audio: buffer, mimetype: 'audio/mp4', ptt: quotedMsg[type].ptt || false }, { quoted: m })
+        return
       }
 
     } catch (e) {
-      reply(`❌ VV Error: ${e.message}\nMake sure you reply view-once message with .vv 🐺`)
+      console.log(e)
+      reply(`❌ VV Error: ${e.message}\nMake sure you reply view-once with .vv 🐺`)
     }
   }
 }

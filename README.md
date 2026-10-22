@@ -13,7 +13,7 @@
 
 <h1 align="center">🐺 ALPHA AND OMEGA WOLF XMD - ONLINE 🟢</h1>
 
-### 🟢 LIVE OUTLINE - PASSING LINE BY LINE
+
 
 ㅤㅤㅤㅤ<p align="center">
   <img src="https://files.catbox.moe/gqz6zv.jpg" width="320" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 40px gold;" />

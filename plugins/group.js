@@ -64,13 +64,51 @@ if (command === 'gcstatus') {
         return reply(`✅ Demoted @${user.split('@')[0]}`, { mentions: [user] })
       }
 
-      // .tagall / .everyone
+     // .tagall / .everyone - INLINE ARRANGED
       if (command === 'tagall' || command === 'everyone') {
-        let txt = `📢 *${metadata.subject || 'GROUP'} TAGALL*\n\n`
-        txt += text ? `${text}\n\n` : ''
-        txt += `👥 Members: ${participants.length}\n\n`
-        for (let p of participants) txt += `➡️ @${p.id.split('@')[0]}\n`
-        await sock.sendMessage(m.key.remoteJid, { text: txt, mentions: participants.map(p=>p.id) }, { quoted: m })
+        let txt = `╭━━━〔 📢 TAG ALL 〕━━━╮\n`
+        txt += `┃ 🏷️ Group: ${metadata.subject || 'GROUP'}\n`
+        txt += `┃ 👥 Members: ${participants.length}\n`
+        txt += `╰━━━━━━━━━━━━━━━━━━╯\n\n`
+
+        if (text) {
+          txt += `💬 Message: ${text}\n\n`
+        }
+
+        txt += `📣 *ATTENTION EVERYONE!*\n`
+        txt += `━━━━━━━━━━━━━━━━━━\n\n`
+
+        const emojis = [
+          '👑', '🐺', '🔥', '⚡', '🌟',
+          '💎', '🚀', '🎯', '🦁', '👻',
+          '💫', '🌈', '🎭', '🛡️', '❤️',
+          '🦋', '🍀', '🌍', '🎉', '🔱'
+        ]
+
+        // INLINE ARRANGE - 3 per line with emojis
+        let line = ''
+        participants.forEach((p, i) => {
+          const emoji = emojis[i % emojis.length]
+          line += `${emoji} @${p.id.split('@')[0]}  `
+          if ((i + 1) % 3 === 0) {
+            txt += line + `\n`
+            line = ''
+          }
+        })
+        if (line) txt += line + `\n`
+
+        txt += `\n━━━━━━━━━━━━━━━━━━\n`
+        txt += `✅ *Total Tagged:* ${participants.length}\n`
+        txt += `🐺 *Powered by ALPHA-OMEGA-XMD*`
+
+        await sock.sendMessage(
+          m.key.remoteJid,
+          {
+            text: txt,
+            mentions: participants.map(p => p.id)
+          },
+          { quoted: m }
+        )
         return
       }
 

@@ -4,7 +4,39 @@
 
 ㅤㅤㅤ🐺 𝐀𝐋𝐏𝐇𝐀 𝐀𝐍𝐃 𝐎𝐌𝐄𝐆𝐀 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 🤖
 
-ㅤㅤㅤㅤ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ㅤㅤㅤㅤ<p align="center">
+  <img src="https://files.catbox.moe/gqz6zv.jpg" width="320" style="border-radius:50%; border:4px solid gold; box-shadow:0 0 40px gold;" />
+</p>
+
+<h1 align="center">🐺 ALPHA AND OMEGA WOLF XMD 🐺</h1>
+<h3 align="center">⚡ TITAN 710 COMMANDS • PREMIUM • ANTI-BAN ⚡</h3>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/WOLF%20XMD-2.5.0%20TITAN-gold?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  <img src="https://img.shields.io/badge/STATUS-ACTIVE%20🟢-00ff41?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/CMDS-710%20TITAN-orange?style=for-the-badge" />
+</p>
+
+---
+
+### 🔥 WOLF NEVER SLEEPS - SIMON TECH INC
+
+> **Power • Loyalty • Excellence** - The most advanced WhatsApp bot with 710 commands, auto features, economy, AI, group management.
+
+<p align="center">
+  <img src="https://files.catbox.moe/gqz6zv.jpg" width="180" style="border-radius:20px;" />
+</p>
+
+### 📊 BOT STATS
+- **Bot:** ALPHA AND OMEGA WOLF XMD
+- **Version:** 2.5.0 PREMIUM TITAN
+- **Commands:** 710 TITAN COMMANDS
+- **Plugins:** 15 Connected
+- **Owner:** 239166265317
+- **Prefix:** `.`
+- **Platform:** Render • VPS • Panel
+
+### ⚙️ FEATURES━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ㅤㅤㅤㅤㅤㅤ⚡ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐖𝐎𝐋𝐅 𝐗𝐌𝐃 ⚡
 

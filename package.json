@@ -1,14 +1,14 @@
 {
   "name": "alpha-and-omega-wolf-xmd",
-  "version": "2.5.0-type2",
-  "description": "🐺 ALPHA AND OMEGA WOLF XMD - 700+ CMD TITAN - TYPE 2 RENDER DASHBOARD - Simon Tech Inc",
-  "main": "Pt.js",
+  "version": "2.5.0",
+  "description": "🐺 ALPHA AND OMEGA WOLF XMD - 700+ CMD TITAN - Simon Tech Inc",
+  "main": "pt.js",
   "scripts": {
-    "start": "node Pt.js",
-    "dev": "node Pt.js"
+    "start": "node connection.js",
+    "dev": "node connection.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.18",
+    "@whiskeysockets/baileys": "^6.7.8",
     "pino": "^8.16.2",
     "axios": "^1.7.2",
     "fs-extra": "^11.2.0",
@@ -21,24 +21,9 @@
     "node-fetch": "^2.7.0",
     "yt-search": "^2.12.1",
     "form-data": "^4.0.0",
-    "cheerio": "^1.0.0",
-    "dotenv": "^16.4.5",
-    "megajs": "^1.2.0",
-    "ws": "^8.17.0",
-    "libphonenumber-js": "^1.11.1",
-    "@mrnima/tiktok-downloader": "^1.0.0",
-    "fluent-ffmpeg": "^2.1.2",
-    "ffmpeg-static": "^5.2.0"
+    "cheerio": "^1.0.0"
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "keywords": [
-    "whatsapp-bot",
-    "alpha-and-omega",
-    "wolf-xmd",
-    "type2",
-    "prince-host",
-    "simon-tech"
-  ]
+  }
 }

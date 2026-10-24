@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://i.imgur.com/dBaSKWF.gif" width="100%" height="45">
+</p>
+
+
 <h1 align="center">
   <a href="https://alpha-omega-xmd.onrender.com">
     <img src="https://img.shields.io/badge/PAIR%20SESSION-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&logoWidth=30&labelColor=black" width="450"/>

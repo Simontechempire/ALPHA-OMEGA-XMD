@@ -1,236 +1,182 @@
-// 🐺 WOLF XMD TITAN - YOUR ZENITH WORKING LINK ENGINE - CONVERTED
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
-  Browsers,
-  downloadMediaMessage
-} = require('@whiskeysockets/baileys');
-const pino = require('pino');
-const chalk = require('chalk');
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
+// 🐺 ALPHA AND OMEGA WOLF XMD - MAIN.JS FINAL - 700 CMD TITAN - RENDER READY
+// Owner: 239166265317 | Simon Tech Inc | 15 Plugins
+const settings = require('./settings')
+const { WOLF_MENU } = require('./lib/menu.js')
+const fs = require('fs')
+const path = require('path')
+const chalk = require('chalk')
 
-// WOLF CONFIG - YOUR NUMBER
-let config;
-try { config = require('./settings'); } catch {
-  config = { botName: "ALPHA AND OMEGA WOLF XMD", ownerName: "ALPHA", ownerNumber: "239166265317", prefix: ".", sessionName: "session", PORT: process.env.PORT || 10000 };
+global.wolfDB = global.wolfDB || { 
+  auto: { 
+    autovv: true, 
+    antidelete: true, 
+    autoread: false, 
+    autoreadgc: false,
+    autoreadpc: false,
+    autotyping: false, 
+    autorecording: false,
+    autoreact: false,
+    autoviewstatus: true,
+    autolikestatus: false,
+    reactEmoji: '🐺',
+    autobio: false,
+    autobioText: '🐺 ALPHA AND OMEGA WOLF XMD | {time}'
+  }, 
+  nsfw: {}, 
+  owners: ["239166265317@s.whatsapp.net", "239166265317"], 
+  mode: 'public', 
+  prefix: settings.prefix || '.',
+  deletedCache: {}
 }
-config.ownerNumber = "239166265317";
-config.botName = "🐺 WOLF XMD TITAN";
-config.sessionName = "session";
+global.wolfEco = global.wolfEco || { users: {} }
 
-global.sock = null; global.isConnected = false; global.connectionStatus = '⚠️ NOT LINKED'; global.pairingCode = null; global.currentPairingNumber = null; global.lastPairTime = 0; global.appStarted = false;
+module.exports = async (sock) => {
+  console.log(chalk.cyan(`🐺 WOLF MAIN HANDLER READY - RENDER EDITION`))
 
-global.db = global.db || {};
-global.db.groups = global.db.groups || {};
-global.db.settings = global.db.settings || { prefix: ".", mode: "public", autoread: false, autostatus: true, autovv: true, autolike: false, autoreact: false, autotyping: false, autopresence: false, autoreply: false, anticall: true };
-global.db.banned = global.db.banned || [];
-global.db.warnings = global.db.warnings || {};
-global.db.messages = global.db.messages || {};
-global.db.spam = global.db.spam || {};
-global.db.sudo = global.db.sudo || [config.ownerNumber + '@s.whatsapp.net', "239166265317@s.whatsapp.net"];
+  const pluginsPath = path.join(__dirname, 'plugins')
+  if (!fs.existsSync(pluginsPath)) fs.mkdirSync(pluginsPath, { recursive: true })
 
-function getGroup(jid){
-  global.db.groups[jid] = global.db.groups[jid] || { antilink:false, antibot:false, antispam:false, antiviewonce:true, antidelete:true, welcome:false, goodbye:false, welcomeText:"", goodbyeText:"" };
-  return global.db.groups[jid];
-}
-
-global.plugins=new Map();
-global.wolfCommands={};
-
-function loadPlugins(){ 
-  const possiblePaths = [path.join(__dirname,'plugins'), path.join(__dirname,'../plugins'), path.join(__dirname,'src/plugins')];
-  let pPath = null;
-  for(const pp of possiblePaths){ if(fs.existsSync(pp)){ pPath=pp; break; } }
-  if(!pPath) { console.log(chalk.red('No plugins folder found')); return; }
-  global.plugins.clear(); 
-  global.wolfCommands={};
-  let t=0; 
-  const IGNORED = ['main.js','index.js','connection.js','settings.js','config.js','app.js','bot.js','server.js'];
-  function rd(dir){ 
-    const items=fs.readdirSync(dir); 
-    for(const it of items){ 
-      const full=path.join(dir,it); 
-      const st=fs.statSync(full); 
-      if(st.isDirectory()){
-        if(it === 'node_modules' || it.startsWith('.') || IGNORED.includes(it)) continue;
-        rd(full); 
-      }
-      else if(it.endsWith('.js')){ 
-        if(IGNORED.includes(it)) continue;
-        try{ 
-          delete require.cache[require.resolve(full)]; 
-          const d=require(full); 
-          const arr=Array.isArray(d)?d:[d]; 
-          for(const pl of arr){ 
-            if(pl&&pl.name&&pl.execute){ 
-              global.plugins.set(pl.name.toLowerCase(),pl); 
-              global.wolfCommands[pl.name.toLowerCase()]=pl.execute;
-              if(pl.alias) for(const a of pl.alias) {
-                global.plugins.set(a.toLowerCase(),pl);
-                global.wolfCommands[a.toLowerCase()]=pl.execute;
-              }
-              t++; 
-            } else if(pl&&pl.command&&pl.execute){
-              for(const cmd of pl.command){
-                const clean=cmd.toLowerCase();
-                global.plugins.set(clean, pl);
-                global.wolfCommands[clean]=pl.execute;
-                global.wolfCommands[clean.replace(/[^a-z0-9]/g,'')]=pl.execute;
-              }
-              t++;
-            }
-          } 
-        }catch(e){ console.log(`Load err ${it}: ${e.message}`)} 
-      } 
-    } 
-  } 
-  rd(pPath); 
-  console.log(chalk.green(`✅ WOLF WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS from ${pPath}`)); 
-}
-loadPlugins();
-
-const groupCache=new Map();
-async function getCachedMeta(sock,jid){
-  const c=groupCache.get(jid); if(c && Date.now()-c.time<90000) return c.meta;
-  try{ const meta=await sock.groupMetadata(jid); groupCache.set(jid,{meta,time:Date.now()}); if(groupCache.size>50) groupCache.delete(groupCache.keys().next().value); return meta; }catch{ return null; }
-}
-
-async function startConnection(){
-  if(!global.appStarted){
-    const app=express(); 
-    app.use(express.json()); 
-    app.use(express.urlencoded({ extended: true }));
-    app.use(express.static(__dirname));
-    app.use(express.static(path.join(__dirname,'../public')));
-    
-    app.get('/',(req,res)=>{
-      const idx1 = path.join(__dirname,'index.html');
-      const idx2 = path.join(__dirname,'../public/index.html');
-      if(fs.existsSync(idx1)) return res.sendFile(idx1);
-      if(fs.existsSync(idx2)) return res.sendFile(idx2);
-      res.send(`<h1>🐺 WOLF XMD TITAN</h1><p>Owner: 239166265317</p><p>CMDS: ${Object.keys(global.wolfCommands).length}</p><p><a href="/api/status">Status</a> | <a href="/getcode?number=239166265317">Get Code</a></p>`);
-    });
-    app.get('/health',(req,res)=>res.send('WOLF LIVE'));
-    app.get('/api/status',(req,res)=>res.json({ botName:"WOLF XMD TITAN", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length }));
-    
-    app.post('/api/pair',async(req,res)=>{
-      try{
-        let phone=(req.body.phone||req.body.number||'').replace(/[^0-9]/g,''); 
-        if(phone.length<10) return res.json({success:false,message:'Enter valid number e.g 239166265317'});
-        if(!global.sock) return res.json({success:false,message:'Bot starting... wait 5 sec'});
-        if(global.isConnected) return res.json({success:false,message:'Already linked!'});
-        const code=await global.sock.requestPairingCode(phone); 
-        global.pairingCode=code; 
-        global.currentPairingNumber=phone;
-        global.connectionStatus=`CODE: ${code}`; 
-        console.log(chalk.yellow(`🔑 WOLF CODE ${phone}: ${code}`)); 
-        res.json({success:true,code});
-      }catch(e){ console.log('Pair fail',e.message); res.json({success:false,message:e.message}); }
-    });
-    
-    app.get('/getcode',async(req,res)=>{
-      try{
-        let phone=(req.query.number||req.query.phone||'').replace(/[^0-9]/g,'');
-        if(!phone) return res.json({success:false,message:'Add ?number=239166265317'});
-        if(!global.sock) return res.json({success:false,message:'Bot starting... wait 5 sec'});
-        if(global.isConnected) return res.json({success:false,message:'Already linked!'});
-        const code=await global.sock.requestPairingCode(phone);
-        global.pairingCode=code;
-        global.currentPairingNumber=phone;
-        global.connectionStatus=`CODE: ${code}`;
-        console.log(chalk.green.bold(`🔑 WOLF CODE ${phone}: ${code}`));
-        res.json({success:true, code, phone, codeFormatted: code.match(/.{1,4}/g)?.join("-")});
-      }catch(e){ console.log('Pair fail',e.message); res.json({success:false,message:e.message}); }
-    });
-
-    app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); fs.rmSync(`./auth`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
-    
-    const PORT=config.PORT||process.env.PORT||10000; 
-    app.listen(PORT,'0.0.0.0',()=>console.log(chalk.cyan(`🌐 WOLF Dashboard ${PORT} | ${Object.keys(global.wolfCommands).length} CMDS`))); 
-    global.appStarted=true;
-  }
-
-  async function initBaileys(){
-    try{
-      const authPath=`./${config.sessionName}`;
-      if((!fs.existsSync(authPath)||fs.readdirSync(authPath).length===0)&&process.env.SESSION_DATA){
-        fs.mkdirSync(authPath,{recursive:true}); let d; try{ d=JSON.parse(process.env.SESSION_DATA); }catch{ d=JSON.parse(Buffer.from(process.env.SESSION_DATA,'base64').toString()); } fs.writeFileSync(path.join(authPath,'creds.json'),JSON.stringify(d,null,2));
-      }
-    }catch(e){}
-    const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); const {version}=await fetchLatestBaileysVersion();
-    const sock=makeWASocket({ version, logger:pino({level:'silent'}), printQRInTerminal:false, browser:Browsers.macOS('Safari'), auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, markOnlineOnConnect:true, connectTimeoutMs:60000, keepAliveIntervalMs:10000, syncFullHistory:false, retryRequestDelayMs:2000 });
-    global.sock=sock; sock.ev.on('creds.update',saveCreds);
-
-    sock.ev.on('call',async(calls)=>{ for(let c of calls){ try{ if(global.db.settings.anticall) await sock.rejectCall(c.id,c.from); }catch{} } });
-    sock.ev.on('messages.update',async(updates)=>{ for(let up of updates){ if(up.update.message===null){ const saved=global.db.messages[up.key.id]; if(!saved) continue; const g=getGroup(saved.from); if(!g.antidelete) continue; try{ await sock.sendMessage(saved.from,{text:`*🔍 ANTI-DELETE WOLF*\nFrom: @${saved.sender.split('@')[0]}\n> ${saved.text?.slice(0,300)}`,mentions:[saved.sender]}); }catch{} } } });
-
-    sock.ev.on('connection.update',async(update)=>{
-      const {connection,lastDisconnect}=update;
-      if(connection==='connecting') global.connectionStatus='Connecting WOLF...';
-      if(connection==='open'){
-        global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
-        try{ const jid=sock.user.id; await sock.sendMessage(jid,{text:`✅ *WOLF XMD TITAN LINKED*\n\n👤 ${sock.user.name||'ALPHA'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu - Owner 239166265317`}).catch(()=>{}); }catch{}
-      }
-      if(connection==='close'){
-        const code=lastDisconnect?.error?.output?.statusCode; console.log(chalk.red(`❌ Closed ${code}`)); global.isConnected=false; global.sock=null; groupCache.clear();
-        if([DisconnectReason.loggedOut,401,440,405].includes(code)){ try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} global.connectionStatus='LOGGED OUT'; setTimeout(()=>initBaileys(),3000); }
-        else{ global.connectionStatus='Reconnecting WOLF...'; setTimeout(()=>initBaileys(),5000); }
-      }
-    });
-
-    sock.ev.on('messages.upsert',async({messages,type})=>{
-      try{
-        if(type!=='notify') return; const m=messages[0]; if(!m?.message) return; const from=m.key.remoteJid;
-        if(from==='status@broadcast'){ if(global.db.settings.autostatus){ await sock.readMessages([m.key]).catch(()=>{}); } return; }
-        const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us'); const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
-        if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
-        if(global.db.settings.autoread) await sock.readMessages([m.key]).catch(()=>{});
-        if(isGroup){
-          const g=getGroup(from);
-          if((global.db.settings.autovv||g.antiviewonce)&&(m.message.viewOnceMessage||m.message.viewOnceMessageV2||m.message.viewOnceMessageV2Extension)){
-            try{ const q=m.message.viewOnceMessage||m.message.viewOnceMessageV2Extension; const inner=q?.message||q; if(inner?.imageMessage) await sock.sendMessage(from,{image:inner.imageMessage},{quoted:m}).catch(()=>{}); else if(inner?.videoMessage) await sock.sendMessage(from,{video:inner.videoMessage},{quoted:m}).catch(()=>{}); else await sock.sendMessage(from,{forward:q},{quoted:m}).catch(()=>{}); }catch{}
+  async function loadPlugins() {
+    const files = fs.readdirSync(pluginsPath).filter(f => f.endsWith('.js'))
+    let allCommands = {}
+    console.log(chalk.cyan(`\n📦 Loading ${files.length} plugin files...\n`))
+    for (let file of files) {
+      try {
+        const filePath = path.join(pluginsPath, file)
+        delete require.cache[require.resolve(filePath)]
+        const plugin = require(filePath)
+        if (plugin.command && plugin.execute) {
+          for (let cmd of plugin.command) {
+            const clean = cmd.toLowerCase().trim()
+            allCommands[clean] = plugin.execute
+            // also clean version without symbols
+            const clean2 = clean.replace(/[^a-z0-9]/g,'')
+            if(clean2) allCommands[clean2] = plugin.execute
           }
+          console.log(chalk.green(`✅ ${file} - ${plugin.command.length} cmds`))
         }
-        if(!body) return; const prefix=global.db.settings.prefix||config.prefix||'.'; if(!body.trim().startsWith(prefix)) return;
-        const args=body.trim().slice(prefix.length).trim().split(/ +/); const rawCmd=args.shift()?.toLowerCase(); if(!rawCmd) return;
-        const cmdName=rawCmd.replace(/[^a-z0-9]/g,'')||rawCmd;
-        let plugin = global.plugins.get(rawCmd) || global.plugins.get(cmdName) || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
-        if(!plugin){
-          const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
-          if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
-        }
-        if(!plugin) return; 
-        if(global.db.banned.includes(sender)) return;
-        
-        m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA"; 
-        m.isOwner=sender.includes('239166265317') || global.db.sudo.includes(sender) || m.key.fromMe;
-        m.reply=async(txt)=>await sock.sendMessage(from,{text:txt},{quoted:m});
-        m.download=async()=>await downloadMediaMessage(m,'buffer',{},{logger:pino({level:"silent"}),reuploadRequest:sock.updateMediaMessage});
-        
-        console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]}`));
-        
-        if(plugin.isWolfStyle || typeof plugin === 'function' || plugin.execute.length===3 || global.wolfCommands[rawCmd]){
-          const execFn = typeof plugin === 'function' ? plugin : (plugin.execute || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]);
-          if(typeof execFn === 'function'){
-            await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix});
-          }
-        } else {
-          await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup});
-        }
-      }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
-    });
-  }
-  await initBaileys();
-}
-
-module.exports={startConnection};
-module.exports.AlphaOmegaConnection=startConnection;
-
-if(require.main===module){
-  startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
+      } catch (e) {
+        console.log(chalk.red(`❌ ${file}: ${e.message}`))
+      }
     }
+    console.log(chalk.magenta(`\n🐺 TOTAL: ${Object.keys(allCommands).length} CMDS LOADED\n`))
+    return allCommands
+  }
+
+  let pluginCommands = await loadPlugins()
+
+  sock.ev.on('messages.upsert', async ({ messages }) => {
+    const m = messages[0]
+    if (!m.message) return
+    if (m.key.remoteJid === 'status@broadcast') return
+
+    // ===== AUTO FEATURES =====
+    try {
+      const isViewOnce = m.message.viewOnceMessage || m.message.viewOnceMessageV2 || m.message.viewOnceMessageV2Extension
+      if (global.wolfDB.auto.autovv && isViewOnce) {
+        const viewMsg = (m.message.viewOnceMessage || m.message.viewOnceMessageV2 || m.message.viewOnceMessageV2Extension).message
+        await sock.sendMessage(m.key.remoteJid, { forward: viewMsg }, { quoted: m }).catch(()=>{})
+      }
+      if (global.wolfDB.auto.autoread) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autoreadgc && m.key.remoteJid.endsWith('@g.us')) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autoreadpc && !m.key.remoteJid.endsWith('@g.us')) await sock.readMessages([m.key]).catch(()=>{})
+      if (global.wolfDB.auto.autotyping) await sock.sendPresenceUpdate('composing', m.key.remoteJid).catch(()=>{})
+      if (global.wolfDB.auto.autorecording) await sock.sendPresenceUpdate('recording', m.key.remoteJid).catch(()=>{})
+      if (global.wolfDB.auto.autoreact) await sock.sendMessage(m.key.remoteJid, { react: { text: global.wolfDB.auto.reactEmoji || '🐺', key: m.key } }).catch(()=>{})
+      if (global.wolfDB.auto.antidelete) {
+        global.wolfDB.deletedCache[m.key.id] = { message: m.message, key: m.key, time: Date.now() }
+        // Clean old
+        for (let id in global.wolfDB.deletedCache) {
+          if (Date.now() - global.wolfDB.deletedCache[id].time > 3600000) delete global.wolfDB.deletedCache[id]
+        }
+      }
+    } catch {}
+
+    // ===== COMMAND PARSER =====
+    const body = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption || m.message.viewOnceMessage?.message?.imageMessage?.caption || m.message.viewOnceMessage?.message?.videoMessage?.caption || m.message.viewOnceMessageV2?.message?.imageMessage?.caption || m.message.viewOnceMessageV2?.message?.videoMessage?.caption || ""
+    if (!body.startsWith(settings.prefix)) return
+
+    const args = body.slice(settings.prefix.length).trim().split(/ +/)
+    const command = args.shift().toLowerCase().replace(/[^a-z0-9]/g,'') || args[0]
+    const rawCommand = body.slice(settings.prefix.length).trim().split(/ +/)[0].toLowerCase()
+    const q = args.join(" ")
+
+    const reply = async (text, opts={}) => {
+      await sock.sendMessage(m.key.remoteJid, { text: text, ...opts }, { quoted: m })
+    }
+
+    const isOwner = m.key.fromMe || m.key.remoteJid.includes('239166265317') || (m.key.participant && m.key.participant.includes('239166265317')) || global.wolfDB.owners.includes(m.key.remoteJid) || global.wolfDB.owners.includes(m.key.participant)
+
+    try {
+      // CORE
+      if (['menu','help','allcmd'].includes(rawCommand) || ['menu','help','allcmd'].includes(command)) {
+        await sock.sendMessage(m.key.remoteJid, { image: { url: settings.pfpUrl }, caption: WOLF_MENU }, { quoted: m })
+        return
+      }
+      if (['ping','speed'].includes(command) || ['ping','speed'].includes(rawCommand)) {
+        const start = Date.now()
+        await reply(`🐺 PINGING WOLF...`)
+        const end = Date.now()
+        await reply(`⚡ WOLF SPEED: ${end - start}ms\n🟢 ONLINE\n📦 ${Object.keys(pluginCommands).length} cmds\n🐺 ALPHA AND OMEGA`)
+        return
+      }
+      if (command === 'alive' || rawCommand === 'alive') {
+        await sock.sendMessage(m.key.remoteJid, {
+          image: { url: settings.pfpUrl },
+          caption: `🐺 *ALPHA AND OMEGA IS ALIVE!*\n\n⚡ Version: 2.5.0 PREMIUM\n📚 Commands: ${Object.keys(pluginCommands).length}+ Real\n👑 Owner: ${settings.ownerNumber}\n🏢 Simon Tech Inc\n🟢 Status: ONLINE\n📦 15 Plugins Connected\n\n*WOLF NEVER SLEEPS*`
+        }, { quoted: m })
+        return
+      }
+      if (command === 'owner' || rawCommand === 'owner') {
+        await reply(`👑 OWNER\nName: Simon Tech Inc\nNumber: ${settings.ownerNumber}\nChannel: ${settings.channelLink}\n📦 ${Object.keys(pluginCommands).length} cmds active`)
+        return
+      }
+      if (['runtime','uptime'].includes(command) || ['runtime','uptime'].includes(rawCommand)) {
+        const up = process.uptime()
+        const d = Math.floor(up / 86400), h = Math.floor((up % 86400) / 3600), mm = Math.floor((up % 3600) / 60), s = Math.floor(up % 60)
+        await reply(`⏰ *RUNTIME*\n${d}d ${h}h ${mm}m ${s}s\n🐺 WOLF XMD - ${Object.keys(pluginCommands).length} cmds`)
+        return
+      }
+
+      // PLUGIN CMDS - REAL HANDLERS
+      const finalCmd = pluginCommands[rawCommand] ? rawCommand : command
+      if (pluginCommands[finalCmd]) {
+        if (global.wolfDB.mode === 'self' && !isOwner) return
+        console.log(chalk.yellow(`[PLUGIN] ${finalCmd} - ${q.slice(0,30)}`))
+        await pluginCommands[finalCmd](sock, m, { command: finalCmd, text: q, args, reply, isOwner, prefix: settings.prefix })
+        return
+      }
+
+      // FALLBACK
+      if (['ai','gpt','chatgpt','gemini','ask'].includes(command)) {
+        if (!q) return reply(`🤖 Usage: .${command} <question>`)
+        await reply(`🤖 *WOLF AI*\nQ: ${q}\n\nConnect API in settings.js or use .gpt from plugins for real AI!\n🐺`)
+        return
+      }
+
+    } catch (e) {
+      console.log(chalk.red(`WOLF Error ${command}:`), e.message)
+    }
+  })
+
+  // ANTI DELETE
+  sock.ev.on('messages.update', async updates => {
+    for (let upd of updates) {
+      try {
+        if (upd.update.message === null && global.wolfDB.auto.antidelete) {
+          const cached = global.wolfDB.deletedCache?.[upd.key.id]
+          if (cached) {
+            const participant = upd.key.participant || upd.key.remoteJid
+            await sock.sendMessage(upd.key.remoteJid, { 
+              text: `🚫 *ANTI-DELETE*\n@${participant.split('@')[0]} deleted a message! Recovered:`,
+              mentions: [participant]
+            }).catch(()=>{})
+            await sock.sendMessage(upd.key.remoteJid, { forward: cached.message }).catch(()=>{})
+          }
+        }
+      } catch {}
+    }
+  })
+
+  console.log(chalk.green(`🐺 main.js READY - ${Object.keys(pluginCommands).length} CMDS - RENDER SAFE!`))
+                         }

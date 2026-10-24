@@ -1,4 +1,4 @@
-// 🐺 WOLF XMD TITAN - YOUR ZENITH WORKING LINK ENGINE - CONVERTED
+// 🐺 WOLF XMD TITAN - FIXED FOR "WAITING FOR THIS MESSAGE"
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -13,8 +13,9 @@ const chalk = require('chalk');
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const NodeCache = require('node-cache'); // FIX 1: ADDED
 
-// WOLF CONFIG - YOUR NUMBER
+// WOLF CONFIG
 let config;
 try { config = require('./settings'); } catch {
   config = { botName: "ALPHA AND OMEGA WOLF XMD", ownerName: "ALPHA", ownerNumber: "239166265317", prefix: ".", sessionName: "session", PORT: process.env.PORT || 10000 };
@@ -81,6 +82,13 @@ function loadPlugins(){
                 global.plugins.set(clean, pl);
                 global.wolfCommands[clean]=pl.execute;
                 global.wolfCommands[clean.replace(/[^a-z0-9]/g,'')]=pl.execute;
+              }
+              t++;
+            } else if(pl&&pl.command&&pl.handler){ // FIX 2: support handler style too
+              for(const cmd of pl.command){
+                const clean=cmd.toLowerCase();
+                global.plugins.set(clean, { execute: pl.handler });
+                global.wolfCommands[clean]=pl.handler;
               }
               t++;
             }
@@ -162,8 +170,29 @@ async function startConnection(){
         fs.mkdirSync(authPath,{recursive:true}); let d; try{ d=JSON.parse(process.env.SESSION_DATA); }catch{ d=JSON.parse(Buffer.from(process.env.SESSION_DATA,'base64').toString()); } fs.writeFileSync(path.join(authPath,'creds.json'),JSON.stringify(d,null,2));
       }
     }catch(e){}
-    const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); const {version}=await fetchLatestBaileysVersion();
-    const sock=makeWASocket({ version, logger:pino({level:'silent'}), printQRInTerminal:false, browser:Browsers.macOS('Safari'), auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, markOnlineOnConnect:true, connectTimeoutMs:60000, keepAliveIntervalMs:10000, syncFullHistory:false, retryRequestDelayMs:2000 });
+    const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); 
+    const {version}=await fetchLatestBaileysVersion();
+    
+    // FIX 3: MAIN FIX FOR "WAITING FOR THIS MESSAGE"
+    const msgRetryCounterCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
+    const sock=makeWASocket({ 
+      version, 
+      logger:pino({level:'silent'}), 
+      printQRInTerminal:false, 
+      browser:Browsers.macOS('Safari'), 
+      auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, 
+      markOnlineOnConnect:false, // FIX: false prevents key corruption
+      connectTimeoutMs:60000, 
+      keepAliveIntervalMs:10000, 
+      syncFullHistory:false, 
+      retryRequestDelayMs:2000,
+      msgRetryCounterCache, // FIX
+      getMessage: async (key) => undefined, // FIX
+      generateHighQualityLinkPreview: false, // FIX
+      shouldSyncHistoryMessage: () => false,
+      fireInitQueries: true
+    });
+    
     global.sock=sock; sock.ev.on('creds.update',saveCreds);
 
     sock.ev.on('call',async(calls)=>{ for(let c of calls){ try{ if(global.db.settings.anticall) await sock.rejectCall(c.id,c.from); }catch{} } });
@@ -174,7 +203,11 @@ async function startConnection(){
       if(connection==='connecting') global.connectionStatus='Connecting WOLF...';
       if(connection==='open'){
         global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
-        try{ const jid=sock.user.id; await sock.sendMessage(jid,{text:`✅ *WOLF XMD TITAN LINKED*\n\n👤 ${sock.user.name||'ALPHA'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu - Owner 239166265317`}).catch(()=>{}); }catch{}
+        try{ 
+          const jid=sock.user.id; 
+          await new Promise(r=>setTimeout(r,3000)); // FIX: wait for keys to sync before first message
+          await sock.sendMessage(jid,{text:`✅ *WOLF XMD TITAN LINKED*\n\n👤 ${sock.user.name||'ALPHA'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu - Owner 239166265317`}).catch(()=>{}); 
+        }catch{}
       }
       if(connection==='close'){
         const code=lastDisconnect?.error?.output?.statusCode; console.log(chalk.red(`❌ Closed ${code}`)); global.isConnected=false; global.sock=null; groupCache.clear();
@@ -233,4 +266,4 @@ module.exports.AlphaOmegaConnection=startConnection;
 
 if(require.main===module){
   startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
-    }
+                                   }

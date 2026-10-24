@@ -1,304 +1,307 @@
-// 👥 ALPHA AND OMEGA WOLF XMD - FILE 5 GROUP - 50 CMDS - TYPE 2 DASHBOARD
-const settings = require('../settings')
-
+// 👥 ALPHA AND OMEGA WOLF XMD - FILE 5 GROUP - 50 CMDS REAL
 module.exports = {
-  command: ['kick','add','promote','demote','tagall','hidetag','admins','groupinfo','mute','unmute','open','close','revoke','newlink','resetlink','invite','join','leave','setname','setdesc','setsubject','setgrouppic','getgrouppic','groupname','groupdesc','membercount','members','listonline','listadmin','listmember','everyone','tagadmin','tagmember','kickall','promoteall','demoteall','group','antidelete','welcome','goodbye','setwelcome','setgoodbye','delwelcome','delgoodbye','approve','reject','requests','poll','vote','gstatus','gcstatus'],
+  command: ['kick','add','promote','demote','tagall','hidetag','admins','groupinfo','mute','unmute','open','close','revoke','newlink','resetlink','invite','join','leave','setname','setdesc','setsubject','setgrouppic','getgrouppic','groupname','groupdesc','membercount','members','listonline','listadmin','listmember','everyone','tagadmin','tagmember','kickall','promoteall','demoteall','group','antidelete','welcome','goodbye','setwelcome','setgoodbye','delwelcome','delgoodbye','approve','reject','requests','poll','vote','gstatus'],
 
-  execute: async (sock, m, { command, text, reply, isOwner, prefix }) => {
+  execute: async (sock, m, { command, text, reply }) => {
     const isGroup = m.key.remoteJid.endsWith('@g.us')
-    if (!isGroup) return reply(`👥 This command is for groups only! 🐺 TYPE 2`)
+    if (!isGroup) return reply(`👥 This command is for groups only!\n\n🐺`)
 
     let metadata
-    try { metadata = await sock.groupMetadata(m.key.remoteJid) } catch { metadata = { participants: [], subject: 'Unknown', desc: '', owner: '', id: m.key.remoteJid, creation: Date.now()/1000 } }
+    try { metadata = await sock.groupMetadata(m.key.remoteJid) } catch { metadata = { participants: [] } }
     const participants = metadata.participants || []
-    
-    const getAdminStatus = (jid) => participants.find(p => p.id === jid || p.id.includes(jid.split('@')[0]))?.admin
-    const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net'
-    const botIdShort = sock.user.id.split('@')[0]
-    const botAdmin = participants.some(p => (p.id === botJid || p.id.includes(botIdShort)) && p.admin)
-    const senderId = m.key.participant || m.key.remoteJid
-    const senderAdmin = getAdminStatus(senderId) || isOwner
-
-    // TYPE 2: Use global.db.groups from connection.js
-    global.db = global.db || {}
-    global.db.groups = global.db.groups || {}
-    global.db.groups[m.key.remoteJid] = global.db.groups[m.key.remoteJid] || { 
-      antilink: settings.auto.antiLink, 
-      antispam: settings.auto.antiSpam, 
-      welcome: settings.auto.welcome, 
-      welcomeText: `Welcome @user to ${metadata.subject} 🎉\n🐺 WOLF XMD TYPE 2`, 
-      goodbyeText: `Goodbye @user 👋`,
-      antidelete: settings.auto.antidelete
-    }
-    const groupDB = global.db.groups[m.key.remoteJid]
+    const isAdmin = (jid) => participants.find(p => p.id === jid)?.admin
+    const botAdmin = isAdmin(sock.user.id.split(':')[0] + '@s.whatsapp.net') || participants.find(p => p.id.includes(sock.user.id.split('@')[0]))?.admin
 
     try {
-      if (command === 'gcstatus') {
-        const txt = `╭━━━〔 🏰 GROUP STATUS TYPE 2 〕━━━╮
-┃
-┃ 👥 *Group:* ${metadata.subject}
-┃ 🆔 *ID:* ${m.key.remoteJid}
-┃ 👤 *Members:* ${participants.length}
-┃ 👑 *Admins:* ${participants.filter(p=>p.admin).length}
-┃ 🤖 *Bot Admin:* ${botAdmin ? 'YES ✓' : 'NO ✗'}
-┃ 🔗 *Mode:* ${settings.mode}
-┃ 🛡️ *AntiLink:* ${groupDB.antilink ? 'ON' : 'OFF'} | ENV: ${settings.auto.antiLink ? 'ON' : 'OFF'}
-┃ 👋 *Welcome:* ${groupDB.welcome ? 'ON' : 'OFF'} | ENV: ${settings.auto.welcome ? 'ON' : 'OFF'}
-┃ 🗑️ *AntiDelete:* ${groupDB.antidelete ? 'ON' : 'OFF'}
-┃
-╰━━━━━━━━━━━━━━━━━━━━╯\n\n🐺 TYPE 2 - ${settings.botName}`
-        await sock.sendMessage(m.key.remoteJid, { text: txt }, { quoted: m })
-        return
-      }
-
-      // Admin-only commands
-      const adminCmds = ['kick','add','promote','demote','mute','unmute','open','close','revoke','newlink','resetlink','invite','setname','setdesc','setsubject','setgrouppic','kickall','promoteall','demoteall','group','setwelcome','setgoodbye','delwelcome','delgoodbye','approve','reject']
-      if (adminCmds.includes(command) && !senderAdmin) return reply(`❌ Admin only! You need to be admin or owner 🐺 TYPE 2`)
-
+      // .kick
       if (command === 'kick') {
         const mentioned = m.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
         const target = mentioned || (text ? text.replace(/[^0-9]/g,'') + '@s.whatsapp.net' : null)
-        if (!target) return reply(`Usage: ${prefix}kick @user`)
-        if (!botAdmin) return reply(`❌ Bot not admin - Make bot admin first 🐺`)
-        if (getAdminStatus(target)) return reply(`❌ Cannot kick admin`)
-        await sock.groupParticipantsUpdate(m.key.remoteJid, [target], 'remove')
-        return reply(`✅ Kicked @${target.split('@')[0]} 🐺 TYPE 2`, { mentions: [target] })
-      }
-
-      if (command === 'add') {
-        if (!text) return reply(`Usage: ${prefix}add 234xxx | ${prefix}add 239166265317`)
+        if (!target) return reply(`Usage: .kick @user`)
         if (!botAdmin) return reply(`❌ Bot not admin`)
+        await sock.groupParticipantsUpdate(m.key.remoteJid, [target], 'remove')
+        return reply(`✅ Kicked @${target.split('@')[0]}`, { mentions: [target] })
+      }
+      // .gcstatus
+if (command === 'gcstatus') {
+  const txt = `╭━━━〔 🏰 GROUP STATUS 〕━━━╮
+┃
+┃ 👥 *Group Name:* ${metadata.subject}
+┃ 🆔 *Group ID:* ${m.key.remoteJid}
+┃ 👤 *Total Members:* ${participants.length}
+┃
+╰━━━━━━━━━━━━━━━━━━━━╯`
+
+  await sock.sendMessage(
+    m.key.remoteJid,
+    { text: txt },
+    { quoted: m }
+  )
+  return
+}
+
+      // .add
+      if (command === 'add') {
+        if (!text) return reply(`Usage: .add 234xxx`)
         const user = text.replace(/[^0-9]/g,'') + '@s.whatsapp.net'
         await sock.groupParticipantsUpdate(m.key.remoteJid, [user], 'add')
-        return reply(`✅ Added ${text} 🐺 TYPE 2`)
+        return reply(`✅ Added ${text}`)
       }
 
+      // .promote
       if (command === 'promote') {
         const user = m.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
-        if (!user) return reply(`Tag user to promote - ${prefix}promote @user`)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
+        if (!user) return reply(`Tag user to promote`)
         await sock.groupParticipantsUpdate(m.key.remoteJid, [user], 'promote')
-        return reply(`✅ Promoted @${user.split('@')[0]} to admin 🐺 TYPE 2`, { mentions: [user] })
+        return reply(`✅ Promoted @${user.split('@')[0]} to admin`, { mentions: [user] })
       }
 
+      // .demote
       if (command === 'demote') {
         const user = m.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
         if (!user) return reply(`Tag user to demote`)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         await sock.groupParticipantsUpdate(m.key.remoteJid, [user], 'demote')
-        return reply(`✅ Demoted @${user.split('@')[0]} 🐺`, { mentions: [user] })
+        return reply(`✅ Demoted @${user.split('@')[0]}`, { mentions: [user] })
       }
 
+     // .tagall / .everyone - INLINE ARRANGED
       if (command === 'tagall' || command === 'everyone') {
-        if (!senderAdmin && settings.mode !== 'public') return reply(`❌ Admin only in ${settings.mode} mode`)
-        let txt = `╭━━━〔 📢 TAG ALL TYPE 2 〕━━━╮\n`
+        let txt = `╭━━━〔 📢 TAG ALL 〕━━━╮\n`
         txt += `┃ 🏷️ Group: ${metadata.subject || 'GROUP'}\n`
         txt += `┃ 👥 Members: ${participants.length}\n`
-        txt += `┃ 🤖 Bot: ${settings.botName}\n`
         txt += `╰━━━━━━━━━━━━━━━━━━╯\n\n`
-        if (text) txt += `💬 Message: ${text}\n\n`
-        txt += `📣 *ATTENTION EVERYONE TYPE 2!*\n━━━━━━━━━━━━━━━━━━\n\n`
-        const emojis = ['👑','🐺','🔥','⚡','🌟','💎','🚀','🎯','🦁','👻','💫','🌈','🎭','🛡️','❤️','🦋','🍀','🌍','🎉','🔱']
+
+        if (text) {
+          txt += `💬 Message: ${text}\n\n`
+        }
+
+        txt += `📣 *ATTENTION EVERYONE!*\n`
+        txt += `━━━━━━━━━━━━━━━━━━\n\n`
+
+        const emojis = [
+          '👑', '🐺', '🔥', '⚡', '🌟',
+          '💎', '🚀', '🎯', '🦁', '👻',
+          '💫', '🌈', '🎭', '🛡️', '❤️',
+          '🦋', '🍀', '🌍', '🎉', '🔱'
+        ]
+
+        // INLINE ARRANGE - 3 per line with emojis
         let line = ''
         participants.forEach((p, i) => {
           const emoji = emojis[i % emojis.length]
           line += `${emoji} @${p.id.split('@')[0]}  `
-          if ((i + 1) % 3 === 0) { txt += line + `\n`; line = '' }
+          if ((i + 1) % 3 === 0) {
+            txt += line + `\n`
+            line = ''
+          }
         })
         if (line) txt += line + `\n`
-        txt += `\n━━━━━━━━━━━━━━━━━━\n✅ *Total Tagged:* ${participants.length}\n🐺 *${settings.botName} TYPE 2*`
-        await sock.sendMessage(m.key.remoteJid, { text: txt, mentions: participants.map(p => p.id) }, { quoted: m })
+
+        txt += `\n━━━━━━━━━━━━━━━━━━\n`
+        txt += `✅ *Total Tagged:* ${participants.length}\n`
+        txt += `🐺 *Powered by ALPHA-OMEGA-XMD*`
+
+        await sock.sendMessage(
+          m.key.remoteJid,
+          {
+            text: txt,
+            mentions: participants.map(p => p.id)
+          },
+          { quoted: m }
+        )
         return
       }
 
+      // .hidetag
       if (command === 'hidetag') {
-        const msg = text || `🐺 ${settings.botName} - HIDETAG TYPE 2`
+        const msg = text || '🐺 ALPHA AND OMEGA WOLF XMD - HIDETAG'
         await sock.sendMessage(m.key.remoteJid, { text: msg, mentions: participants.map(p=>p.id) }, { quoted: m })
         return
       }
 
+      // .admins / .listadmin
       if (command === 'admins' || command === 'listadmin') {
         const admins = participants.filter(p=>p.admin)
-        let txt = `👑 *ADMINS TYPE 2 - ${metadata.subject}*\n\nTotal: ${admins.length}\nMode: ${settings.mode}\n\n`
+        let txt = `👑 *ADMINS - ${metadata.subject}*\n\nTotal: ${admins.length}\n\n`
         admins.forEach((a,i)=> txt += `${i+1}. @${a.id.split('@')[0]} - ${a.admin}\n`)
         await sock.sendMessage(m.key.remoteJid, { text: txt, mentions: admins.map(a=>a.id) }, { quoted: m })
         return
       }
 
+      // .groupinfo / .groupname / .groupdesc / .membercount / .members
       if (command === 'groupinfo') {
-        return reply(`👥 *GROUP INFO TYPE 2*\n\nName: ${metadata.subject}\nID: ${metadata.id}\nOwner: ${metadata.owner ? '@'+metadata.owner.split('@')[0] : 'Unknown'}\nMembers: ${participants.length}\nAdmins: ${participants.filter(p=>p.admin).length}\nCreated: ${new Date(metadata.creation*1000).toLocaleString()}\nDesc: ${metadata.desc || 'None'}\n\n🛡️ AntiLink: ${groupDB.antilink} | Welcome: ${groupDB.welcome}\n🤖 Bot: ${settings.botName} TYPE 2\n\n🐺`)
+        return reply(`👥 *GROUP INFO*\n\nName: ${metadata.subject}\nID: ${metadata.id}\nOwner: ${metadata.owner ? '@'+metadata.owner.split('@')[0] : 'Unknown'}\nMembers: ${participants.length}\nAdmins: ${participants.filter(p=>p.admin).length}\nCreated: ${new Date(metadata.creation*1000).toLocaleString()}\nDesc: ${metadata.desc || 'None'}\n\n🐺`)
       }
-      if (command === 'groupname') return reply(`📛 Group Name: ${metadata.subject} | TYPE 2`)
-      if (command === 'groupdesc') return reply(`📝 Group Desc: ${metadata.desc || 'None'} | TYPE 2`)
-      if (command === 'membercount' || command === 'members') return reply(`👥 Members Count TYPE 2: ${participants.length}\n\n${participants.map(p=>`@${p.id.split('@')[0]}`).join('\n')}`, { mentions: participants.map(p=>p.id) })
+      if (command === 'groupname') return reply(`📛 Group Name: ${metadata.subject}`)
+      if (command === 'groupdesc') return reply(`📝 Group Desc: ${metadata.desc || 'None'}`)
+      if (command === 'membercount' || command === 'members') return reply(`👥 Members Count: ${participants.length}\n\n${participants.map(p=>`@${p.id.split('@')[0]}`).join('\n')}`, { mentions: participants.map(p=>p.id) })
 
+      // .mute / .unmute / .open / .close / .group
       if (command === 'mute' || command === 'close' || command === 'group') {
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         await sock.groupSettingUpdate(m.key.remoteJid, 'announcement')
-        return reply(`🔒 Group closed TYPE 2 - Only admins can send messages`)
+        return reply(`🔒 Group closed - Only admins can send messages`)
       }
       if (command === 'unmute' || command === 'open') {
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         await sock.groupSettingUpdate(m.key.remoteJid, 'not_announcement')
-        return reply(`🔓 Group opened TYPE 2 - All members can send`)
+        return reply(`🔓 Group opened - All members can send messages`)
       }
 
+      // .revoke / .newlink / .resetlink / .invite
       if (['revoke','newlink','resetlink','invite'].includes(command)) {
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         await sock.groupRevokeInvite(m.key.remoteJid)
         const code = await sock.groupInviteCode(m.key.remoteJid)
-        return reply(`🔗 *NEW GROUP LINK TYPE 2*\n\nhttps://chat.whatsapp.com/${code}\n\n🐺 WOLF XMD TYPE 2`)
+        return reply(`🔗 *NEW GROUP LINK*\n\nhttps://chat.whatsapp.com/${code}\n\n🐺 WOLF XMD`)
       }
 
+      // .join
       if (command === 'join') {
-        if (!isOwner) return reply(settings.mess.owner)
-        if (!text.includes('chat.whatsapp.com')) return reply(`Usage: ${prefix}join <group link>`)
-        const code = text.split('chat.whatsapp.com/')[1].trim()
+        if (!text.includes('chat.whatsapp.com')) return reply(`Usage: .join <group link>`)
+        const code = text.split('chat.whatsapp.com/')[1]
         await sock.groupAcceptInvite(code)
-        return reply(`✅ Joined group! TYPE 2`)
+        return reply(`✅ Joined group!`)
       }
 
+      // .leave
       if (command === 'leave') {
-        if (!isOwner && !senderAdmin) return reply(`❌ Owner/admin only`)
-        await reply(`👋 Leaving... TYPE 2 | ${settings.botName}`)
         await sock.groupLeave(m.key.remoteJid)
         return
       }
 
+      // .setname / .setsubject
       if (command === 'setname' || command === 'setsubject') {
-        if (!text) return reply(`Usage: ${prefix}${command} <new name>`)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
+        if (!text) return reply(`Usage: .${command} <new name>`)
         await sock.groupUpdateSubject(m.key.remoteJid, text)
-        return reply(`✅ Group name changed TYPE 2 to: ${text}`)
+        return reply(`✅ Group name changed to: ${text}`)
       }
 
+      // .setdesc
       if (command === 'setdesc') {
-        if (!text) return reply(`Usage: ${prefix}setdesc <new description>`)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
+        if (!text) return reply(`Usage: .setdesc <new description>`)
         await sock.groupUpdateDescription(m.key.remoteJid, text)
-        return reply(`✅ Description updated TYPE 2!`)
+        return reply(`✅ Description updated!`)
       }
 
+      // .setgrouppic
       if (command === 'setgrouppic') {
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage
-        let buf
-        try {
-          const { downloadMediaMessage } = require('@whiskeysockets/baileys')
-          const pino = require('pino')
-          buf = await downloadMediaMessage(quoted ? { message: quoted } : m, 'buffer', {}, { logger: pino({level:'silent'}), reuploadRequest: sock.updateMediaMessage })
-        } catch {}
-        if (!buf) return reply(`Reply image with ${prefix}setgrouppic | TYPE 2`)
+        const buf = await sock.downloadMediaMessage(quoted ? { message: quoted } : m).catch(()=>null)
+        if (!buf) return reply(`Reply image with .setgrouppic`)
         await sock.updateProfilePicture(m.key.remoteJid, buf)
-        return reply(`✅ Group DP updated TYPE 2! 🐺`)
+        return reply(`✅ Group DP updated! 🐺`)
       }
 
+      // .getgrouppic
       if (command === 'getgrouppic') {
         try {
           const url = await sock.profilePictureUrl(m.key.remoteJid, 'image')
-          await sock.sendMessage(m.key.remoteJid, { image: { url }, caption: `🖼️ Group DP TYPE 2\n\n🐺 ${settings.botName}` }, { quoted: m })
-        } catch { reply(`❌ No group DP or private | TYPE 2`) }
+          await sock.sendMessage(m.key.remoteJid, { image: { url }, caption: `🖼️ Group DP\n\n🐺` }, { quoted: m })
+        } catch { reply(`❌ No group DP or private`) }
         return
       }
 
+      // .listonline
       if (command === 'listonline') {
-        let online = participants.slice(0,10)
-        return reply(`🟢 *ONLINE MEMBERS TYPE 2* (Sample)\n\n${online.map(p=>`@${p.id.split('@')[0]}`).join('\n')}\n\nTotal: ${participants.length}`, { mentions: online.map(p=>p.id) })
+        // presence check - simulate
+        let online = participants.slice(0,5)
+        return reply(`🟢 *ONLINE MEMBERS* (Sample)\n\n${online.map(p=>`@${p.id.split('@')[0]}`).join('\n')}\n\nTotal: ${participants.length}`, { mentions: online.map(p=>p.id) })
       }
 
+      // .listmember
       if (command === 'listmember') {
-        let txt = `👥 *ALL MEMBERS TYPE 2*\n${metadata.subject}\nMode: ${settings.mode}\n\n`
+        let txt = `👥 *ALL MEMBERS*\n${metadata.subject}\n\n`
         participants.forEach((p,i)=> txt += `${i+1}. @${p.id.split('@')[0]} ${p.admin ? '(ADMIN)' : ''}\n`)
         await sock.sendMessage(m.key.remoteJid, { text: txt, mentions: participants.map(p=>p.id) }, { quoted: m })
         return
       }
 
+      // .tagadmin / .tagmember
       if (command === 'tagadmin') {
         const admins = participants.filter(p=>p.admin)
-        await sock.sendMessage(m.key.remoteJid, { text: `👑 Tag Admins TYPE 2: ${text}\n\n${admins.map(a=>`@${a.id.split('@')[0]}`).join(' ')}`, mentions: admins.map(a=>a.id) }, { quoted: m })
+        await sock.sendMessage(m.key.remoteJid, { text: `👑 Tag Admins: ${text}\n\n${admins.map(a=>`@${a.id.split('@')[0]}`).join(' ')}`, mentions: admins.map(a=>a.id) }, { quoted: m })
         return
       }
       if (command === 'tagmember') {
-        await sock.sendMessage(m.key.remoteJid, { text: `👥 TYPE 2: ${text}`, mentions: participants.map(p=>p.id) }, { quoted: m })
+        await sock.sendMessage(m.key.remoteJid, { text: `👥 ${text}`, mentions: participants.map(p=>p.id) }, { quoted: m })
         return
       }
 
+      // .kickall / .promoteall / .demoteall
       if (command === 'kickall') {
-        if (!isOwner) return reply(settings.mess.owner)
-        if (!text.includes('CONFIRM')) return reply(`⚠️ DANGER TYPE 2! Type ${prefix}kickall CONFIRM to kick all members`)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
-        for (let p of participants) { if (!p.admin) await sock.groupParticipantsUpdate(m.key.remoteJid, [p.id], 'remove').catch(()=>{}) }
-        return reply(`✅ All non-admins kicked TYPE 2`)
+        if (!text.includes('CONFIRM')) return reply(`⚠️ DANGER! Type .kickall CONFIRM to kick all members`)
+        for (let p of participants) {
+          if (!p.admin) await sock.groupParticipantsUpdate(m.key.remoteJid, [p.id], 'remove').catch(()=>{})
+        }
+        return reply(`✅ All non-admins kicked`)
       }
       if (command === 'promoteall') {
-        if (!isOwner) return reply(settings.mess.owner)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         for (let p of participants) await sock.groupParticipantsUpdate(m.key.remoteJid, [p.id], 'promote').catch(()=>{})
-        return reply(`✅ All promoted TYPE 2`)
+        return reply(`✅ All promoted`)
       }
       if (command === 'demoteall') {
-        if (!isOwner) return reply(settings.mess.owner)
-        if (!botAdmin) return reply(`❌ Bot not admin`)
-        for (let p of participants.filter(p=>p.admin && !p.id.includes(botIdShort))) await sock.groupParticipantsUpdate(m.key.remoteJid, [p.id], 'demote').catch(()=>{})
-        return reply(`✅ All demoted TYPE 2`)
+        for (let p of participants.filter(p=>p.admin && !p.id.includes(sock.user.id))) await sock.groupParticipantsUpdate(m.key.remoteJid, [p.id], 'demote').catch(()=>{})
+        return reply(`✅ All demoted`)
       }
 
+      // .antidelete / .welcome / .goodbye / .setwelcome / .setgoodbye / .delwelcome / .delgoodbye
       if (['antidelete','welcome','goodbye','setwelcome','setgoodbye','delwelcome','delgoodbye'].includes(command)) {
-        if (!senderAdmin) return reply(`❌ Admin only`)
+        global.wolfDB = global.wolfDB || { welcome: {}, goodbye: {}, antidelete: {} }
         if (command === 'setwelcome') {
-          if (!text) return reply(`Usage: ${prefix}setwelcome <message> Use @user for mention\nCurrent: ${groupDB.welcomeText}\nENV WELCOME=${settings.auto.welcome}`)
-          groupDB.welcomeText = text
-          groupDB.welcome = true
-          return reply(`✅ Welcome TYPE 2 set: ${text}\nSet WELCOME=true in Dashboard ENV for permanent`)
+          if (!text) return reply(`Usage: .setwelcome <message> Use @user for mention`)
+          global.wolfDB.welcome[m.key.remoteJid] = text
+          return reply(`✅ Welcome set: ${text}`)
         }
         if (command === 'setgoodbye') {
-          if (!text) return reply(`Usage: ${prefix}setgoodbye <message>`)
-          groupDB.goodbyeText = text
-          return reply(`✅ Goodbye TYPE 2 set: ${text}`)
+          global.wolfDB.goodbye[m.key.remoteJid] = text
+          return reply(`✅ Goodbye set: ${text}`)
         }
-        if (command === 'delwelcome') { groupDB.welcome = false; groupDB.welcomeText = ''; return reply(`✅ Welcome deleted TYPE 2 - Set WELCOME=false in Dashboard`) }
-        if (command === 'delgoodbye') { groupDB.goodbyeText = ''; return reply(`✅ Goodbye deleted TYPE 2`) }
-        if (command === 'welcome') return reply(`Welcome TYPE 2: ${groupDB.welcome ? 'ON' : 'OFF'} | ENV: ${settings.auto.welcome}\nText: ${groupDB.welcomeText}\nUsage: ${prefix}setwelcome hi @user welcome`)
-        if (command === 'goodbye') return reply(`Goodbye TYPE 2: ${groupDB.goodbyeText || 'Not set'}`)
+        if (command === 'delwelcome') { delete global.wolfDB.welcome[m.key.remoteJid]; return reply(`✅ Welcome deleted`) }
+        if (command === 'delgoodbye') { delete global.wolfDB.goodbye[m.key.remoteJid]; return reply(`✅ Goodbye deleted`) }
+        if (command === 'welcome') return reply(`Welcome: ${global.wolfDB.welcome[m.key.remoteJid] || 'Not set'}\nUsage: .setwelcome hi @user welcome to group`)
+        if (command === 'goodbye') return reply(`Goodbye: ${global.wolfDB.goodbye[m.key.remoteJid] || 'Not set'}`)
         if (command === 'antidelete') {
-          if (!text) return reply(`${prefix}antidelete on/off - Current: ${groupDB.antidelete ? 'ON' : 'OFF'} | ENV: ${settings.auto.antidelete} | Path: ${settings.auto.antiDelPath}`)
-          groupDB.antidelete = text === 'on'
-          return reply(`🛡️ Antidelete TYPE 2 ${text.toUpperCase()} | Path: ${settings.auto.antiDelPath}`)
+          if (!text) return reply(`.antidelete on/off - Current: ${global.wolfDB.antidelete[m.key.remoteJid] ? 'ON' : 'OFF'}`)
+          global.wolfDB.antidelete[m.key.remoteJid] = text === 'on'
+          return reply(`🛡️ Antidelete ${text.toUpperCase()}`)
         }
       }
 
+      // .approve / .reject / .requests
       if (['approve','reject','requests'].includes(command)) {
-        if (!botAdmin) return reply(`❌ Bot not admin`)
         if (command === 'requests') {
           const reqs = await sock.groupRequestParticipantsList(m.key.remoteJid).catch(()=>[])
-          return reply(`📩 Pending Requests TYPE 2: ${reqs.length}\n\n${reqs.map(r=>r.jid).join('\n') || 'None'}`)
+          return reply(`📩 Pending Requests: ${reqs.length}\n\n${reqs.map(r=>r.jid).join('\n') || 'None'}`)
         }
         if (command === 'approve') {
           const reqs = await sock.groupRequestParticipantsList(m.key.remoteJid)
           for (let r of reqs) await sock.groupRequestParticipantsUpdate(m.key.remoteJid, [r.jid], 'approve')
-          return reply(`✅ Approved ${reqs.length} requests TYPE 2`)
+          return reply(`✅ Approved ${reqs.length} requests`)
         }
         if (command === 'reject') {
           const reqs = await sock.groupRequestParticipantsList(m.key.remoteJid)
           for (let r of reqs) await sock.groupRequestParticipantsUpdate(m.key.remoteJid, [r.jid], 'reject')
-          return reply(`❌ Rejected ${reqs.length} requests TYPE 2`)
+          return reply(`❌ Rejected ${reqs.length} requests`)
         }
       }
 
+      // .poll / .vote / .gstatus
       if (command === 'poll') {
-        if (!text.includes('|')) return reply(`Usage: ${prefix}poll Question | Option1 | Option2 | Option3 | TYPE 2`)
+        if (!text.includes('|')) return reply(`Usage: .poll Question | Option1 | Option2 | Option3`)
         const [q, ...opts] = text.split('|').map(s=>s.trim())
         await sock.sendMessage(m.key.remoteJid, { poll: { name: q, values: opts, selectableCount: 1 } }, { quoted: m })
         return
       }
-      if (command === 'vote') return reply(`🗳️ Vote using poll above! TYPE 2`)
+      if (command === 'vote') {
+        return reply(`🗳️ Vote using poll above!`)
+      }
       if (command === 'gstatus') {
-        return reply(`✅ Group Status TYPE 2 feature - ${settings.botName}\nMode: ${settings.mode}\nMembers: ${participants.length}`)
+        const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage
+        if (!quoted) return reply(`Reply message to post as Group Status`)
+        // Simulate group status post
+        return reply(`✅ Group Status feature - Message would be posted to group status wall 🐺\nText: ${text || 'media'}`)
       }
 
     } catch (e) {
-      console.log(`Group TYPE 2 Error ${command}: ${e.message}`)
-      reply(`❌ Group TYPE 2 Error: ${e.message}\nBot needs admin! Make bot admin 🐺\nMode: ${settings.mode}`)
+      reply(`❌ Group Error: ${e.message}\nBot needs admin! 🐺`)
     }
   }
-          }
+    }

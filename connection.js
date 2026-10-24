@@ -1,4 +1,4 @@
-// 🩺 SIMON MD - FINAL - RENDER ENV ONLY - WOLF CONNECTED
+// 🐺 WOLF XMD TITAN - YOUR ZENITH WORKING LINK ENGINE - CONVERTED
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -14,16 +14,16 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 
+// WOLF CONFIG - YOUR NUMBER
 let config;
 try { config = require('./settings'); } catch {
-  config = { botName: "SIMON MD", ownerName: "Simon", ownerNumber: "239166265317", prefix: ".", sessionName: "session", PORT: process.env.PORT || 10000 };
+  config = { botName: "ALPHA AND OMEGA WOLF XMD", ownerName: "ALPHA", ownerNumber: "239166265317", prefix: ".", sessionName: "session", PORT: process.env.PORT || 10000 };
 }
 config.ownerNumber = "239166265317";
-config.botName = "🩺 SIMON MD";
+config.botName = "🐺 WOLF XMD TITAN";
 config.sessionName = "session";
 
 global.sock = null; global.isConnected = false; global.connectionStatus = '⚠️ NOT LINKED'; global.pairingCode = null; global.currentPairingNumber = null; global.lastPairTime = 0; global.appStarted = false;
-let lastGeneratedSession = null;
 
 global.db = global.db || {};
 global.db.groups = global.db.groups || {};
@@ -43,6 +43,7 @@ global.plugins=new Map();
 global.wolfCommands={};
 
 function loadPlugins(){ 
+  // Try all possible plugin paths
   const possiblePaths = [path.join(__dirname,'plugins'), path.join(__dirname,'../plugins'), path.join(__dirname,'src/plugins')];
   let pPath = null;
   for(const pp of possiblePaths){ if(fs.existsSync(pp)){ pPath=pp; break; } }
@@ -63,6 +64,7 @@ function loadPlugins(){
           const arr=Array.isArray(d)?d:[d]; 
           for(const pl of arr){ 
             if(pl&&pl.name&&pl.execute){ 
+              // Zenith style
               global.plugins.set(pl.name.toLowerCase(),pl); 
               global.wolfCommands[pl.name.toLowerCase()]=pl.execute;
               if(pl.alias) for(const a of pl.alias) {
@@ -71,6 +73,7 @@ function loadPlugins(){
               }
               t++; 
             } else if(pl&&pl.command&&pl.execute){
+              // Wolf style 710 cmds
               for(const cmd of pl.command){
                 const clean=cmd.toLowerCase();
                 global.plugins.set(clean, pl);
@@ -85,49 +88,14 @@ function loadPlugins(){
     } 
   } 
   rd(pPath); 
-  console.log(chalk.green(`✅ SIMON WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS from ${pPath}`)); 
+  console.log(chalk.green(`✅ WOLF WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS from ${pPath}`)); 
 }
 loadPlugins();
 
 const groupCache=new Map();
-
-// 🔥 HANDLE SESSION FROM RENDER ENV - FIXED FOR FOREVER ONLINE
-function handleSessionEnv(){
-  const authPath=`./${config.sessionName}`;
-  try{
-    let sessionEnv = process.env.SESSION_DATA || process.env.SESSION_ID || process.env.SESSION || config.SESSION_ID || "";
-    if(!sessionEnv) return false;
-    if(fs.existsSync(path.join(authPath,'creds.json')) && fs.statSync(path.join(authPath,'creds.json')).size>100) return true;
-    
-    sessionEnv = sessionEnv.trim();
-    // Remove WOLF~ prefix if exists
-    if(sessionEnv.startsWith('WOLF~')) sessionEnv = sessionEnv.split('~')[1];
-    
-    let decoded = "";
-    try{
-      decoded = Buffer.from(sessionEnv, 'base64').toString('utf-8');
-      // Double base64 check
-      if(!decoded.trim().startsWith('{')){
-        try{ decoded = Buffer.from(decoded, 'base64').toString('utf-8'); }catch{}
-      }
-    }catch{
-      decoded = sessionEnv;
-    }
-    
-    if(!decoded.trim().startsWith('{')){
-      console.log(chalk.red('❌ SESSION_DATA invalid - not JSON'));
-      return false;
-    }
-    
-    if(!fs.existsSync(authPath)) fs.mkdirSync(authPath,{recursive:true});
-    const data = JSON.parse(decoded);
-    fs.writeFileSync(path.join(authPath,'creds.json'), JSON.stringify(data,null,2));
-    console.log(chalk.green.bold('✅ SESSION_DATA loaded from Render ENV - Forever online!'));
-    return true;
-  }catch(e){
-    console.log(chalk.red('Session ENV error: '+e.message));
-    return false;
-  }
+async function getCachedMeta(sock,jid){
+  const c=groupCache.get(jid); if(c && Date.now()-c.time<90000) return c.meta;
+  try{ const meta=await sock.groupMetadata(jid); groupCache.set(jid,{meta,time:Date.now()}); if(groupCache.size>50) groupCache.delete(groupCache.keys().next().value); return meta; }catch{ return null; }
 }
 
 async function startConnection(){
@@ -143,24 +111,25 @@ async function startConnection(){
       const idx2 = path.join(__dirname,'../public/index.html');
       if(fs.existsSync(idx1)) return res.sendFile(idx1);
       if(fs.existsSync(idx2)) return res.sendFile(idx2);
-      res.send(`<h1>🩺 SIMON MD</h1><p>Owner: 239166265317</p><p>CMDS: ${Object.keys(global.wolfCommands).length}</p>`);
+      res.send(`<h1>🐺 WOLF XMD TITAN</h1><p>Owner: 239166265317</p><p>CMDS: ${Object.keys(global.wolfCommands).length}</p><p><a href="/api/status">Status</a> | <a href="/getcode?number=239166265317">Get Code</a></p>`);
     });
-    app.get('/health',(req,res)=>res.send('SIMON LIVE'));
-    app.get('/api/status',(req,res)=>res.json({ botName:"SIMON MD", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length, session: lastGeneratedSession ? 'generated' : 'none', hasEnv: !!(process.env.SESSION_DATA||process.env.SESSION_ID) }));
+    app.get('/health',(req,res)=>res.send('WOLF LIVE'));
+    app.get('/api/status',(req,res)=>res.json({ botName:"WOLF XMD TITAN", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length }));
     
+    // YOUR WORKING PAIR LOGIC - EXACT SAME
     app.post('/api/pair',async(req,res)=>{
       try{
         let phone=(req.body.phone||req.body.number||'').replace(/[^0-9]/g,''); 
-        if(phone.length<10) return res.json({success:false,message:'Enter valid number'});
+        if(phone.length<10) return res.json({success:false,message:'Enter valid number e.g 239166265317'});
         if(!global.sock) return res.json({success:false,message:'Bot starting... wait 5 sec'});
         if(global.isConnected) return res.json({success:false,message:'Already linked!'});
         const code=await global.sock.requestPairingCode(phone); 
         global.pairingCode=code; 
         global.currentPairingNumber=phone;
         global.connectionStatus=`CODE: ${code}`; 
-        console.log(chalk.yellow(`🔑 SIMON CODE ${phone}: ${code}`)); 
+        console.log(chalk.yellow(`🔑 WOLF CODE ${phone}: ${code}`)); 
         res.json({success:true,code});
-      }catch(e){ res.json({success:false,message:e.message}); }
+      }catch(e){ console.log('Pair fail',e.message); res.json({success:false,message:e.message}); }
     });
     
     app.get('/getcode',async(req,res)=>{
@@ -173,54 +142,43 @@ async function startConnection(){
         global.pairingCode=code;
         global.currentPairingNumber=phone;
         global.connectionStatus=`CODE: ${code}`;
-        console.log(chalk.green.bold(`🔑 SIMON CODE ${phone}: ${code}`));
+        console.log(chalk.green.bold(`🔑 WOLF CODE ${phone}: ${code}`));
         res.json({success:true, code, phone, codeFormatted: code.match(/.{1,4}/g)?.join("-")});
-      }catch(e){ res.json({success:false,message:e.message}); }
+      }catch(e){ console.log('Pair fail',e.message); res.json({success:false,message:e.message}); }
     });
 
-    app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; lastGeneratedSession=null; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
+    app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); fs.rmSync(`./auth`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
     
     const PORT=config.PORT||process.env.PORT||10000; 
-    app.listen(PORT,'0.0.0.0',()=>console.log(chalk.cyan(`🌐 SIMON Dashboard ${PORT} | ${Object.keys(global.wolfCommands).length} CMDS`))); 
+    app.listen(PORT,'0.0.0.0',()=>console.log(chalk.cyan(`🌐 WOLF Dashboard ${PORT} | ${Object.keys(global.wolfCommands).length} CMDS`))); 
     global.appStarted=true;
   }
 
   async function initBaileys(){
-    handleSessionEnv();
+    try{
+      const authPath=`./${config.sessionName}`;
+      if((!fs.existsSync(authPath)||fs.readdirSync(authPath).length===0)&&process.env.SESSION_DATA){
+        fs.mkdirSync(authPath,{recursive:true}); let d; try{ d=JSON.parse(process.env.SESSION_DATA); }catch{ d=JSON.parse(Buffer.from(process.env.SESSION_DATA,'base64').toString()); } fs.writeFileSync(path.join(authPath,'creds.json'),JSON.stringify(d,null,2));
+      }
+    }catch(e){}
     const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); const {version}=await fetchLatestBaileysVersion();
     const sock=makeWASocket({ version, logger:pino({level:'silent'}), printQRInTerminal:false, browser:Browsers.macOS('Safari'), auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, markOnlineOnConnect:true, connectTimeoutMs:60000, keepAliveIntervalMs:10000, syncFullHistory:false, retryRequestDelayMs:2000 });
     global.sock=sock; sock.ev.on('creds.update',saveCreds);
 
     sock.ev.on('call',async(calls)=>{ for(let c of calls){ try{ if(global.db.settings.anticall) await sock.rejectCall(c.id,c.from); }catch{} } });
+    sock.ev.on('messages.update',async(updates)=>{ for(let up of updates){ if(up.update.message===null){ const saved=global.db.messages[up.key.id]; if(!saved) continue; const g=getGroup(saved.from); if(!g.antidelete) continue; try{ await sock.sendMessage(saved.from,{text:`*🔍 ANTI-DELETE WOLF*\nFrom: @${saved.sender.split('@')[0]}\n> ${saved.text?.slice(0,300)}`,mentions:[saved.sender]}); }catch{} } } });
 
     sock.ev.on('connection.update',async(update)=>{
       const {connection,lastDisconnect}=update;
-      if(connection==='connecting') global.connectionStatus='Connecting SIMON...';
+      if(connection==='connecting') global.connectionStatus='Connecting WOLF...';
       if(connection==='open'){
-        try{
-          if(fs.existsSync(`./${config.sessionName}/creds.json`)){
-            const b=fs.readFileSync(`./${config.sessionName}/creds.json`);
-            const s='WOLF~'+Buffer.from(b).toString('base64');
-            lastGeneratedSession=s;
-            console.log(chalk.green.bold(`\n✅ WOLF~ SESSION GENERATED:\n${s.substring(0,80)}...\n`));
-          }
-        }catch(e){ console.log('Session gen err', e.message); }
-
-        global.isConnected=true; global.connectionStatus='ONLINE ✅ SIMON'; console.log(chalk.green.bold(`\n✅ SIMON ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
-        try{
-          const jid=sock.user.id;
-          if(lastGeneratedSession && !process.env.SESSION_DATA && !process.env.SESSION_ID){
-            await sock.sendMessage(jid,{text:`✅ *WOLF XMD LINKED - COPY SESSION FOR RENDER*\n\n*Your WOLF~ Session (for forever online):*\n\n${lastGeneratedSession}\n\n*STEPS FOR FOREVER ONLINE:*\n1. Copy this WOLF~ code\n2. Go to Render Dashboard (dashboard.render.com)\n3. Your Service > Environment\n4. Add Variable: SESSION_DATA\n5. Paste WOLF~ as value\n6. Save Changes > Manual Deploy > Deploy\n7. Bot will be ONLINE forever!\n\nDon't paste in normal dashboard - Use Render ENV!`}).catch(()=>{});
-            await sock.sendMessage(jid,{text: lastGeneratedSession}).catch(()=>{});
-          } else {
-            await sock.sendMessage(jid,{text:`✅ *SIMON MD ONLINE FOREVER*\n\n👤 ${sock.user.name||'SIMON MD'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu`}).catch(()=>{});
-          }
-        }catch{}
+        global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
+        try{ const jid=sock.user.id; await sock.sendMessage(jid,{text:`✅ *WOLF XMD TITAN LINKED*\n\n👤 ${sock.user.name||'ALPHA'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu - Owner 239166265317`}).catch(()=>{}); }catch{}
       }
       if(connection==='close'){
         const code=lastDisconnect?.error?.output?.statusCode; console.log(chalk.red(`❌ Closed ${code}`)); global.isConnected=false; global.sock=null; groupCache.clear();
         if([DisconnectReason.loggedOut,401,440,405].includes(code)){ try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} global.connectionStatus='LOGGED OUT'; setTimeout(()=>initBaileys(),3000); }
-        else{ global.connectionStatus='Reconnecting SIMON...'; setTimeout(()=>initBaileys(),5000); }
+        else{ global.connectionStatus='Reconnecting WOLF...'; setTimeout(()=>initBaileys(),5000); }
       }
     });
 
@@ -230,28 +188,54 @@ async function startConnection(){
         if(from==='status@broadcast'){ if(global.db.settings.autostatus){ await sock.readMessages([m.key]).catch(()=>{}); } return; }
         const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us'); const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
         if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
+        if(global.db.settings.autoread) await sock.readMessages([m.key]).catch(()=>{});
+        if(isGroup){
+          const g=getGroup(from);
+          if((global.db.settings.autovv||g.antiviewonce)&&(m.message.viewOnceMessage||m.message.viewOnceMessageV2||m.message.viewOnceMessageV2Extension)){
+            try{ const q=m.message.viewOnceMessage||m.message.viewOnceMessageV2Extension; const inner=q?.message||q; if(inner?.imageMessage) await sock.sendMessage(from,{image:inner.imageMessage},{quoted:m}).catch(()=>{}); else if(inner?.videoMessage) await sock.sendMessage(from,{video:inner.videoMessage},{quoted:m}).catch(()=>{}); else await sock.sendMessage(from,{forward:q},{quoted:m}).catch(()=>{}); }catch{}
+          }
+        }
         if(!body) return; const prefix=global.db.settings.prefix||config.prefix||'.'; if(!body.trim().startsWith(prefix)) return;
         const args=body.trim().slice(prefix.length).trim().split(/ +/); const rawCmd=args.shift()?.toLowerCase(); if(!rawCmd) return;
         const cmdName=rawCmd.replace(/[^a-z0-9]/g,'')||rawCmd;
+        // Try both Wolf and Zenith style
         let plugin = global.plugins.get(rawCmd) || global.plugins.get(cmdName) || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
-        if(!plugin){ const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]; if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; } }
+        if(!plugin){
+          // search wolfCommands function map
+          const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
+          if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
+        }
         if(!plugin) return; 
         if(global.db.banned.includes(sender)) return;
-        m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"User"; 
+        
+        // Build message like Zenith
+        m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA"; 
         m.isOwner=sender.includes('239166265317') || global.db.sudo.includes(sender) || m.key.fromMe;
         m.reply=async(txt)=>await sock.sendMessage(from,{text:txt},{quoted:m});
         m.download=async()=>await downloadMediaMessage(m,'buffer',{},{logger:pino({level:"silent"}),reuploadRequest:sock.updateMediaMessage});
+        
         console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]}`));
+        
         if(plugin.isWolfStyle || typeof plugin === 'function' || plugin.execute.length===3 || global.wolfCommands[rawCmd]){
+          // Wolf style: (sock, m, {command, text...})
           const execFn = typeof plugin === 'function' ? plugin : (plugin.execute || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]);
-          if(typeof execFn === 'function'){ await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix}); }
-        } else { await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup}); }
-      }catch(e){ console.log(chalk.red(`Exec err: ${e.message}`)); }
+          if(typeof execFn === 'function'){
+            await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix});
+          }
+        } else {
+          // Zenith style
+          await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup});
+        }
+      }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
     });
   }
   await initBaileys();
 }
 
 module.exports={startConnection};
-module.exports.SimonMDConnection=startConnection;
-if(require.main===module){ startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); }); }
+module.exports.AlphaOmegaConnection=startConnection;
+
+// Auto start if run directly
+if(require.main===module){
+  startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
+}

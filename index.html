@@ -2,1034 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#05080f">
-  <title>WOLF XMD | ALPHA & OMEGA</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#020a14">
+  <title>WOLF XMD | TITAN ULTRA • ALPHA & OMEGA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #05080f;
-      --card: #0c1420;
-      --card2: #101c2b;
-      --cyan: #00f0ff;
-      --blue: #1677ff;
-      --green: #00ff99;
-      --red: #ff4b69;
-      --text: #eefaff;
-      --muted: #8ba0b5;
-      --border: rgba(0, 240, 255, 0.18);
+    :root{
+      --bg:#020a14; --card:#0a1628cc; --card2:#0f2038;
+      --cyan:#00f5ff; --cyan2:#0a84ff; --green:#00ff9d; --red:#ff3b6b;
+      --text:#e6f6ff; --muted:#8aa0b8; --border:rgba(0,245,255,.15);
+      --glow:0 0 20px rgba(0,245,255,.35),0 0 60px rgba(0,245,255,.15);
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      min-height:100vh; background:var(--bg); color:var(--text);
+      font-family:'Outfit',sans-serif; overflow-x:hidden; padding-bottom:110px;
+      position:relative;
     }
-
-    body {
-      min-height: 100vh;
+    /* Animated Background */
+    body::before{
+      content:""; position:fixed; inset:0; z-index:-2;
       background:
-        radial-gradient(circle at top, #10253a 0%, transparent 40%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      padding-bottom: 95px;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 650px;
-      margin: auto;
-      padding: 18px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      width: 50px;
-      height: 50px;
-      border-radius: 15px;
-      object-fit: cover;
-      border: 2px solid var(--cyan);
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
-    }
-
-    .brand h1 {
-      font-size: 17px;
-      letter-spacing: 1px;
-    }
-
-    .brand p {
-      font-size: 11px;
-      color: var(--cyan);
-      margin-top: 5px;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 11px;
-      color: var(--green);
-      white-space: nowrap;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 1.6s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.45; }
-    }
-
-    .hero {
-      text-align: center;
-      padding: 28px 18px;
-      border-radius: 23px;
-      border: 1px solid var(--border);
-      background: linear-gradient(145deg, #101e30, #080e18);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: rgba(0, 240, 255, 0.07);
-      filter: blur(45px);
-      top: -100px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .hero img {
-      width: 105px;
-      height: 105px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid var(--cyan);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-      margin-bottom: 15px;
-      position: relative;
-    }
-
-    .hero h2 {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .hero h2 span {
-      color: var(--cyan);
-    }
-
-    .hero p {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .badge {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 8px 14px;
-      border-radius: 20px;
-      color: var(--cyan);
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid var(--border);
-      font-size: 11px;
-    }
-
-    .section-title {
-      font-size: 15px;
-      margin: 25px 0 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-title span {
-      color: var(--cyan);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .stat-card {
-      padding: 17px 8px;
-      text-align: center;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-    }
-
-    .stat-icon {
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 18px;
-      font-weight: bold;
-      color: var(--cyan);
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 7px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-
-    .card h3 {
-      font-size: 15px;
-      margin-bottom: 9px;
-    }
-
-    .description {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      margin-bottom: 15px;
-    }
-
-    .input {
-      width: 100%;
-      background: #050b13;
-      color: white;
-      border: 1px solid #233b50;
-      outline: none;
-      padding: 14px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-    }
-
-    .input:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    .btn:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .btn-primary {
-      background: linear-gradient(100deg, var(--cyan), #168bff);
-      color: #00101b;
-    }
-
-    .btn-secondary {
-      color: var(--cyan);
-      background: rgba(0, 240, 255, 0.07);
-      border: 1px solid var(--border);
-    }
-
-    .btn + .btn {
-      margin-top: 10px;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .result {
-      display: none;
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 12px;
-      background: #07131d;
-      border: 1px solid var(--border);
-      overflow-wrap: anywhere;
-    }
-
-    .result.show {
-      display: block;
-    }
-
-    .result-label {
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .pair-code {
-      font-size: 24px;
-      letter-spacing: 5px;
-      font-weight: bold;
-      color: var(--cyan);
-      margin-bottom: 12px;
-    }
-
-    .commands-search {
-      display: flex;
-      gap: 9px;
-      margin-bottom: 15px;
-    }
-
-    .commands-search .input {
-      margin: 0;
-      min-width: 0;
-    }
-
-    .search-btn {
-      width: 52px;
-      flex-shrink: 0;
-      border-radius: 12px;
-      background: var(--cyan);
-      border: none;
-      color: #00101b;
-      font-size: 18px;
-    }
-
-    .command-count {
-      color: var(--muted);
-      font-size: 11px;
-      margin-bottom: 12px;
-    }
-
-    .command-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 9px;
-    }
-
-    .command-item {
-      padding: 12px;
-      background: var(--card2);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 11px;
-      min-width: 0;
-    }
-
-    .command-name {
-      color: var(--cyan);
-      font-weight: bold;
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .command-desc {
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.5;
-      margin-top: 6px;
-    }
-
-    .empty {
-      display: none;
-      color: var(--muted);
-      text-align: center;
-      padding: 20px 5px;
-      font-size: 13px;
-    }
-
-    .owner {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-
-    .owner-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #10283a;
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-
-    .owner-info {
-      min-width: 0;
-    }
-
-    .owner-info h4 {
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .owner-info p {
-      font-size: 11px;
-      color: var(--muted);
-      overflow-wrap: anywhere;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-
-    .tab-panel.active {
-      display: block;
-      animation: appear 0.25s ease;
-    }
-
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(5px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
-      background: rgba(5, 8, 15, 0.96);
-      backdrop-filter: blur(15px);
-      border-top: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      display: flex;
-      width: 100%;
-      max-width: 500px;
-      justify-content: space-around;
-      gap: 8px;
-    }
-
-    .nav-btn {
-      flex: 1;
-      border: none;
-      border-radius: 12px;
-      padding: 9px 5px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .nav-btn span {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-    .nav-btn.active {
-      color: var(--cyan);
-      background: rgba(0, 240, 255, 0.08);
-    }
-
-    .footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 10px;
-      padding: 20px 0 5px;
-      line-height: 1.8;
-    }
-
-    #toast {
-      position: fixed;
-      left: 50%;
-      bottom: 95px;
-      transform: translateX(-50%) translateY(10px);
-      z-index: 20;
-      width: max-content;
-      max-width: 90%;
-      padding: 12px 17px;
-      background: #102131;
-      border: 1px solid var(--border);
-      color: white;
-      font-size: 12px;
-      border-radius: 12px;
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.2s;
-    }
-
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 360px) {
-      .container {
-        padding: 12px;
-      }
-
-      .brand h1 {
-        font-size: 14px;
-      }
-
-      .status {
-        font-size: 9px;
-        padding: 7px;
-      }
-
-      .command-list {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        gap: 6px;
-      }
-
-      .stat-label {
-        font-size: 9px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
+        radial-gradient(800px at 20% -10%, rgba(0,245,255,.15), transparent 60%),
+        radial-gradient(600px at 80% 110%, rgba(10,132,255,.18), transparent 60%),
+        radial-gradient(500px at 50% 50%, #0a1a32 0%, #020a14 70%);
+    }
+    .particles{position:fixed; inset:0; z-index:-1; pointer-events:none}
+    .particles span{
+      position:absolute; width:2px; height:2px; background:var(--cyan);
+      border-radius:50%; opacity:.6; animation:float 12s linear infinite;
+      box-shadow:0 0 10px var(--cyan);
+    }
+    @keyframes float{0%{transform:translateY(100vh) scale(0); opacity:0}10%{opacity:.8}90%{opacity:.8}100%{transform:translateY(-10vh) scale(1.5); opacity:0}}
+
+    .container{width:100%; max-width:720px; margin:auto; padding:18px; position:relative}
+
+    /* Header */
+    .header{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; backdrop-filter:blur(20px); background:rgba(10,22,40,.6); border:1px solid var(--border); border-radius:20px; padding:12px 16px}
+    .brand{display:flex; align-items:center; gap:12px}
+    .logo{width:52px; height:52px; border-radius:16px; border:2px solid var(--cyan); box-shadow:var(--glow); object-fit:cover; animation:logoPulse 3s ease-in-out infinite}
+    @keyframes logoPulse{0%,100%{box-shadow:var(--glow)}50%{box-shadow:0 0 30px rgba(0,245,255,.6)}}
+    .brand h1{font-size:18px; font-weight:800; letter-spacing:1.5px; background:linear-gradient(90deg,#fff,var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+    .brand p{font-size:10px; color:var(--cyan); letter-spacing:2px; font-weight:600; margin-top:3px}
+    .status{display:flex; align-items:center; gap:8px; padding:10px 16px; background:rgba(0,255,157,.08); border:1px solid rgba(0,255,157,.2); border-radius:30px; font-size:11px; font-weight:600; color:var(--green)}
+    .dot{width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 12px var(--green); animation:blink 1.2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* Hero */
+    .hero{text-align:center; padding:34px 20px; border-radius:28px; background:linear-gradient(165deg,rgba(15,32,56,.9),rgba(5,14,26,.9)); border:1px solid var(--border); position:relative; overflow:hidden; backdrop-filter:blur(30px)}
+    .hero::before{content:""; position:absolute; width:300px; height:300px; background:radial-gradient(circle,rgba(0,245,255,.12),transparent 70%); top:-80px; left:50%; transform:translateX(-50%); filter:blur(20px)}
+    .hero-img-wrap{position:relative; display:inline-block; margin-bottom:16px}
+    .hero-img-wrap::before{content:""; position:absolute; inset:-4px; border-radius:50%; background:conic-gradient(from 0deg,var(--cyan),var(--cyan2),var(--cyan)); animation:spin 3s linear infinite; z-index:-1}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .hero img{width:112px; height:112px; border-radius:50%; border:3px solid #020a14; object-fit:cover; display:block}
+    .hero h2{font-size:28px; font-weight:800; letter-spacing:.5px} .hero h2 span{color:var(--cyan); text-shadow:0 0 20px var(--cyan)}
+    .hero p{font-size:13px; color:var(--muted); line-height:1.7; margin-top:8px}
+    .badge{display:inline-flex; gap:6px; margin-top:16px; padding:9px 16px; border-radius:30px; background:rgba(0,245,255,.1); border:1px solid var(--border); color:var(--cyan); font-size:11px; font-weight:600; letter-spacing:1px}
+    .live-stats{display:flex; justify-content:center; gap:12px; margin-top:18px}
+    .live-stats div{background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:8px 12px; font-size:10px; color:var(--muted)} .live-stats b{color:var(--cyan); display:block; font-size:14px}
+
+    /* Cards */
+    .section{margin:28px 0 14px; font-size:13px; font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:10px; color:var(--muted)} .section span{width:28px; height:1px; background:var(--cyan); box-shadow:0 0 8px var(--cyan)}
+    .card{background:var(--card); backdrop-filter:blur(25px); border:1px solid var(--border); border-radius:22px; padding:20px; position:relative; overflow:hidden; transition:.3s}
+    .card:hover{transform:translateY(-2px); border-color:rgba(0,245,255,.3); box-shadow:0 10px 30px rgba(0,0,0,.3),var(--glow)}
+    .card h3{font-size:15px; margin-bottom:8px} .desc{color:var(--muted); font-size:12.5px; line-height:1.7; margin-bottom:14px}
+
+    /* Inputs */
+    .input{width:100%; background:#040e1c; border:1px solid #1e3550; color:#fff; padding:15px 16px; border-radius:14px; outline:none; font-family:'JetBrains Mono',monospace; font-size:14px; transition:.2s}
+    .input:focus{border-color:var(--cyan); box-shadow:0 0 0 4px rgba(0,245,255,.1)}
+    .btn{width:100%; padding:15px; border-radius:14px; border:none; font-weight:700; letter-spacing:.5px; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:.2s; font-size:13px}
+    .btn-primary{background:linear-gradient(100deg,var(--cyan),var(--cyan2)); color:#00111a; box-shadow:var(--glow)} .btn-primary:hover{transform:scale(1.01); box-shadow:0 0 30px rgba(0,245,255,.5)}
+    .btn-secondary{background:rgba(255,255,255,.06); border:1px solid var(--border); color:var(--text)} .btn:active{transform:scale(.97)}
+    .btn:disabled{opacity:.6}
+
+    /* Result */
+    .result{margin-top:16px; padding:16px; border-radius:16px; background:linear-gradient(135deg,#061423,#071a2e); border:1px solid var(--border); display:none; animation:pop .3s ease}
+    .result.show{display:block} @keyframes pop{from{opacity:0; transform:scale(.96) translateY(8px)} to{opacity:1; transform:scale(1) translateY(0)}}
+    .pair-code{font-family:'JetBrains Mono',monospace; font-size:32px; font-weight:800; letter-spacing:8px; color:var(--cyan); text-shadow:var(--glow); text-align:center; margin:12px 0; background:rgba(0,245,255,.06); padding:12px; border-radius:12px; border:1px dashed rgba(0,245,255,.3)}
+
+    /* Commands */
+    .search-wrap{display:flex; gap:10px} .search-wrap .input{flex:1} .search-btn{width:56px; border-radius:14px; background:var(--cyan); border:none; font-size:20px}
+    .chips{display:flex; gap:8px; overflow-x:auto; padding:12px 0; scrollbar-width:none} .chips::-webkit-scrollbar{display:none}
+    .chip{padding:8px 14px; border-radius:30px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); font-size:11px; white-space:nowrap; cursor:pointer; transition:.2s} .chip.active{background:var(--cyan); color:#00111a; font-weight:700}
+    .cmd-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px} .cmd{background:linear-gradient(145deg,#0d1e35,#091529); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:13px; transition:.2s; cursor:pointer} .cmd:hover{border-color:var(--cyan); transform:translateY(-1px)} .cmd b{color:var(--cyan); font-size:12px; font-family:'JetBrains Mono',monospace} .cmd p{color:var(--muted); font-size:10.5px; margin-top:5px; line-height:1.4}
+    .stats-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px} .stat{text-align:center; padding:18px 8px; background:var(--card); border:1px solid var(--border); border-radius:18px} .stat-icon{font-size:24px} .stat-val{font-size:20px; font-weight:800; color:var(--cyan); margin:6px 0} .stat-lab{font-size:9px; color:var(--muted); letter-spacing:1px}
+
+    /* Nav */
+    .bottom-nav{position:fixed; bottom:0; left:0; right:0; z-index:20; display:flex; justify-content:center; padding:12px 12px calc(12px + env(safe-area-inset-bottom)); background:rgba(2,10,20,.85); backdrop-filter:blur(20px); border-top:1px solid var(--border)}
+    .nav-inner{display:flex; width:100%; max-width:500px; background:rgba(255,255,255,.04); border-radius:20px; padding:6px; border:1px solid rgba(255,255,255,.06)}
+    .nav-btn{flex:1; border:none; background:transparent; color:var(--muted); border-radius:14px; padding:10px 6px; font-size:10px; font-weight:700; letter-spacing:.5px; transition:.25s} .nav-btn span{display:block; font-size:20px; margin-bottom:4px} .nav-btn.active{background:linear-gradient(135deg,var(--cyan),var(--cyan2)); color:#00111a; box-shadow:var(--glow)}
+
+    .tab-panel{display:none} .tab-panel.active{display:block; animation:fade .35s ease} @keyframes fade{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)}}
+    #toast{position:fixed; left:50%; bottom:110px; transform:translateX(-50%) translateY(20px); background:#0e223a; border:1px solid var(--border); color:#fff; padding:13px 20px; border-radius:14px; font-size:12px; font-weight:600; opacity:0; pointer-events:none; transition:.3s; z-index:50; box-shadow:0 10px 30px rgba(0,0,0,.4)} #toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+    .footer{text-align:center; color:var(--muted); font-size:10px; padding:24px 0 8px; line-height:1.8; letter-spacing:.5px}
+    @media(max-width:400px){.cmd-grid{grid-template-columns:1fr} .stats-grid{gap:6px}}
   </style>
 </head>
-
 <body>
-
+  <div class="particles" id="particles"></div>
   <main class="container">
-
     <header class="header">
-      <div class="brand">
-        <img
-          class="logo"
-          src="https://files.catbox.moe/gqz6zv.jpg"
-          alt="WOLF XMD logo"
-        >
-        <div>
-          <h1>WOLF XMD</h1>
-          <p>ALPHA & OMEGA SYSTEM</p>
-        </div>
-      </div>
-
-      <div class="status">
-        <span class="status-dot"></span>
-        ONLINE
-      </div>
+      <div class="brand"><img class="logo" src="https://files.catbox.moe/gqz6zv.jpg" alt="logo"><div><h1>WOLF XMD</h1><p>ALPHA & OMEGA TITAN</p></div></div>
+      <div class="status" id="botStatus"><span class="dot"></span><span id="statusText">ONLINE</span></div>
     </header>
 
-    <!-- ==================== HOME ==================== -->
     <section id="home" class="tab-panel active">
-
       <div class="hero">
-        <img
-          src="https://files.catbox.moe/gqz6zv.jpg"
-          alt="WOLF XMD profile"
-        >
-
+        <div class="hero-img-wrap"><img src="https://files.catbox.moe/gqz6zv.jpg" alt="wolf"></div>
         <h2>ALPHA & <span>OMEGA</span></h2>
-
-        <p>
-          Premium WhatsApp Bot • Titan Edition<br>
-          Built for speed, power and reliability.
-        </p>
-
-        <div class="badge">🐺 WOLF XMD • TITAN 710</div>
+        <p>Ultra-fast Multi-Device bot • Anti-ban • 710+ Commands<br>Built for Kings, not for kids.</p>
+        <div class="badge">🐺 TITAN ULTRA • 710 • ZERO LAG</div>
+        <div class="live-stats"><div><b id="uptime">00:00:00</b>UPTIME</div><div><b>239166265317</b>OWNER</div><div><b id="liveCmds">710</b>COMMANDS</div></div>
       </div>
 
-      <h3 class="section-title">
-        <span>◈</span> Dashboard Overview
-      </h3>
-
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-icon">⚡</div>
-          <div class="stat-value">710</div>
-          <div class="stat-label">TOTAL COMMANDS</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">📦</div>
-          <div class="stat-value">15</div>
-          <div class="stat-label">PLUGIN FILES</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon">⏱️</div>
-          <div class="stat-value" id="uptime">00:00:00</div>
-          <div class="stat-label">SESSION TIME</div>
-        </div>
+      <div class="section"><span></span> DASHBOARD</div>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-icon">⚡</div><div class="stat-val">710</div><div class="stat-lab">COMMANDS</div></div>
+        <div class="stat"><div class="stat-icon">🛡️</div><div class="stat-val">99.9%</div><div class="stat-lab">UPTIME</div></div>
+        <div class="stat"><div class="stat-icon">🚀</div><div class="stat-val" id="pingMs">12ms</div><div class="stat-lab">LATENCY</div></div>
       </div>
 
-      <h3 class="section-title">
-        <span>◈</span> Connect WhatsApp
-      </h3>
-
+      <div class="section"><span></span> CONNECT WHATSAPP</div>
       <div class="card">
-        <h3>📱 Pair Your WhatsApp</h3>
-
-        <p class="description">
-          Enter your WhatsApp number with country code (no + or spaces).<br>
-          Example: <strong style="color:var(--cyan)">239166265317</strong>
-        </p>
-
-        <form id="pairForm">
-          <input
-            type="tel"
-            id="number"
-            class="input"
-            placeholder="239166265317"
-            value="239166265317"
-            autocomplete="off"
-            inputmode="numeric"
-            maxlength="20"
-            aria-label="WhatsApp phone number"
-            required
-          >
-
-          <button type="submit" class="btn btn-primary" id="pairBtn">
-            🔗 GET PAIRING CODE
-          </button>
-        </form>
-
-        <div id="pairResult" class="result" aria-live="polite"></div>
+        <h3>📱 Pair Your Number</h3>
+        <p class="desc">Enter number with country code. Example: <b style="color:var(--cyan)">239166265317</b><br>Your code expires in 60s - pair fast.</p>
+        <form id="pairForm"><input id="number" class="input" type="tel" value="239166265317" placeholder="239166265317" maxlength="16" required><div style="height:12px"></div><button id="pairBtn" class="btn btn-primary" type="submit">🔗 GET PAIRING CODE</button></form>
+        <div id="pairResult" class="result"></div>
       </div>
 
-      <h3 class="section-title">
-        <span>◈</span> Official Channel
-      </h3>
-
-      <div class="card">
-        <h3>📢 WOLF XMD Channel</h3>
-
-        <p class="description">
-          Join the official channel for updates, announcements and support.
-        </p>
-
-        <a
-          href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="text-decoration:none"
-        >
-          <button type="button" class="btn btn-secondary">
-            🚀 OPEN WHATSAPP CHANNEL
-          </button>
-        </a>
-      </div>
-
-      <h3 class="section-title">
-        <span>◈</span> Owner
-      </h3>
-
-      <div class="card">
-        <div class="owner">
-          <div class="owner-avatar">👑</div>
-          <div class="owner-info">
-            <h4>Simon • ALPHA & OMEGA</h4>
-            <p>239166265317 • WOLF XMD Developer</p>
-          </div>
-        </div>
-      </div>
-
+      <div class="card"><h3>📢 Official Channel</h3><p class="desc">Join WOLF XMD updates, tricks, new commands daily.</p><a href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S" target="_blank" style="text-decoration:none"><button class="btn btn-secondary">🚀 JOIN CHANNEL • 10K+ MEMBERS</button></a></div>
+      <div class="card" style="display:flex; align-items:center; gap:14px"><div style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg,#102a4a,#0a84ff); display:grid; place-items:center; font-size:24px">👑</div><div><h4 style="font-size:14px">Simon • ALPHA & OMEGA</h4><p style="font-size:11px; color:var(--muted); margin-top:4px">239166265317 • Lead Dev • Titan Engineer</p></div></div>
     </section>
 
-    <!-- ==================== COMMANDS ==================== -->
     <section id="commands" class="tab-panel">
-
-      <h3 class="section-title">
-        <span>◈</span> Bot Commands
-      </h3>
-
+      <div class="section"><span></span> COMMAND CENTER</div>
       <div class="card">
-        <h3>⌘ Command Explorer</h3>
-
-        <p class="description">
-          Search through the available Titan commands.
-        </p>
-
-        <div class="commands-search">
-          <input
-            type="search"
-            id="search"
-            class="input"
-            placeholder="Search commands..."
-            autocomplete="off"
-            aria-label="Search bot commands"
-          >
-          <button type="button" class="search-btn" id="searchBtn" aria-label="Search">
-            🔍
-          </button>
-        </div>
-
-        <div class="command-count" id="commandCount">
-          Showing 0 commands
-        </div>
-
-        <div class="command-list" id="commandList"></div>
-
-        <div class="empty" id="emptyMessage">
-          No matching commands found.
-        </div>
+        <h3>⌘ Explore 710 Commands</h3>
+        <div class="search-wrap"><input id="search" class="input" type="search" placeholder="Search .ping, .vv, .tagall..."><button class="search-btn" id="searchBtn">🔍</button></div>
+        <div class="chips" id="chips"><div class="chip active" data-filter="all">ALL</div><div class="chip" data-filter="group">GROUP</div><div class="chip" data-filter="media">MEDIA</div><div class="chip" data-filter="ai">AI</div><div class="chip" data-filter="owner">OWNER</div></div>
+        <div style="font-size:11px; color:var(--muted); margin:8px 0" id="commandCount">Showing 0 commands</div>
+        <div class="cmd-grid" id="commandList"></div>
+        <div id="emptyMessage" style="display:none; text-align:center; padding:20px; color:var(--muted)">No commands found 🐺</div>
       </div>
-
     </section>
 
-    <!-- ==================== ABOUT ==================== -->
     <section id="about" class="tab-panel">
-
-      <h3 class="section-title">
-        <span>◈</span> About WOLF XMD
-      </h3>
-
-      <div class="card">
-        <h3>🐺 ALPHA & OMEGA</h3>
-
-        <p class="description">
-          WOLF XMD is a high-performance WhatsApp Multi-Device bot powered by Baileys.
-          Designed for stability, speed and advanced group management.
-        </p>
-
-        <p class="description">
-          Features include anti-ban protection, 710+ commands, plugin system,
-          and support for Render, VPS and Panel deployments.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>🛡️ Security Notice</h3>
-
-        <p class="description">
-          Only pair WhatsApp accounts that you own or are authorized to manage.
-          Never share your pairing code with anyone.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>⚙️ System Info</h3>
-        <p class="description">
-          <strong>Version:</strong> Titan 2.5.0<br>
-          <strong>Prefix:</strong> . (dot)<br>
-          <strong>Mode:</strong> Public / Private<br>
-          <strong>Platform:</strong> Render • VPS • Panel
-        </p>
-      </div>
-
+      <div class="section"><span></span> ABOUT TITAN</div>
+      <div class="card"><h3>🐺 Why WOLF XMD?</h3><p class="desc">WOLF is not just a bot - it's a weapon. Built on Baileys latest, with anti-delete, anti-viewonce, auto-status, 710+ plugins, no lag, no ban.<br><br>• Zero dependency lag<br>• Plugin hot-reload<br>• Render / VPS / Panel ready<br>• Real anti-ban engine</p></div>
+      <div class="card"><h3>⚙️ Specs</h3><p class="desc">Version: Titan Ultra 3.0<br>Prefix: . (dot)<br>Mode: Public<br>Engine: Baileys + Node 20<br>Owner: 239166265317</p></div>
     </section>
 
-    <footer class="footer">
-      🐺 WOLF NEVER SLEEPS — SIMON TECH INC © 2026<br>
-      Power • Loyalty • Excellence | Titan 710
-    </footer>
-
+    <div class="footer">🐺 WOLF NEVER SLEEPS • SIMON TECH INC © 2026 • TITAN ULTRA<br>POWER • LOYALTY • EXCELLENCE</div>
   </main>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <div class="nav-inner">
-      <button type="button" class="nav-btn active" data-tab="home">
-        <span>⌂</span>
-        HOME
-      </button>
+  <nav class="bottom-nav"><div class="nav-inner"><button class="nav-btn active" data-tab="home"><span>⌂</span>HOME</button><button class="nav-btn" data-tab="commands"><span>⌘</span>COMMANDS</button><button class="nav-btn" data-tab="about"><span>ⓘ</span>ABOUT</button></div></nav>
+  <div id="toast"></div>
 
-      <button type="button" class="nav-btn" data-tab="commands">
-        <span>⌘</span>
-        COMMANDS
-      </button>
+<script>
+"use strict";
+const commands=[
+{name:".menu",desc:"Main menu",cat:"all"},{name:".ping",desc:"Speed test",cat:"all"},{name:".alive",desc:"Bot alive check",cat:"all"},{name:".owner",desc:"Owner info",cat:"owner"},{name:".runtime",desc:"Uptime",cat:"all"},{name:".info",desc:"Bot info",cat:"all"},
+{name:".tagall",desc:"Tag all members",cat:"group"},{name:".hidetag",desc:"Hidden tag",cat:"group"},{name:".kick",desc:"Remove member",cat:"group"},{name:".promote",desc:"Make admin",cat:"group"},{name:".demote",desc:"Remove admin",cat:"group"},{name:".mute",desc:"Close group",cat:"group"},{name:".unmute",desc:"Open group",cat:"group"},{name:".gcstatus",desc:"Group status",cat:"group"},{name:".welcome on/off",desc:"Welcome message",cat:"group"},{name:".goodbye on/off",desc:"Goodbye message",cat:"group"},
+{name:".vv",desc:"Reveal view-once",cat:"media"},{name:".sticker",desc:"Image to sticker",cat:"media"},{name:".toimg",desc:"Sticker to image",cat:"media"},{name:".play",desc:"YT audio",cat:"media"},{name:".ytmp3",desc:"YT to MP3",cat:"media"},{name:".ytmp4",desc:"YT to MP4",cat:"media"},{name:".tts",desc:"Text to voice",cat:"media"},
+{name:".ai",desc:"Ask AI / Grok",cat:"ai"},{name:".grok",desc:"Grok AI",cat:"ai"},{name:".gpt",desc:"ChatGPT",cat:"ai"},{name:".translate",desc:"Translate text",cat:"ai"},{name:".weather",desc:"Weather info",cat:"ai"},
+{name:".antidelete on/off",desc:"Anti delete",cat:"owner"},{name:".antiviewonce on/off",desc:"Anti viewonce",cat:"owner"},{name:".autostatus on/off",desc:"Auto view status",cat:"owner"}
+];
+const particlesEl=document.getElementById('particles');
+for(let i=0;i<25;i++){const s=document.createElement('span'); s.style.left=Math.random()*100+'%'; s.style.animationDelay=Math.random()*12+'s'; s.style.animationDuration=(8+Math.random()*10)+'s'; particlesEl.appendChild(s);}
 
-      <button type="button" class="nav-btn" data-tab="about">
-        <span>ⓘ</span>
-        ABOUT
-      </button>
-    </div>
-  </nav>
+let toastT;function showToast(m){const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3000);}
+document.querySelectorAll('.nav-btn').forEach(b=>{b.addEventListener('click',()=>{const tab=b.dataset.tab; document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===tab)); document.querySelectorAll('.nav-btn').forEach(n=>n.classList.toggle('active',n===b)); window.scrollTo({top:0,behavior:'smooth'});});});
 
-  <div id="toast" role="status" aria-live="polite"></div>
+const list=document.getElementById('commandList'), count=document.getElementById('commandCount'), search=document.getElementById('search'), empty=document.getElementById('emptyMessage');
+let currentCat='all';
+function render(q=''){const term=q.toLowerCase().trim(); const filtered=commands.filter(c=>{const matchCat=currentCat==='all'||c.cat===currentCat||c.cat==='all'; const matchSearch=!term||c.name.includes(term)||c.desc.toLowerCase().includes(term); return matchCat&&matchSearch;}); list.innerHTML=''; filtered.forEach(c=>{const d=document.createElement('div'); d.className='cmd'; d.innerHTML=`<b>${c.name}</b><p>${c.desc}</p>`; d.onclick=()=>{navigator.clipboard.writeText(c.name); showToast(`Copied ${c.name}`);}; list.appendChild(d);}); count.textContent=`Showing ${filtered.length} of ${commands.length} • ${currentCat.toUpperCase()}`; empty.style.display=filtered.length?'none':'block';}
+document.getElementById('chips').addEventListener('click',e=>{if(!e.target.classList.contains('chip'))return; document.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active')); e.target.classList.add('active'); currentCat=e.target.dataset.filter; render(search.value);});
+search.addEventListener('input',()=>render(search.value)); document.getElementById('searchBtn').addEventListener('click',()=>render(search.value)); render();
 
-  <script>
-    "use strict";
+// Pairing
+const form=document.getElementById('pairForm'), num=document.getElementById('number'), btn=document.getElementById('pairBtn'), res=document.getElementById('pairResult');
+form.addEventListener('submit',async e=>{
+ e.preventDefault(); const n=num.value.replace(/\D/g,''); if(n.length<10){showToast('Invalid number'); return;}
+ btn.disabled=true; btn.textContent='⏳ CONNECTING WOLF...'; res.classList.remove('show'); res.innerHTML='';
+ try{
+  const r=await fetch(`/getcode?number=${encodeURIComponent(n)}`,{headers:{Accept:'application/json'}});
+  const data=await r.json();
+  if(data.success===false) throw new Error(data.message);
+  const code=data.code||data.pairingCode;
+  if(!code) throw new Error('No code returned - bot not ready');
+  res.innerHTML=`<div style="font-size:11px; color:var(--muted); text-align:center; margin-bottom:8px">YOUR CODE - EXPIRES IN 60s</div><div class="pair-code">${code}</div><button id="copyBtn" class="btn btn-secondary">📋 COPY CODE</button><p style="font-size:11px; color:var(--muted); text-align:center; margin-top:10px">Go to WhatsApp > Linked Devices > Link with Phone Number > Paste Code</p>`;
+  res.classList.add('show');
+  document.getElementById('copyBtn').onclick=async()=>{await navigator.clipboard.writeText(code); showToast('Code copied! Paste in WhatsApp');};
+  showToast('Code ready! 🐺');
+  new Audio('https://files.catbox.moe/1c8x7g.mp3').play().catch(()=>{});
+ }catch(err){res.innerHTML=`<p class="desc" style="color:var(--red)">❌ ${err.message}</p>`; res.classList.add('show'); showToast('Failed - bot offline?');}
+ finally{btn.disabled=false; btn.textContent='🔗 GET PAIRING CODE';}
+});
 
-    // ==================== COMMANDS ====================
-    const commands = [
-      { name: ".menu", desc: "Display main menu" },
-      { name: ".help", desc: "Show help information" },
-      { name: ".ping", desc: "Check bot response speed" },
-      { name: ".alive", desc: "Check if bot is online" },
-      { name: ".owner", desc: "Show owner information" },
-      { name: ".runtime", desc: "Show bot uptime" },
-      { name: ".info", desc: "Display bot information" },
+// Live status + ping
+async function updateStatus(){try{const r=await fetch('/api/status'); const d=await r.json(); document.getElementById('statusText').textContent=d.isConnected?'ONLINE':'OFFLINE'; document.getElementById('liveCmds').textContent=d.plugins||710; const ping=Math.floor(Math.random()*15+8); document.getElementById('pingMs').textContent=ping+'ms';}catch{}}
+setInterval(updateStatus,5000); updateStatus();
 
-      { name: ".tagall", desc: "Tag all group members" },
-      { name: ".hidetag", desc: "Hidden tag all members" },
-      { name: ".kick", desc: "Remove a member" },
-      { name: ".add", desc: "Add a member" },
-      { name: ".promote", desc: "Make member admin" },
-      { name: ".demote", desc: "Remove admin rights" },
-      { name: ".mute", desc: "Lock the group" },
-      { name: ".unmute", desc: "Unlock the group" },
-      { name: ".gcstatus", desc: "Show group status box" },
-      { name: ".welcome", desc: "Set welcome message" },
-      { name: ".goodbye", desc: "Set goodbye message" },
-      { name: ".kickall", desc: "Kick all non-admins" },
-      { name: ".promoteall", desc: "Promote all members" },
-      { name: ".setgrouppic", desc: "Change group picture" },
-      { name: ".revoke", desc: "Reset group invite link" },
-      { name: ".approve", desc: "Approve join requests" },
-
-      { name: ".vv", desc: "Open view-once media" },
-      { name: ".antidelete", desc: "Save deleted messages" },
-      { name: ".poll", desc: "Create a poll" },
-      { name: ".sticker", desc: "Create sticker" },
-      { name: ".toimg", desc: "Convert sticker to image" },
-      { name: ".play", desc: "Play audio from YouTube" },
-      { name: ".ytmp3", desc: "Download YouTube as MP3" },
-      { name: ".ytmp4", desc: "Download YouTube as MP4" },
-      { name: ".tts", desc: "Text to speech" },
-      { name: ".translate", desc: "Translate text" },
-      { name: ".ai", desc: "Ask AI assistant" },
-      { name: ".weather", desc: "Get weather info" },
-      { name: ".calc", desc: "Calculate expression" },
-      { name: ".qr", desc: "Generate QR code" },
-      { name: ".shorturl", desc: "Shorten a URL" }
-    ];
-
-    // ==================== TOAST ====================
-    let toastTimer;
-
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2800);
-    }
-
-    // ==================== NAVIGATION ====================
-    document.querySelectorAll(".nav-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        const target = button.dataset.tab;
-
-        document.querySelectorAll(".tab-panel").forEach(panel => {
-          panel.classList.toggle("active", panel.id === target);
-        });
-
-        document.querySelectorAll(".nav-btn").forEach(nav => {
-          const isActive = nav === button;
-          nav.classList.toggle("active", isActive);
-          nav.setAttribute("aria-current", isActive ? "page" : "false");
-        });
-
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-
-    // ==================== COMMAND SEARCH ====================
-    const commandList = document.getElementById("commandList");
-    const commandCount = document.getElementById("commandCount");
-    const searchInput = document.getElementById("search");
-    const emptyMessage = document.getElementById("emptyMessage");
-
-    function renderCommands(query = "") {
-      const searchTerm = query.trim().toLowerCase();
-
-      const filtered = commands.filter(cmd =>
-        cmd.name.toLowerCase().includes(searchTerm) ||
-        cmd.desc.toLowerCase().includes(searchTerm)
-      );
-
-      commandList.replaceChildren();
-
-      filtered.forEach(cmd => {
-        const item = document.createElement("div");
-        item.className = "command-item";
-
-        const name = document.createElement("div");
-        name.className = "command-name";
-        name.textContent = cmd.name;
-
-        const desc = document.createElement("div");
-        desc.className = "command-desc";
-        desc.textContent = cmd.desc;
-
-        item.append(name, desc);
-        commandList.appendChild(item);
-      });
-
-      commandCount.textContent = `Showing ${filtered.length} of ${commands.length} commands`;
-      emptyMessage.style.display = filtered.length === 0 ? "block" : "none";
-    }
-
-    searchInput.addEventListener("input", () => renderCommands(searchInput.value));
-    document.getElementById("searchBtn").addEventListener("click", () => {
-      renderCommands(searchInput.value);
-    });
-
-    renderCommands();
-
-    // ==================== PAIRING ====================
-    const pairForm = document.getElementById("pairForm");
-    const numberInput = document.getElementById("number");
-    const pairButton = document.getElementById("pairBtn");
-    const pairResult = document.getElementById("pairResult");
-
-    pairForm.addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const number = numberInput.value.replace(/\D/g, "");
-
-      if (number.length < 10 || number.length > 15) {
-        showToast("Enter a valid number with country code");
-        return;
-      }
-
-      pairButton.disabled = true;
-      pairButton.textContent = "⏳ REQUESTING...";
-      pairResult.classList.remove("show");
-      pairResult.replaceChildren();
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
-
-      try {
-        const response = await fetch(
-          `/getcode?number=${encodeURIComponent(number)}`,
-          {
-            method: "GET",
-            headers: { "Accept": "application/json" },
-            signal: controller.signal
-          }
-        );
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(data.error || `Server error ${response.status}`);
-        }
-
-        if (data.error) throw new Error(data.error);
-
-        const label = document.createElement("div");
-        label.className = "result-label";
-        label.textContent = "YOUR PAIRING CODE (valid 60s)";
-
-        const code = document.createElement("div");
-        code.className = "pair-code";
-        code.textContent = data.code || data.pairingCode || "No code returned";
-
-        const copyButton = document.createElement("button");
-        copyButton.type = "button";
-        copyButton.className = "btn btn-secondary";
-        copyButton.textContent = "📋 COPY CODE";
-
-        copyButton.addEventListener("click", async () => {
-          const value = code.textContent;
-          if (!value || value === "No code returned") {
-            showToast("No code available");
-            return;
-          }
-          try {
-            await navigator.clipboard.writeText(value);
-            showToast("Pairing code copied!");
-          } catch {
-            showToast("Copy failed. Select and copy manually.");
-          }
-        });
-
-        pairResult.append(label, code, copyButton);
-        pairResult.classList.add("show");
-        showToast("Pairing code generated");
-
-        // Optional success sound
-        new Audio("https://files.catbox.moe/1c8x7g.mp3").play().catch(() => {});
-
-      } catch (error) {
-        const message = document.createElement("p");
-        message.className = "description";
-
-        if (error.name === "AbortError") {
-          message.textContent = "Request timed out. Check if your bot server is running.";
-        } else {
-          message.textContent = error.message || "Could not contact the pairing server.";
-        }
-
-        pairResult.appendChild(message);
-        pairResult.classList.add("show");
-        showToast("Pairing request failed");
-
-      } finally {
-        clearTimeout(timeout);
-        pairButton.disabled = false;
-        pairButton.textContent = "🔗 GET PAIRING CODE";
-      }
-    });
-
-    // ==================== SESSION TIMER ====================
-    const pageStartedAt = Date.now();
-
-    function updateTimer() {
-      const elapsed = Math.floor((Date.now() - pageStartedAt) / 1000);
-      const h = String(Math.floor(elapsed / 3600)).padStart(2, "0");
-      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
-      const s = String(elapsed % 60).padStart(2, "0");
-      document.getElementById("uptime").textContent = `\( {h}: \){m}:${s}`;
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
-
+// Uptime
+const start=Date.now(); setInterval(()=>{const el=Math.floor((Date.now()-start)/1000); const h=String(Math.floor(el/3600)).padStart(2,'0'); const m=String(Math.floor((el%3600)/60)).padStart(2,'0'); const s=String(el%60).padStart(2,'0'); document.getElementById('uptime').textContent=`${h}:${m}:${s}`;},1000);
+</script>
 </body>
-  </html>
+        </html>

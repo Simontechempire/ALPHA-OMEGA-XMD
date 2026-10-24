@@ -1,25 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>WOLF XMD TYPE 2</title>
-<style>:root{--bg:#05080f;--card:#0c1420;--cyan:#00f0ff;--green:#00ff99;--text:#eefaff;--muted:#8ba0b5;--border:rgba(0,240,255,0.18);}*{margin:0;padding:0;box-sizing:border-box}body{min-height:100vh;background:var(--bg);color:var(--text);font-family:Arial;padding-bottom:80px}.container{max-width:650px;margin:auto;padding:18px}.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.logo{width:50px;height:50px;border-radius:15px;border:2px solid var(--cyan)}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px}.input{width:100%;background:#050b13;color:#fff;border:1px solid #233b50;padding:14px;border-radius:12px;margin-bottom:12px}.btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:bold;cursor:pointer}.btn-primary{background:linear-gradient(100deg,var(--cyan),#168bff);color:#00101b}.btn-secondary{background:rgba(0,240,255,0.07);border:1px solid var(--border);color:var(--cyan);margin-top:10px}.result{display:none;margin-top:15px;padding:15px;border-radius:12px;background:#07131d;border:1px solid var(--border);word-break:break-all}.result.show{display:block}.pair-code{font-size:32px;letter-spacing:6px;font-weight:bold;color:var(--cyan);text-align:center;background:#000;padding:15px;border-radius:10px;border:1px solid var(--cyan);margin-bottom:12px}.session-box{background:#000;padding:12px;border-radius:10px;border:1px dashed var(--cyan);font-size:11px;color:var(--green);max-height:150px;overflow-y:auto;margin-bottom:12px}#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#102131;border:1px solid var(--border);color:#fff;padding:12px 17px;border-radius:12px;opacity:0;transition:0.2s;pointer-events:none}#toast.show{opacity:1}.polling{color:var(--green);font-size:11px;margin-top:10px;display:none}</style>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WOLF XMD - SIMON LINK ENGINE</title>
+<style>
+body{font-family:sans-serif;background:#0f0f0f;color:#fff;display:flex;justify-content:center;padding:20px}
+.card{background:#1a1a1a;padding:25px;border-radius:15px;width:100%;max-width:400px;border:1px solid #333}
+input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #444;background:#000;color:#fff;box-sizing:border-box}
+button{width:100%;padding:12px;background:#00ff88;color:#000;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:10px}
+.code-box{background:#000;padding:15px;border-radius:8px;text-align:center;font-size:28px;letter-spacing:3px;margin:10px 0;border:1px dashed #00ff88;display:none}
+.info{font-size:12px;color:#888;margin-top:10px;text-align:center}
+.divider{height:1px;background:#333;margin:25px 0}
+h3{margin:0 0 10px;text-align:center}
+</style>
 </head>
 <body>
-<main class="container">
-<header class="header"><div style="display:flex;gap:12px;align-items:center"><img class="logo" src="https://files.catbox.moe/gqz6zv.jpg"><div><h1>WOLF XMD</h1><p style="color:var(--cyan);font-size:11px;">TYPE 2 - HYBRID</p></div></div><div style="border:1px solid var(--border);padding:6px 10px;border-radius:20px;font-size:11px;color:var(--green)">ONLINE</div></header>
+<div class="card">
+<h3>🐺 WOLF XMD PAIRING</h3>
+<p style="text-align:center;font-size:12px;color:#aaa">SIMON MD ENGINE</p>
 
-<div class="card"><h3>📱 Pair Your WhatsApp</h3><p style="color:var(--muted);font-size:12px;margin:10px 0;">Enter with country code. Example: 239166265317</p><form id="pairForm"><input type="tel" id="number" class="input" value="239166265317" required><button class="btn btn-primary" id="pairBtn">🔗 GET PAIRING CODE</button></form><div id="pairResult" class="result"></div><div id="polling" class="polling">⏳ Waiting for WhatsApp... Checking every 3s</div></div>
+<!-- BOX 1: PAIR CODE -->
+<input id="num" placeholder="239166265317 (no +)">
+<button onclick="getCode()">Get Pair Code</button>
+<div id="codeBox" class="code-box"></div>
+<div id="msg1" class="info"></div>
 
-<div class="card"><h3>🚀 Enter Session & Deploy</h3><p style="color:var(--muted);font-size:12px;margin:10px 0;">After pairing, bot sends WOLF~ to your DM. Paste here:<br><b style="color:var(--green)">Then copy to Render ENV → SESSION_ID → Deploy</b></p><input type="text" id="sessionInput" class="input" placeholder="Paste WOLF~... here"><button class="btn btn-primary" id="deployBtn">🚀 DEPLOY BOT</button><button class="btn btn-secondary" id="loadBtn">📋 LOAD SESSION FROM SERVER</button><div id="deployResult" class="result"></div></div>
+<div class="divider"></div>
 
-<div class="card"><p style="color:var(--muted);font-size:11px;line-height:1.7;">Version: Titan 2.5.0 TYPE 2<br>Flow: Pair → Get WOLF~ → Render ENV SESSION_ID → Save & Redeploy → Online</p></div>
-</main>
-<div id="toast"></div>
+<!-- BOX 2: SAME DASHBOARD DEPLOY - AFTER LINK -->
+<h3>📦 DEPLOY SESSION - SAME DASHBOARD</h3>
+<input id="sess" placeholder="Paste WOLF~... session here">
+<button onclick="deploySess()" style="background:#00aaff">DEPLOY - GO ONLINE FOREVER</button>
+<div id="msg2" class="info"></div>
+<p class="info">After linking, bot DM you WOLF~. Copy it and paste here. Then click Deploy. Bot will be online forever on same URL! No need Render ENV.</p>
+
+</div>
+
 <script>
-let toastTimer,pollingInterval,currentNumber=""; function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);}
-async function checkSession(){ try{ const r=await fetch('/check-session?number='+currentNumber); const d=await r.json(); if(d.session){ clearInterval(pollingInterval); document.getElementById("polling").style.display='none'; document.getElementById("sessionInput").value=d.session; document.getElementById("pairResult").innerHTML=`<div style="color:#8ba0b5;font-size:11px;margin-bottom:8px">✅ PAIRED! SESSION READY</div><div class="session-box">${d.session}</div><button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${d.session}').then(()=>showToast('Copied!'))">📋 COPY SESSION</button><p style="color:#ffcc00;font-size:11px;margin-top:10px">⚠️ Copy → Render Dashboard → ENV SESSION_ID → Save & Redeploy + Also sent to your DM!</p>`; document.getElementById("pairResult").classList.add("show"); showToast("Session ready!"); } }catch{} }
-document.getElementById("pairForm").addEventListener("submit", async e=>{ e.preventDefault(); const num=document.getElementById("number").value.replace(/\D/g,""); if(num.length<10){showToast("Invalid number");return;} currentNumber=num; const btn=document.getElementById("pairBtn"), resDiv=document.getElementById("pairResult"), poll=document.getElementById("polling"); btn.disabled=true; btn.textContent="⏳ REQUESTING..."; resDiv.classList.remove("show"); poll.style.display='none'; clearInterval(pollingInterval); try{ const r=await fetch(`/getcode?number=${num}`); const d=await r.json(); if(d.error) throw new Error(d.error); resDiv.innerHTML=`<div style="color:#8ba0b5;font-size:11px;margin-bottom:8px">CODE (60s) - Enter in WhatsApp > Linked Devices</div><div class="pair-code">${d.code}</div><button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${d.code}').then(()=>showToast('Code copied!'))">📋 COPY CODE</button>`; resDiv.classList.add("show"); poll.style.display='block'; showToast("Code! Enter in WhatsApp"); pollingInterval=setInterval(checkSession,3000); setTimeout(()=>{clearInterval(pollingInterval);poll.style.display='none';},120000); }catch(err){ resDiv.innerHTML=`<p style="color:#ff4b69;font-size:12px;">❌ ${err.message}<br><br>If Connection Closed: Wait 10s and try again. Make sure number not already linked.</p>`; resDiv.classList.add("show"); showToast("Failed"); } finally{ btn.disabled=false; btn.textContent="🔗 GET PAIRING CODE"; } });
-document.getElementById("loadBtn").addEventListener("click", async ()=>{ try{ const r=await fetch('/check-session'); const d=await r.json(); if(d.session){ document.getElementById("sessionInput").value=d.session; showToast("Loaded!"); } else showToast("No session yet - Pair first"); }catch{ showToast("Failed"); } });
-document.getElementById("deployBtn").addEventListener("click", async ()=>{ const s=document.getElementById("sessionInput").value.trim(); const out=document.getElementById("deployResult"); if(!s||!s.startsWith("WOLF~")){ showToast("Enter valid WOLF~"); out.innerHTML=`<p style="color:#ff4b69">Must start with WOLF~</p>`; out.classList.add("show"); return; } out.innerHTML=`<div style="color:var(--green);font-size:12px;line-height:1.8">✅ Session Ready!<br><br>Go to Render Dashboard:<br>1. Environment<br>2. Add SESSION_ID<br>3. Paste this code<br>4. Save & Manual Deploy<br><br><div class="session-box">${s}</div>Bot online after deploy!</div>`; out.classList.add("show"); showToast("Copy to Render ENV!"); });
+async function getCode(){
+  const n=document.getElementById('num').value.replace(/[^0-9]/g,'');
+  if(n.length<10){ alert('Enter number'); return; }
+  document.getElementById('msg1').innerText='Getting code... wait 5 sec';
+  try{
+    const r=await fetch('/getcode?number='+n);
+    const j=await r.json();
+    if(j.code){
+      document.getElementById('codeBox').style.display='block';
+      document.getElementById('codeBox').innerText=j.code;
+      document.getElementById('msg1').innerText='Enter this in WhatsApp > Linked Devices > Link with phone number - FAST! 60 sec';
+    }else{
+      document.getElementById('msg1').innerText=j.message||j.error||'Failed, wait 5 sec retry';
+    }
+  }catch(e){ document.getElementById('msg1').innerText='Error: '+e.message; }
+}
+
+async function deploySess(){
+  const s=document.getElementById('sess').value.trim();
+  if(!s.startsWith('WOLF~')){ alert('Session must start with WOLF~'); return; }
+  document.getElementById('msg2').innerText='Deploying...';
+  try{
+    const r=await fetch('/deploy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:s})});
+    const j=await r.json();
+    if(j.success){
+      document.getElementById('msg2').innerText='✅ DEPLOYED! Restarting bot... Wait 10 sec then check /api/status - Bot will be ONLINE forever!';
+      // Auto reload status after 5 sec
+      setTimeout(()=>{ fetch('/api/status').then(r=>r.json()).then(d=>{ document.getElementById('msg2').innerText='Status: '+d.status+' | Connected: '+d.isConnected; }); }, 5000);
+    }else{
+      document.getElementById('msg2').innerText='Error: '+(j.error||'failed');
+    }
+  }catch(e){ document.getElementById('msg2').innerText='Error '+e.message; }
+}
+
+// Auto fetch session from /check-session after linking
+setInterval(async()=>{
+  try{
+    const r=await fetch('/check-session');
+    const j=await r.json();
+    if(j.session && !document.getElementById('sess').value){
+      document.getElementById('sess').value=j.session;
+      document.getElementById('msg2').innerText='✅ Session auto-detected! Click DEPLOY now!';
+    }
+  }catch{}
+}, 3000);
 </script>
 </body>
-</html>
+  </html>

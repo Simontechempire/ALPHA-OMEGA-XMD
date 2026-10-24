@@ -1,4 +1,4 @@
-// 🩺 SIMON MD - YOUR ZENITH WORKING LINK ENGINE - WOLF CONNECTED
+// 🩺 SIMON MD - FINAL - RENDER ENV ONLY - WOLF CONNECTED
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -23,8 +23,6 @@ config.botName = "🩺 SIMON MD";
 config.sessionName = "session";
 
 global.sock = null; global.isConnected = false; global.connectionStatus = '⚠️ NOT LINKED'; global.pairingCode = null; global.currentPairingNumber = null; global.lastPairTime = 0; global.appStarted = false;
-
-// 🔥 ADDED FOR WOLF TYPE 2
 let lastGeneratedSession = null;
 
 global.db = global.db || {};
@@ -93,6 +91,45 @@ loadPlugins();
 
 const groupCache=new Map();
 
+// 🔥 HANDLE SESSION FROM RENDER ENV - FIXED FOR FOREVER ONLINE
+function handleSessionEnv(){
+  const authPath=`./${config.sessionName}`;
+  try{
+    let sessionEnv = process.env.SESSION_DATA || process.env.SESSION_ID || process.env.SESSION || config.SESSION_ID || "";
+    if(!sessionEnv) return false;
+    if(fs.existsSync(path.join(authPath,'creds.json')) && fs.statSync(path.join(authPath,'creds.json')).size>100) return true;
+    
+    sessionEnv = sessionEnv.trim();
+    // Remove WOLF~ prefix if exists
+    if(sessionEnv.startsWith('WOLF~')) sessionEnv = sessionEnv.split('~')[1];
+    
+    let decoded = "";
+    try{
+      decoded = Buffer.from(sessionEnv, 'base64').toString('utf-8');
+      // Double base64 check
+      if(!decoded.trim().startsWith('{')){
+        try{ decoded = Buffer.from(decoded, 'base64').toString('utf-8'); }catch{}
+      }
+    }catch{
+      decoded = sessionEnv;
+    }
+    
+    if(!decoded.trim().startsWith('{')){
+      console.log(chalk.red('❌ SESSION_DATA invalid - not JSON'));
+      return false;
+    }
+    
+    if(!fs.existsSync(authPath)) fs.mkdirSync(authPath,{recursive:true});
+    const data = JSON.parse(decoded);
+    fs.writeFileSync(path.join(authPath,'creds.json'), JSON.stringify(data,null,2));
+    console.log(chalk.green.bold('✅ SESSION_DATA loaded from Render ENV - Forever online!'));
+    return true;
+  }catch(e){
+    console.log(chalk.red('Session ENV error: '+e.message));
+    return false;
+  }
+}
+
 async function startConnection(){
   if(!global.appStarted){
     const app=express(); 
@@ -109,7 +146,7 @@ async function startConnection(){
       res.send(`<h1>🩺 SIMON MD</h1><p>Owner: 239166265317</p><p>CMDS: ${Object.keys(global.wolfCommands).length}</p>`);
     });
     app.get('/health',(req,res)=>res.send('SIMON LIVE'));
-    app.get('/api/status',(req,res)=>res.json({ botName:"SIMON MD", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length, session: lastGeneratedSession ? 'generated' : 'none' }));
+    app.get('/api/status',(req,res)=>res.json({ botName:"SIMON MD", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length, session: lastGeneratedSession ? 'generated' : 'none', hasEnv: !!(process.env.SESSION_DATA||process.env.SESSION_ID) }));
     
     app.post('/api/pair',async(req,res)=>{
       try{
@@ -141,38 +178,6 @@ async function startConnection(){
       }catch(e){ res.json({success:false,message:e.message}); }
     });
 
-    // 🔥 ADDED - FOR YOUR WOLF DASHBOARD SECOND BOX
-    app.get('/check-session',(req,res)=>{
-      if(lastGeneratedSession) return res.json({session: lastGeneratedSession});
-      if(fs.existsSync(`./${config.sessionName}/creds.json`)){
-        try{
-          const b=fs.readFileSync(`./${config.sessionName}/creds.json`);
-          if(b.length>100){
-            const s='WOLF~'+Buffer.from(b).toString('base64');
-            lastGeneratedSession=s;
-            return res.json({session:s});
-          }
-        }catch{}
-      }
-      res.json({});
-    });
-
-    app.post('/deploy', async (req,res)=>{
-      const {sessionId}=req.body;
-      if(!sessionId||!sessionId.startsWith('WOLF~')) return res.json({error:'Invalid WOLF~'});
-      try{
-        lastGeneratedSession=sessionId;
-        let clean=sessionId.split('~')[1];
-        let dec=Buffer.from(clean,'base64').toString('utf-8');
-        if(!dec.trim().startsWith('{')) dec=Buffer.from(dec,'base64').toString('utf-8');
-        const data=JSON.parse(dec);
-        if(!fs.existsSync(`./${config.sessionName}`)) fs.mkdirSync(`./${config.sessionName}`,{recursive:true});
-        fs.writeFileSync(`./${config.sessionName}/creds.json`, JSON.stringify(data,null,2));
-        console.log(chalk.green("✅ Session deployed via dashboard"));
-        res.json({success:true});
-      }catch(e){ res.json({error:e.message}); }
-    });
-
     app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; lastGeneratedSession=null; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
     
     const PORT=config.PORT||process.env.PORT||10000; 
@@ -181,12 +186,7 @@ async function startConnection(){
   }
 
   async function initBaileys(){
-    try{
-      const authPath=`./${config.sessionName}`;
-      if((!fs.existsSync(authPath)||fs.readdirSync(authPath).length===0)&&process.env.SESSION_DATA){
-        fs.mkdirSync(authPath,{recursive:true}); let d; try{ d=JSON.parse(process.env.SESSION_DATA); }catch{ d=JSON.parse(Buffer.from(process.env.SESSION_DATA,'base64').toString()); } fs.writeFileSync(path.join(authPath,'creds.json'),JSON.stringify(d,null,2));
-      }
-    }catch(e){}
+    handleSessionEnv();
     const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); const {version}=await fetchLatestBaileysVersion();
     const sock=makeWASocket({ version, logger:pino({level:'silent'}), printQRInTerminal:false, browser:Browsers.macOS('Safari'), auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, markOnlineOnConnect:true, connectTimeoutMs:60000, keepAliveIntervalMs:10000, syncFullHistory:false, retryRequestDelayMs:2000 });
     global.sock=sock; sock.ev.on('creds.update',saveCreds);
@@ -197,7 +197,6 @@ async function startConnection(){
       const {connection,lastDisconnect}=update;
       if(connection==='connecting') global.connectionStatus='Connecting SIMON...';
       if(connection==='open'){
-        // 🔥 ADDED - GENERATE WOLF~ ON LINK
         try{
           if(fs.existsSync(`./${config.sessionName}/creds.json`)){
             const b=fs.readFileSync(`./${config.sessionName}/creds.json`);
@@ -210,11 +209,11 @@ async function startConnection(){
         global.isConnected=true; global.connectionStatus='ONLINE ✅ SIMON'; console.log(chalk.green.bold(`\n✅ SIMON ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
         try{
           const jid=sock.user.id;
-          if(lastGeneratedSession){
-            await sock.sendMessage(jid,{text:`✅ *WOLF XMD LINKED - SESSION*\n\nYour WOLF~ Session:\n${lastGeneratedSession}\n\n1. Copy\n2. Render Dashboard > ENV > SESSION_ID\n3. Paste\n4. Deploy\n\nBot online after redeploy!`}).catch(()=>{});
+          if(lastGeneratedSession && !process.env.SESSION_DATA && !process.env.SESSION_ID){
+            await sock.sendMessage(jid,{text:`✅ *WOLF XMD LINKED - COPY SESSION FOR RENDER*\n\n*Your WOLF~ Session (for forever online):*\n\n${lastGeneratedSession}\n\n*STEPS FOR FOREVER ONLINE:*\n1. Copy this WOLF~ code\n2. Go to Render Dashboard (dashboard.render.com)\n3. Your Service > Environment\n4. Add Variable: SESSION_DATA\n5. Paste WOLF~ as value\n6. Save Changes > Manual Deploy > Deploy\n7. Bot will be ONLINE forever!\n\nDon't paste in normal dashboard - Use Render ENV!`}).catch(()=>{});
             await sock.sendMessage(jid,{text: lastGeneratedSession}).catch(()=>{});
           } else {
-            await sock.sendMessage(jid,{text:`✅ *SIMON MD LINKED*\n\n👤 ${sock.user.name||'SIMON MD'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu`}).catch(()=>{});
+            await sock.sendMessage(jid,{text:`✅ *SIMON MD ONLINE FOREVER*\n\n👤 ${sock.user.name||'SIMON MD'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu`}).catch(()=>{});
           }
         }catch{}
       }

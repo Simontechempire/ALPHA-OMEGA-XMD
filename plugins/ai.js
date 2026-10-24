@@ -1,263 +1,184 @@
-// 🤖 ALPHA AND OMEGA WOLF XMD - FILE 2 AI - 50 CMDS REAL
+// 🤖 ALPHA AND OMEGA WOLF XMD - FILE 2 AI - 50 CMDS REAL - TYPE 2 DASHBOARD EDITION
 const axios = require('axios')
+const settings = require('../settings')
+
+// TYPE 2: Gemini with API KEY from ENV
+let geminiModel = null
+function getGemini() {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY || settings.geminiKey || settings.GEMINI_API_KEY
+    if (!apiKey || apiKey.includes('your_') || apiKey.length < 10) return null
+    if (!geminiModel) {
+      const { GoogleGenerativeAI } = require('@google/generative-ai')
+      const genAI = new GoogleGenerativeAI(apiKey)
+      geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    }
+    return geminiModel
+  } catch (e) {
+    return null
+  }
+}
+
+async function askGemini(prompt) {
+  const model = getGemini()
+  if (!model) return null
+  try {
+    const result = await model.generateContent(prompt)
+    return result.response.text()
+  } catch (e) {
+    console.log("Gemini error: " + e.message)
+    return null
+  }
+}
+
+async function fallbackAI(prompt) {
+  // Fallback APIs if Gemini fails or no key
+  const apis = [
+    `https://api.siputzx.my.id/api/ai/gpt3?text=${encodeURIComponent(prompt)}`,
+    `https://api.ferdev.my.id/api/ai/chatgpt?text=${encodeURIComponent(prompt)}&apikey=ferdev`,
+  ]
+  for (let url of apis) {
+    try {
+      let res = await axios.get(url, { timeout: 15000 })
+      let ans = res.data?.data || res.data?.result || res.data?.answer
+      if (ans) return ans
+    } catch {}
+  }
+  return "❌ AI services busy. Set GEMINI_API_KEY in Render Dashboard ENV for best results 🐺"
+}
 
 module.exports = {
   command: ['ai','gpt','chatgpt','gemini','llama','deepseek','claude','copilot','perplexity','ask','imagine','translate','summarize','define','explain','rewrite','grammar','paraphrase','essay','story','poem','code','debug','javascript','python','html','css','nodejs','sql','regex','math','solve','homework','quiz','tutor','languageai','emailai','caption','bioai','businessai','marketingai','resumeai','interviewai','ideas','plan','recipeai','travelai','sentiment','aiclear'],
 
-  execute: async (sock, m, { command, text, reply }) => {
+  execute: async (sock, m, { command, text, reply, prefix }) => {
 
     if (command === 'aiclear') {
       global.wolfAIHistory = {}
-      return reply(`🧹 *AI HISTORY CLEARED*\n\nAll AI chats cleared for ${m.key.remoteJid}\n\n🐺`)
+      return reply(`🧹 *AI HISTORY CLEARED TYPE 2*\n\nAll AI chats cleared for ${m.key.remoteJid}\nGemini Key: ${process.env.GEMINI_API_KEY ? 'SET ✓' : 'MISSING - Set in Dashboard ENV'}\n\n🐺 TYPE 2`)
     }
 
-    if (!text) return reply(`🤖 Usage: .${command} <query>\n\nEx: .${command} what is WOLF XMD?\n\n🐺`)
+    if (!text) return reply(`🤖 *AI TYPE 2 - GEMINI ENV*\n\nUsage: ${prefix}${command} <query>\nEx: ${prefix}${command} what is WOLF XMD?\n\nGemini: ${process.env.GEMINI_API_KEY ? 'ON ✓' : 'OFF - Set GEMINI_API_KEY in Render ENV'}\nFallback: ON\n\n🐺 TYPE 2`)
 
     try {
-      // .ai
-      if (command === 'ai') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=${encodeURIComponent(text)}`)
-        let ans = res.data.data || res.data.result
-        return reply(`🤖 *WOLF AI*\n\nQ: ${text}\n\nA: ${ans}\n\n🐺 ALPHA AND OMEGA`)
+      const promptBase = text
+      let answer = null
+
+      // TYPE 2: Try Gemini first if API key exists
+      const gemini = getGemini()
+
+      // Define prompts per command
+      const prompts = {
+        ai: promptBase,
+        gpt: promptBase,
+        chatgpt: promptBase,
+        gemini: promptBase,
+        llama: `You are Llama. ${promptBase}`,
+        deepseek: `You are DeepSeek. ${promptBase}`,
+        claude: `You are Claude. ${promptBase}`,
+        copilot: `You are Copilot, coding assistant. ${promptBase}`,
+        perplexity: promptBase,
+        ask: promptBase,
+        summarize: `Summarize this in short: ${promptBase}`,
+        define: `Define: ${promptBase}`,
+        explain: `Explain in simple terms: ${promptBase}`,
+        rewrite: `Rewrite this: ${promptBase}`,
+        grammar: `Correct grammar: ${promptBase}`,
+        paraphrase: `Paraphrase: ${promptBase}`,
+        essay: `Write a 300 word essay about: ${promptBase}`,
+        story: `Write a short story about: ${promptBase}`,
+        poem: `Write a poem about: ${promptBase}`,
+        code: `Write code for: ${promptBase}. Provide only code with comments.`,
+        debug: `Debug this code and fix: ${promptBase}`,
+        javascript: `Write JavaScript code for: ${promptBase}`,
+        python: `Write Python code for: ${promptBase}`,
+        html: `Write HTML code for: ${promptBase}`,
+        css: `Write CSS code for: ${promptBase}`,
+        nodejs: `Write Node.js code for: ${promptBase}`,
+        sql: `Write SQL query for: ${promptBase}`,
+        regex: `Write regex for: ${promptBase}`,
+        math: `Solve math step by step: ${promptBase}`,
+        solve: `Solve math step by step: ${promptBase}`,
+        homework: `Help with homework: ${promptBase}`,
+        quiz: `Create a quiz about: ${promptBase} with 4 options and answer`,
+        tutor: `Act as tutor and teach me: ${promptBase}`,
+        languageai: `Teach me language: ${promptBase}`,
+        emailai: `Write professional email about: ${promptBase}`,
+        caption: `Write Instagram caption for: ${promptBase} with hashtags`,
+        bioai: `Write bio for: ${promptBase}`,
+        businessai: `You are business expert. Help with: ${promptBase}`,
+        marketingai: `You are marketing expert. Help with: ${promptBase}`,
+        resumeai: `You are resume expert. Help with: ${promptBase}`,
+        interviewai: `You are interview coach. Help with: ${promptBase}`,
+        ideas: `Give business/creative ideas for: ${promptBase}`,
+        plan: `Create a plan for: ${promptBase}`,
+        recipeai: `Give recipe for: ${promptBase}`,
+        travelai: `You are travel guide for: ${promptBase}`,
+        sentiment: `Analyze sentiment of: ${promptBase}`
       }
 
-      // .gpt
-      if (command === 'gpt') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=${encodeURIComponent(text)}`)
-        return reply(`🧠 *GPT*\n\n${res.data.data}\n\n🐺`)
-      }
+      let finalPrompt = prompts[command] || promptBase
 
-      // .chatgpt
-      if (command === 'chatgpt') {
-        let res = await axios.get(`https://api.ferdev.my.id/api/ai/chatgpt?text=${encodeURIComponent(text)}&apikey=ferdev`)
-        return reply(`💬 *CHATGPT*\n\n${res.data.data || res.data.result}\n\n🐺`)
-      }
-
-      // .gemini
-      if (command === 'gemini') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gemini?text=${encodeURIComponent(text)}`)
-        return reply(`✨ *GEMINI*\n\n${res.data.data || res.data.result}\n\n🐺`)
-      }
-
-      // .llama
-      if (command === 'llama') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/llama?text=${encodeURIComponent(text)}`)
-        return reply(`🦙 *LLAMA*\n\n${res.data.data || 'Llama response'}\n\n🐺`)
-      }
-
-      // .deepseek
-      if (command === 'deepseek') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/deepseek?text=${encodeURIComponent(text)}`)
-        return reply(`🔍 *DEEPSEEK*\n\n${res.data.data || res.data.result}\n\n🐺`)
-      }
-
-      // .claude
-      if (command === 'claude') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/claude?text=${encodeURIComponent(text)}`)
-        return reply(`🤖 *CLAUDE*\n\n${res.data.data || res.data.result}\n\n🐺`)
-      }
-
-      // .copilot
-      if (command === 'copilot') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=You are Copilot. ${encodeURIComponent(text)}`)
-        return reply(`💻 *COPILOT*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .perplexity
-      if (command === 'perplexity') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/perplexity?text=${encodeURIComponent(text)}`)
-        return reply(`🔮 *PERPLEXITY*\n\n${res.data.data || res.data.result}\n\n🐺`)
-      }
-
-      // .ask
-      if (command === 'ask') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=${encodeURIComponent(text)}`)
-        return reply(`❓ *ASK*\n\nQ: ${text}\nA: ${res.data.data}\n\n🐺`)
-      }
-
-      // .imagine
+      // .imagine - image generation - no Gemini needed
       if (command === 'imagine') {
-        let url = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?nologo=true`
-        await sock.sendMessage(m.key.remoteJid, { image: { url }, caption: `🎨 *IMAGINE*\n\nPrompt: ${text}\n\n🐺 WOLF XMD` }, { quoted: m })
+        let url = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?nologo=true&seed=${Math.floor(Math.random()*9999)}`
+        await sock.sendMessage(m.key.remoteJid, { image: { url }, caption: `🎨 *IMAGINE TYPE 2*\n\nPrompt: ${text}\n\n🐺 WOLF XMD TYPE 2 - Gemini: ${gemini ? 'ON' : 'OFF'}` }, { quoted: m })
         return
       }
 
-      // .translate
+      // .translate - special
       if (command === 'translate') {
-        // format: text | lang or auto to french
         let lang = 'fr'
         let query = text
         if (text.includes('|')) { const parts = text.split('|'); query = parts[0].trim(); lang = parts[1].trim() }
-        let res = await axios.get(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=en|${lang}`)
-        return reply(`🌐 *TRANSLATE*\n\nFrom: ${query}\nTo (${lang}): ${res.data.responseData.translatedText}\n\n🐺`)
+        if (gemini) {
+          let tr = await askGemini(`Translate to ${lang}: ${query}. Only give translation.`)
+          if (tr) return reply(`🌐 *TRANSLATE TYPE 2 (GEMINI)*\n\nFrom: ${query}\nTo (${lang}): ${tr}\n\n🐺 TYPE 2`)
+        }
+        let res = await axios.get(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(query)}&langpair=en|${lang}`).catch(()=>null)
+        let translated = res?.data?.responseData?.translatedText || await fallbackAI(`Translate to ${lang}: ${query}`)
+        return reply(`🌐 *TRANSLATE TYPE 2*\n\nFrom: ${query}\nTo (${lang}): ${translated}\n\n🐺 TYPE 2`)
       }
 
-      // .summarize
-      if (command === 'summarize') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Summarize this in short: ${encodeURIComponent(text)}`)
-        return reply(`📝 *SUMMARIZE*\n\n${res.data.data}\n\n🐺`)
+      // Try Gemini first
+      if (gemini) {
+        answer = await askGemini(finalPrompt)
+      }
+      // Fallback
+      if (!answer) {
+        answer = await fallbackAI(finalPrompt)
       }
 
-      // .define
-      if (command === 'define') {
-        let res = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(text)}`).catch(() => null)
-        if (res) return reply(`📖 *DEFINE ${text}*\n\n${res.data[0].meanings[0].definitions[0].definition}\n\nExample: ${res.data[0].meanings[0].definitions[0].example || 'None'}\n\n🐺`)
-        let ai = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Define ${encodeURIComponent(text)}`)
-        return reply(`📖 *DEFINE*\n\n${ai.data.data}\n\n🐺`)
+      // Formatting per command
+      const titles = {
+        ai: '🤖 WOLF AI TYPE 2', gpt: '🧠 GPT TYPE 2', chatgpt: '💬 CHATGPT TYPE 2', gemini: '✨ GEMINI TYPE 2 - ENV',
+        llama: '🦙 LLAMA TYPE 2', deepseek: '🔍 DEEPSEEK TYPE 2', claude: '🤖 CLAUDE TYPE 2',
+        copilot: '💻 COPILOT TYPE 2', perplexity: '🔮 PERPLEXITY TYPE 2', ask: '❓ ASK TYPE 2',
+        summarize: '📝 SUMMARIZE TYPE 2', define: `📖 DEFINE ${text}`, explain: '💡 EXPLAIN TYPE 2',
+        rewrite: '✍️ REWRITE TYPE 2', grammar: '📝 GRAMMAR FIX TYPE 2', paraphrase: '🔄 PARAPHRASE TYPE 2',
+        essay: `📄 ESSAY - ${text}`, story: '📖 STORY TYPE 2', poem: '📝 POEM TYPE 2',
+        code: '💻 CODE TYPE 2', debug: '🐛 DEBUG TYPE 2', javascript: '📜 JAVASCRIPT TYPE 2',
+        python: '🐍 PYTHON TYPE 2', html: '🌐 HTML TYPE 2', css: '🎨 CSS TYPE 2',
+        nodejs: '🟢 NODEJS TYPE 2', sql: '🗄️ SQL TYPE 2', regex: '🔍 REGEX TYPE 2',
+        math: '🧮 MATH SOLVE TYPE 2', solve: '🧮 SOLVE TYPE 2', homework: '📚 HOMEWORK TYPE 2',
+        quiz: '❓ QUIZ TYPE 2', tutor: '👨‍🏫 TUTOR TYPE 2', languageai: '🗣️ LANGUAGE AI TYPE 2',
+        emailai: '📧 EMAIL AI TYPE 2', caption: '📸 CAPTION TYPE 2', bioai: '👤 BIO AI TYPE 2',
+        businessai: '💼 BUSINESS AI TYPE 2', marketingai: '📈 MARKETING AI TYPE 2', resumeai: '📄 RESUME AI TYPE 2',
+        interviewai: '💼 INTERVIEW AI TYPE 2', ideas: '💡 IDEAS TYPE 2', plan: '📋 PLAN TYPE 2',
+        recipeai: '🍳 RECIPE AI TYPE 2', travelai: '✈️ TRAVEL AI TYPE 2', sentiment: '😊 SENTIMENT TYPE 2'
       }
 
-      // .explain
-      if (command === 'explain') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Explain in simple terms: ${encodeURIComponent(text)}`)
-        return reply(`💡 *EXPLAIN*\n\n${res.data.data}\n\n🐺`)
+      const title = titles[command] || `🤖 ${command.toUpperCase()} TYPE 2`
+
+      if (['code','javascript','python','html','css','nodejs','sql'].includes(command)) {
+        const lang = command === 'code' ? '' : command
+        return reply(`${title}\n\nRequest: ${text}\n\n\`\`\`${lang}\n${answer}\n\`\`\`\n\n🐺 TYPE 2 | Gemini: ${gemini ? 'ON ✓' : 'Fallback'}`)
       }
 
-      // .rewrite
-      if (command === 'rewrite') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Rewrite this: ${encodeURIComponent(text)}`)
-        return reply(`✍️ *REWRITE*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .grammar
-      if (command === 'grammar') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Correct grammar: ${encodeURIComponent(text)}`)
-        return reply(`📝 *GRAMMAR FIX*\n\nOriginal: ${text}\nFixed: ${res.data.data}\n\n🐺`)
-      }
-
-      // .paraphrase
-      if (command === 'paraphrase') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Paraphrase: ${encodeURIComponent(text)}`)
-        return reply(`🔄 *PARAPHRASE*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .essay
-      if (command === 'essay') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write a 300 word essay about: ${encodeURIComponent(text)}`)
-        return reply(`📄 *ESSAY*\n\nTopic: ${text}\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .story
-      if (command === 'story') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write a short story about: ${encodeURIComponent(text)}`)
-        return reply(`📖 *STORY*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .poem
-      if (command === 'poem') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write a poem about: ${encodeURIComponent(text)}`)
-        return reply(`📝 *POEM*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .code
-      if (command === 'code') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write code for: ${encodeURIComponent(text)}. Provide only code with comments.`)
-        return reply(`💻 *CODE*\n\nRequest: ${text}\n\n\`\`\`\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .debug
-      if (command === 'debug') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Debug this code and fix: ${encodeURIComponent(text)}`)
-        return reply(`🐛 *DEBUG*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .javascript
-      if (command === 'javascript') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write JavaScript code for: ${encodeURIComponent(text)}`)
-        return reply(`📜 *JAVASCRIPT*\n\n\`\`\`js\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .python
-      if (command === 'python') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write Python code for: ${encodeURIComponent(text)}`)
-        return reply(`🐍 *PYTHON*\n\n\`\`\`python\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .html
-      if (command === 'html') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write HTML code for: ${encodeURIComponent(text)}`)
-        return reply(`🌐 *HTML*\n\n\`\`\`html\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .css
-      if (command === 'css') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write CSS code for: ${encodeURIComponent(text)}`)
-        return reply(`🎨 *CSS*\n\n\`\`\`css\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .nodejs
-      if (command === 'nodejs') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write Node.js code for: ${encodeURIComponent(text)}`)
-        return reply(`🟢 *NODEJS*\n\n\`\`\`js\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .sql
-      if (command === 'sql') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write SQL query for: ${encodeURIComponent(text)}`)
-        return reply(`🗄️ *SQL*\n\n\`\`\`sql\n${res.data.data}\n\`\`\`\n\n🐺`)
-      }
-
-      // .regex
-      if (command === 'regex') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write regex for: ${encodeURIComponent(text)}`)
-        return reply(`🔍 *REGEX*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .math / .solve
-      if (command === 'math' || command === 'solve') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Solve math step by step: ${encodeURIComponent(text)}`)
-        return reply(`🧮 *MATH SOLVE*\n\nProblem: ${text}\n\nSolution: ${res.data.data}\n\n🐺`)
-      }
-
-      // .homework
-      if (command === 'homework') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Help with homework: ${encodeURIComponent(text)}`)
-        return reply(`📚 *HOMEWORK*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .quiz
-      if (command === 'quiz') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Create a quiz about: ${encodeURIComponent(text)} with 4 options and answer`)
-        return reply(`❓ *QUIZ*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .tutor
-      if (command === 'tutor') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Act as tutor and teach me: ${encodeURIComponent(text)}`)
-        return reply(`👨‍🏫 *TUTOR*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .languageai
-      if (command === 'languageai') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Teach me language: ${encodeURIComponent(text)}`)
-        return reply(`🗣️ *LANGUAGE AI*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .emailai
-      if (command === 'emailai') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write professional email about: ${encodeURIComponent(text)}`)
-        return reply(`📧 *EMAIL AI*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .caption
-      if (command === 'caption') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write Instagram caption for: ${encodeURIComponent(text)} with hashtags`)
-        return reply(`📸 *CAPTION*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .bioai
-      if (command === 'bioai') {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=Write bio for: ${encodeURIComponent(text)}`)
-        return reply(`👤 *BIO AI*\n\n${res.data.data}\n\n🐺`)
-      }
-
-      // .businessai / .marketingai / .resumeai / .interviewai / .ideas / .plan / .recipeai / .travelai / .sentiment
-      if (['businessai','marketingai','resumeai','interviewai','ideas','plan','recipeai','travelai','sentiment'].includes(command)) {
-        let res = await axios.get(`https://api.siputzx.my.id/api/ai/gpt3?text=You are ${command} expert. Help with: ${encodeURIComponent(text)}`)
-        return reply(`💼 *${command.toUpperCase()}*\n\n${res.data.data}\n\n🐺`)
-      }
+      return reply(`${title}\n\nQ: ${text}\n\nA: ${answer}\n\n🐺 ALPHA AND OMEGA TYPE 2 | ENV: ${gemini ? 'GEMINI ✓' : 'FALLBACK'}`)
 
     } catch (e) {
-      reply(`❌ AI Error: ${e.message}\nTry again! 🐺`)
+      console.log(`AI TYPE 2 Error ${command}: ${e.message}`)
+      reply(`❌ AI TYPE 2 Error: ${e.message}\nSet GEMINI_API_KEY in Render Dashboard ENV for stable AI! 🐺`)
     }
   }
-            }
+      }

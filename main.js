@@ -179,4 +179,4 @@ module.exports = async (sock) => {
   })
 
   console.log(chalk.green(`🐺 main.js READY - ${Object.keys(pluginCommands).length} CMDS - RENDER SAFE!`))
-}
+            }

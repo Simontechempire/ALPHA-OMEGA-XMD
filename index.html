@@ -7,92 +7,65 @@
   <title>WOLF XMD | ALPHA & OMEGA - TYPE 2 PAIR</title>
   <style>
     :root {
-      --bg: #05080f;
-      --card: #0c1420;
-      --card2: #101c2b;
-      --cyan: #00f0ff;
-      --blue: #1677ff;
-      --green: #00ff99;
-      --red: #ff4b69;
-      --text: #eefaff;
-      --muted: #8ba0b5;
+      --bg: #05080f; --card: #0c1420; --card2: #101c2b;
+      --cyan: #00f0ff; --blue: #1677ff; --green: #00ff99;
+      --red: #ff4b69; --text: #eefaff; --muted: #8ba0b5;
       --border: rgba(0, 240, 255, 0.18);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       min-height: 100vh;
       background: radial-gradient(circle at top, #10253a 0%, transparent 40%), var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      padding-bottom: 95px;
+      color: var(--text); font-family: Arial, Helvetica, sans-serif; padding-bottom: 95px;
     }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
+    button, input { font: inherit; } button { cursor: pointer; }
     .container { width: 100%; max-width: 650px; margin: auto; padding: 18px; }
     .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 25px; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .logo { width: 50px; height: 50px; border-radius: 15px; object-fit: cover; border: 2px solid var(--cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); }
-    .brand h1 { font-size: 17px; letter-spacing: 1px; }
-    .brand p { font-size: 11px; color: var(--cyan); margin-top: 5px; }
+    .brand h1 { font-size: 17px; letter-spacing: 1px; } .brand p { font-size: 11px; color: var(--cyan); margin-top: 5px; }
     .status { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; color: var(--green); white-space: nowrap; }
     .status-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: pulse 1.6s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
     .hero { text-align: center; padding: 28px 18px; border-radius: 23px; border: 1px solid var(--border); background: linear-gradient(145deg, #101e30, #080e18); margin-bottom: 20px; position: relative; overflow: hidden; }
     .hero::before { content: ""; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(0, 240, 255, 0.07); filter: blur(45px); top: -100px; left: 50%; transform: translateX(-50%); }
     .hero img { width: 105px; height: 105px; object-fit: cover; border-radius: 50%; border: 3px solid var(--cyan); box-shadow: 0 0 25px rgba(0, 240, 255, 0.3); margin-bottom: 15px; position: relative; }
-    .hero h2 { font-size: 24px; margin-bottom: 8px; }
-    .hero h2 span { color: var(--cyan); }
-    .hero p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .hero h2 { font-size: 24px; margin-bottom: 8px; } .hero h2 span { color: var(--cyan); } .hero p { font-size: 13px; color: var(--muted); line-height: 1.6; }
     .badge { display: inline-block; margin-top: 14px; padding: 8px 14px; border-radius: 20px; color: var(--cyan); background: rgba(0, 240, 255, 0.08); border: 1px solid var(--border); font-size: 11px; }
-    .section-title { font-size: 15px; margin: 25px 0 13px; display: flex; align-items: center; gap: 8px; }
-    .section-title span { color: var(--cyan); }
+    .section-title { font-size: 15px; margin: 25px 0 13px; display: flex; align-items: center; gap: 8px; } .section-title span { color: var(--cyan); }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .stat-card { padding: 17px 8px; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 15px; }
-    .stat-icon { font-size: 22px; margin-bottom: 8px; }
-    .stat-value { font-size: 18px; font-weight: bold; color: var(--cyan); }
-    .stat-label { color: var(--muted); font-size: 10px; margin-top: 7px; }
+    .stat-icon { font-size: 22px; margin-bottom: 8px; } .stat-value { font-size: 18px; font-weight: bold; color: var(--cyan); } .stat-label { color: var(--muted); font-size: 10px; margin-top: 7px; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 16px; }
-    .card h3 { font-size: 15px; margin-bottom: 9px; }
-    .description { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 15px; }
+    .card h3 { font-size: 15px; margin-bottom: 9px; } .description { color: var(--muted); font-size: 12px; line-height: 1.7; margin-bottom: 15px; }
     .input { width: 100%; background: #050b13; color: white; border: 1px solid #233b50; outline: none; padding: 14px; border-radius: 12px; margin-bottom: 12px; }
     .input:focus { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; transition: 0.2s; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-primary { background: linear-gradient(100deg, var(--cyan), #168bff); color: #00101b; }
     .btn-secondary { color: var(--cyan); background: rgba(0, 240, 255, 0.07); border: 1px solid var(--border); }
-    .btn + .btn { margin-top: 10px; }
-    .btn:active { transform: scale(0.98); }
+    .btn + .btn { margin-top: 10px; } .btn:active { transform: scale(0.98); }
     .result { display: none; margin-top: 15px; padding: 15px; border-radius: 12px; background: #07131d; border: 1px solid var(--border); overflow-wrap: anywhere; }
     .result.show { display: block; }
     .result-label { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
-    .pair-code { font-size: 22px; letter-spacing: 3px; font-weight: bold; color: var(--cyan); margin-bottom: 12px; word-break: break-all; }
+    .pair-code { font-size: 32px; letter-spacing: 6px; font-weight: bold; color: var(--cyan); margin-bottom: 12px; text-align:center; word-break: break-all; background:#000; padding:15px; border-radius:10px; border:1px solid var(--cyan); }
     .session-box { background: #000; padding: 12px; border-radius: 10px; border: 1px dashed var(--cyan); font-size: 11px; color: var(--green); word-break: break-all; max-height: 150px; overflow-y: auto; margin-bottom: 12px; }
-    .commands-search { display: flex; gap: 9px; margin-bottom: 15px; }
-    .commands-search .input { margin: 0; min-width: 0; }
-    .search-btn { width: 52px; flex-shrink: 0; border-radius: 12px; background: var(--cyan); border: none; color: #00101b; font-size: 18px; }
     .command-count { color: var(--muted); font-size: 11px; margin-bottom: 12px; }
     .command-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
     .command-item { padding: 12px; background: var(--card2); border: 1px solid rgba(255,255,255,0.05); border-radius: 11px; min-width: 0; }
-    .command-name { color: var(--cyan); font-weight: bold; font-size: 12px; overflow-wrap: anywhere; }
-    .command-desc { color: var(--muted); font-size: 10px; line-height: 1.5; margin-top: 6px; }
-    .empty { display: none; color: var(--muted); text-align: center; padding: 20px 5px; font-size: 13px; }
+    .command-name { color: var(--cyan); font-weight: bold; font-size: 12px; } .command-desc { color: var(--muted); font-size: 10px; line-height: 1.5; margin-top: 6px; }
     .owner { display: flex; align-items: center; gap: 13px; }
-    .owner-avatar { width: 48px; height: 48px; border-radius: 50%; background: #10283a; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
-    .owner-info { min-width: 0; }
-    .owner-info h4 { font-size: 14px; margin-bottom: 6px; }
-    .owner-info p { font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; animation: appear 0.25s ease; }
+    .owner-avatar { width: 48px; height: 48px; border-radius: 50%; background: #10283a; display: grid; place-items: center; font-size: 22px; }
+    .tab-panel { display: none; } .tab-panel.active { display: block; animation: appear 0.25s ease; }
     @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 10; display: flex; justify-content: center; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); background: rgba(5, 8, 15, 0.96); backdrop-filter: blur(15px); border-top: 1px solid var(--border); }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 10; display: flex; justify-content: center; padding: 12px 10px; background: rgba(5, 8, 15, 0.96); backdrop-filter: blur(15px); border-top: 1px solid var(--border); }
     .nav-inner { display: flex; width: 100%; max-width: 500px; justify-content: space-around; gap: 8px; }
     .nav-btn { flex: 1; border: none; border-radius: 12px; padding: 9px 5px; background: transparent; color: var(--muted); font-size: 10px; }
-    .nav-btn span { display: block; font-size: 20px; margin-bottom: 5px; }
-    .nav-btn.active { color: var(--cyan); background: rgba(0, 240, 255, 0.08); }
+    .nav-btn span { display: block; font-size: 20px; margin-bottom: 5px; } .nav-btn.active { color: var(--cyan); background: rgba(0, 240, 255, 0.08); }
     .footer { text-align: center; color: var(--muted); font-size: 10px; padding: 20px 0 5px; line-height: 1.8; }
     #toast { position: fixed; left: 50%; bottom: 95px; transform: translateX(-50%) translateY(10px); z-index: 20; width: max-content; max-width: 90%; padding: 12px 17px; background: #102131; border: 1px solid var(--border); color: white; font-size: 12px; border-radius: 12px; opacity: 0; pointer-events: none; transition: 0.2s; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    @media (max-width: 360px) { .container { padding: 12px; } .brand h1 { font-size: 14px; } .status { font-size: 9px; padding: 7px; } .command-list { grid-template-columns: 1fr; } .stats { gap: 6px; } .stat-label { font-size: 9px; } }
+    .polling { color: var(--green); font-size: 11px; margin-top:10px; animation: pulse 1s infinite; }
   </style>
 </head>
 <body>
@@ -113,207 +86,102 @@
         <div class="badge">🐺 WOLF XMD • TITAN 710 • TYPE 2</div>
       </div>
 
-      <h3 class="section-title"><span>◈</span> Dashboard Overview</h3>
-      <div class="stats">
-        <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value">710</div><div class="stat-label">TOTAL COMMANDS</div></div>
-        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value">15</div><div class="stat-label">PLUGIN FILES</div></div>
-        <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-value" id="uptime">00:00:00</div><div class="stat-label">SESSION TIME</div></div>
-      </div>
-
       <h3 class="section-title"><span>◈</span> Connect WhatsApp - TYPE 2</h3>
       <div class="card">
         <h3>📱 Pair Your WhatsApp</h3>
         <p class="description">
           Enter number with country code (no + or spaces).<br>
           Example: <strong style="color:var(--cyan)">239166265317</strong><br><br>
-          <b style="color:var(--green)">TYPE 2:</b> After pairing, you will get <b>WOLF~</b> Session ID. Copy it and paste in Render Dashboard ENV -> SESSION_ID
+          <b style="color:var(--green)">TYPE 2 FLOW:</b> Get code → Enter in WhatsApp → Bot sends <b>WOLF~</b> Session to your DM + Shows here
         </p>
         <form id="pairForm">
-          <input type="tel" id="number" class="input" placeholder="239166265317" value="239166265317" autocomplete="off" inputmode="numeric" maxlength="20" aria-label="WhatsApp phone number" required>
+          <input type="tel" id="number" class="input" placeholder="239166265317" value="239166265317" required>
           <button type="submit" class="btn btn-primary" id="pairBtn">🔗 GET PAIRING CODE</button>
         </form>
-        <div id="pairResult" class="result" aria-live="polite"></div>
-      </div>
-
-      <h3 class="section-title"><span>◈</span> Official Channel</h3>
-      <div class="card">
-        <h3>📢 WOLF XMD Channel</h3>
-        <p class="description">Join the official channel for updates, announcements and support.</p>
-        <a href="https://whatsapp.com/channel/0029Vb97vPwChq6GqI44n61S" target="_blank" rel="noopener noreferrer" style="text-decoration:none"><button type="button" class="btn btn-secondary">🚀 OPEN WHATSAPP CHANNEL</button></a>
+        <div id="pairResult" class="result"></div>
+        <div id="polling" class="polling" style="display:none;">⏳ Waiting for you to enter code in WhatsApp... Checking...</div>
       </div>
 
       <h3 class="section-title"><span>◈</span> Owner</h3>
-      <div class="card"><div class="owner"><div class="owner-avatar">👑</div><div class="owner-info"><h4>Simon • ALPHA & OMEGA</h4><p>239166265317 • WOLF XMD Developer - TYPE 2</p></div></div></div>
+      <div class="card"><div class="owner"><div class="owner-avatar">👑</div><div><h4>Simon • ALPHA & OMEGA</h4><p style="color:var(--muted);font-size:11px;">239166265317 • WOLF XMD Developer - TYPE 2</p></div></div></div>
     </section>
 
     <section id="commands" class="tab-panel">
       <h3 class="section-title"><span>◈</span> Bot Commands</h3>
-      <div class="card">
-        <h3>⌘ Command Explorer</h3>
-        <p class="description">Search through the available Titan commands.</p>
-        <div class="commands-search"><input type="search" id="search" class="input" placeholder="Search commands..." autocomplete="off" aria-label="Search bot commands"><button type="button" class="search-btn" id="searchBtn" aria-label="Search">🔍</button></div>
-        <div class="command-count" id="commandCount">Showing 0 commands</div>
-        <div class="command-list" id="commandList"></div>
-        <div class="empty" id="emptyMessage">No matching commands found.</div>
-      </div>
+      <div class="card"><div id="commandList"></div></div>
     </section>
 
     <section id="about" class="tab-panel">
-      <h3 class="section-title"><span>◈</span> About WOLF XMD</h3>
-      <div class="card"><h3>🐺 ALPHA & OMEGA - TYPE 2</h3><p class="description">WOLF XMD TYPE 2 uses SESSION_ID from pairing. No QR. Works on Render Dashboard with ENV variables. High-performance WhatsApp Multi-Device bot powered by Baileys.</p><p class="description">Features: Prince Host Dashboard support, 710+ commands, plugin system, Render/VPS/Panel.</p></div>
-      <div class="card"><h3>🛡️ Security Notice</h3><p class="description">Only pair accounts you own. Never share your WOLF~ session. If someone gets your SESSION_ID they can control your bot!</p></div>
-      <div class="card"><h3>⚙️ System Info</h3><p class="description"><strong>Version:</strong> Titan 2.5.0 TYPE 2<br><strong>Prefix:</strong> . (dot) - Dashboard controlled<br><strong>Mode:</strong> public/private/self - Dashboard<br><strong>Platform:</strong> Render • VPS • Panel<br><strong>Session Type:</strong> WOLF~ (MEGA + Base64)</p></div>
+      <h3 class="section-title"><span>◈</span> About</h3>
+      <div class="card"><p class="description"><b>Version:</b> Titan 2.5.0 TYPE 2<br><b>Type:</b> WOLF~ Session<br><b>Flow:</b> Pair → Get WOLF~ → Paste in Render ENV → SESSION_ID → Redeploy</p></div>
     </section>
 
-    <footer class="footer">🐺 WOLF NEVER SLEEPS — SIMON TECH INC © 2026<br>Power • Loyalty • Excellence | Titan 710 TYPE 2</footer>
+    <footer class="footer">🐺 WOLF NEVER SLEEPS — SIMON TECH INC © 2026</footer>
   </main>
 
-  <nav class="bottom-nav" aria-label="Main navigation"><div class="nav-inner">
+  <nav class="bottom-nav"><div class="nav-inner">
     <button type="button" class="nav-btn active" data-tab="home"><span>⌂</span>HOME</button>
     <button type="button" class="nav-btn" data-tab="commands"><span>⌘</span>COMMANDS</button>
     <button type="button" class="nav-btn" data-tab="about"><span>ⓘ</span>ABOUT</button>
   </div></nav>
-  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="toast"></div>
 
   <script>
-    "use strict";
-    const commands = [
-      { name: ".menu", desc: "Display main menu" }, { name: ".help", desc: "Show help information" },
-      { name: ".ping", desc: "Check bot response speed" }, { name: ".alive", desc: "Check if bot is online - uses ALIVE_MSG/IMG from dashboard" },
-      { name: ".owner", desc: "Show owner information" }, { name: ".runtime", desc: "Show bot uptime" },
-      { name: ".tagall", desc: "Tag all group members" }, { name: ".hidetag", desc: "Hidden tag all members" },
-      { name: ".kick", desc: "Remove a member" }, { name: ".add", desc: "Add a member" },
-      { name: ".promote", desc: "Make member admin" }, { name: ".demote", desc: "Remove admin rights" },
-      { name: ".mute", desc: "Lock the group" }, { name: ".unmute", desc: "Unlock the group" },
-      { name: ".vv", desc: "Open view-once media" }, { name: ".antidelete", desc: "Save deleted messages - set ANTI_DEL_PATH" },
-      { name: ".sticker", desc: "Create sticker - AUTO_STICKER" }, { name: ".play", desc: "Play audio from YouTube" },
-      { name: ".ai", desc: "Ask AI - needs GEMINI_API_KEY in dashboard" }
-    ];
+    let toastTimer, pollingInterval;
+    function showToast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);}
+    document.querySelectorAll(".nav-btn").forEach(b=>{b.addEventListener("click",()=>{const tar=b.dataset.tab;document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id===tar));document.querySelectorAll(".nav-btn").forEach(n=>n.classList.toggle("active",n===b));window.scrollTo({top:0,behavior:"smooth"});});});
+    
+    const pairForm=document.getElementById("pairForm"), numberInput=document.getElementById("number"), pairButton=document.getElementById("pairBtn"), pairResult=document.getElementById("pairResult"), pollingEl=document.getElementById("polling");
+    let currentNumber="";
 
-    let toastTimer;
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+    async function checkSession(){
+      try{
+        const res=await fetch('/check-session?number='+currentNumber);
+        const data=await res.json();
+        if(data.session){
+          clearInterval(pollingInterval);
+          pollingEl.style.display='none';
+          pairResult.innerHTML=`
+            <div style="color:var(--muted);font-size:11px;margin-bottom:10px;">✅ PAIRED! YOUR WOLF~ SESSION ID</div>
+            <div class="session-box">${data.session}</div>
+            <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${data.session}').then(()=>showToast('Session copied!'))">📋 COPY SESSION ID</button>
+            <p style="color:#ffcc00;font-size:11px;margin-top:12px;line-height:1.6;">⚠️ <b>IMPORTANT:</b><br>1. Copy WOLF~ code<br>2. Render Dashboard → Environment<br>3. Add SESSION_ID = paste<br>4. Save & Redeploy<br>5. Bot online!<br><br>Also sent to your WhatsApp DM!</p>
+          `;
+          pairResult.classList.add("show");
+          showToast("Paired! Session ready!");
+        }
+      }catch{}
     }
 
-    document.querySelectorAll(".nav-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        const target = button.dataset.tab;
-        document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.id === target));
-        document.querySelectorAll(".nav-btn").forEach(nav => {
-          const isActive = nav === button;
-          nav.classList.toggle("active", isActive);
-          nav.setAttribute("aria-current", isActive ? "page" : "false");
-        });
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-
-    const commandList = document.getElementById("commandList");
-    const commandCount = document.getElementById("commandCount");
-    const searchInput = document.getElementById("search");
-    const emptyMessage = document.getElementById("emptyMessage");
-
-    function renderCommands(query = "") {
-      const searchTerm = query.trim().toLowerCase();
-      const filtered = commands.filter(cmd => cmd.name.toLowerCase().includes(searchTerm) || cmd.desc.toLowerCase().includes(searchTerm));
-      commandList.replaceChildren();
-      filtered.forEach(cmd => {
-        const item = document.createElement("div"); item.className = "command-item";
-        const name = document.createElement("div"); name.className = "command-name"; name.textContent = cmd.name;
-        const desc = document.createElement("div"); desc.className = "command-desc"; desc.textContent = cmd.desc;
-        item.append(name, desc); commandList.appendChild(item);
-      });
-      commandCount.textContent = `Showing ${filtered.length} of ${commands.length} commands`;
-      emptyMessage.style.display = filtered.length === 0 ? "block" : "none";
-    }
-    searchInput.addEventListener("input", () => renderCommands(searchInput.value));
-    document.getElementById("searchBtn").addEventListener("click", () => renderCommands(searchInput.value));
-    renderCommands();
-
-    const pairForm = document.getElementById("pairForm");
-    const numberInput = document.getElementById("number");
-    const pairButton = document.getElementById("pairBtn");
-    const pairResult = document.getElementById("pairResult");
-
-    pairForm.addEventListener("submit", async event => {
-      event.preventDefault();
-      const number = numberInput.value.replace(/\D/g, "");
-      if (number.length < 10 || number.length > 15) { showToast("Enter valid number with country code"); return; }
-
-      pairButton.disabled = true;
-      pairButton.textContent = "⏳ REQUESTING...";
-      pairResult.classList.remove("show");
-      pairResult.replaceChildren();
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 30000);
-
-      try {
-        const response = await fetch(`/getcode?number=${encodeURIComponent(number)}`, { method: "GET", headers: { "Accept": "application/json" }, signal: controller.signal });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || `Server error ${response.status}`);
-        if (data.error) throw new Error(data.error);
-
-        const label = document.createElement("div"); label.className = "result-label";
-        label.textContent = data.session ? "✅ PAIRED! YOUR WOLF~ SESSION ID (Copy this to Render Dashboard)" : "YOUR PAIRING CODE (valid 60s) - Enter in WhatsApp Linked Devices";
-
-        const code = document.createElement("div");
-        if (data.session) {
-          code.className = "session-box";
-          code.textContent = data.session;
-        } else {
-          code.className = "pair-code";
-          code.textContent = data.code || data.pairingCode || "No code returned";
-        }
-
-        pairResult.append(label, code);
-
-        const copyButton = document.createElement("button");
-        copyButton.type = "button"; copyButton.className = "btn btn-secondary";
-        copyButton.textContent = data.session ? "📋 COPY SESSION ID" : "📋 COPY CODE";
-        copyButton.addEventListener("click", async () => {
-          const value = code.textContent;
-          try { await navigator.clipboard.writeText(value); showToast(data.session ? "Session ID copied! Paste in Render ENV" : "Pairing code copied!"); }
-          catch { showToast("Copy failed. Select and copy manually."); }
-        });
-        pairResult.appendChild(copyButton);
-
-        if (data.session) {
-          const warn = document.createElement("p"); warn.className = "description"; warn.style.color = "#ffcc00"; warn.style.marginTop = "12px";
-          warn.innerHTML = "⚠️ <b>IMPORTANT:</b><br>1. Copy this WOLF~ code<br>2. Go to Render Dashboard<br>3. ENV Variables -> SESSION_ID<br>4. Paste and Save<br>5. Redeploy your bot";
-          pairResult.appendChild(warn);
-        }
-
+    pairForm.addEventListener("submit", async e=>{
+      e.preventDefault();
+      const number=numberInput.value.replace(/\D/g,"");
+      if(number.length<10){showToast("Enter valid number");return;}
+      currentNumber=number;
+      pairButton.disabled=true; pairButton.textContent="⏳ REQUESTING..."; pairResult.classList.remove("show"); pairResult.innerHTML=""; pollingEl.style.display='none';
+      clearInterval(pollingInterval);
+      try{
+        const res=await fetch(`/getcode?number=${encodeURIComponent(number)}`);
+        const data=await res.json();
+        if(data.error) throw new Error(data.error);
+        pairResult.innerHTML=`
+          <div style="color:var(--muted);font-size:11px;margin-bottom:10px;">YOUR PAIRING CODE (valid 60s) - Enter in WhatsApp: Linked Devices > Link with phone number</div>
+          <div class="pair-code">${data.code}</div>
+          <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${data.code}').then(()=>showToast('Code copied!'))">📋 COPY CODE</button>
+        `;
         pairResult.classList.add("show");
-        showToast(data.session ? "Paired! Copy your Session ID" : "Pairing code generated");
-
-      } catch (error) {
-        const message = document.createElement("p"); message.className = "description";
-        if (error.name === "AbortError") message.textContent = "Request timed out. Check if pair server is running.";
-        else message.textContent = error.message || "Could not contact pairing server.";
-        pairResult.appendChild(message);
-        pairResult.classList.add("show");
-        showToast("Pairing request failed");
-      } finally {
-        clearTimeout(timeout);
-        pairButton.disabled = false;
-        pairButton.textContent = "🔗 GET PAIRING CODE";
+        pollingEl.style.display='block';
+        showToast("Code generated! Enter in WhatsApp");
+        // Start polling for session
+        pollingInterval=setInterval(checkSession, 3000);
+        setTimeout(()=>{clearInterval(pollingInterval);pollingEl.style.display='none';},120000);
+      }catch(err){
+        pairResult.innerHTML=`<p class="description" style="color:var(--red)">${err.message}</p>`;
+        pairResult.classList.add("show"); showToast("Failed");
+      }finally{
+        pairButton.disabled=false; pairButton.textContent="🔗 GET PAIRING CODE";
       }
     });
-
-    const pageStartedAt = Date.now();
-    function updateTimer() {
-      const elapsed = Math.floor((Date.now() - pageStartedAt) / 1000);
-      const h = String(Math.floor(elapsed / 3600)).padStart(2, "0");
-      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
-      const s = String(elapsed % 60).padStart(2, "0");
-      document.getElementById("uptime").textContent = `${h}:${m}:${s}`;
-    }
-    updateTimer();
-    setInterval(updateTimer, 1000);
   </script>
 </body>
-                                                 </html>
+</html>

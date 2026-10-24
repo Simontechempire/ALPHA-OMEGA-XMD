@@ -43,7 +43,6 @@ global.plugins=new Map();
 global.wolfCommands={};
 
 function loadPlugins(){ 
-  // Try all possible plugin paths
   const possiblePaths = [path.join(__dirname,'plugins'), path.join(__dirname,'../plugins'), path.join(__dirname,'src/plugins')];
   let pPath = null;
   for(const pp of possiblePaths){ if(fs.existsSync(pp)){ pPath=pp; break; } }
@@ -51,20 +50,24 @@ function loadPlugins(){
   global.plugins.clear(); 
   global.wolfCommands={};
   let t=0; 
+  const IGNORED = ['main.js','index.js','connection.js','settings.js','config.js','app.js','bot.js','server.js'];
   function rd(dir){ 
     const items=fs.readdirSync(dir); 
     for(const it of items){ 
       const full=path.join(dir,it); 
       const st=fs.statSync(full); 
-      if(st.isDirectory()) rd(full); 
+      if(st.isDirectory()){
+        if(it === 'node_modules' || it.startsWith('.') || IGNORED.includes(it)) continue;
+        rd(full); 
+      }
       else if(it.endsWith('.js')){ 
+        if(IGNORED.includes(it)) continue;
         try{ 
           delete require.cache[require.resolve(full)]; 
           const d=require(full); 
           const arr=Array.isArray(d)?d:[d]; 
           for(const pl of arr){ 
             if(pl&&pl.name&&pl.execute){ 
-              // Zenith style
               global.plugins.set(pl.name.toLowerCase(),pl); 
               global.wolfCommands[pl.name.toLowerCase()]=pl.execute;
               if(pl.alias) for(const a of pl.alias) {
@@ -73,7 +76,6 @@ function loadPlugins(){
               }
               t++; 
             } else if(pl&&pl.command&&pl.execute){
-              // Wolf style 710 cmds
               for(const cmd of pl.command){
                 const clean=cmd.toLowerCase();
                 global.plugins.set(clean, pl);
@@ -116,7 +118,6 @@ async function startConnection(){
     app.get('/health',(req,res)=>res.send('WOLF LIVE'));
     app.get('/api/status',(req,res)=>res.json({ botName:"WOLF XMD TITAN", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length }));
     
-    // YOUR WORKING PAIR LOGIC - EXACT SAME
     app.post('/api/pair',async(req,res)=>{
       try{
         let phone=(req.body.phone||req.body.number||'').replace(/[^0-9]/g,''); 
@@ -198,17 +199,14 @@ async function startConnection(){
         if(!body) return; const prefix=global.db.settings.prefix||config.prefix||'.'; if(!body.trim().startsWith(prefix)) return;
         const args=body.trim().slice(prefix.length).trim().split(/ +/); const rawCmd=args.shift()?.toLowerCase(); if(!rawCmd) return;
         const cmdName=rawCmd.replace(/[^a-z0-9]/g,'')||rawCmd;
-        // Try both Wolf and Zenith style
         let plugin = global.plugins.get(rawCmd) || global.plugins.get(cmdName) || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
         if(!plugin){
-          // search wolfCommands function map
           const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
           if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
         }
         if(!plugin) return; 
         if(global.db.banned.includes(sender)) return;
         
-        // Build message like Zenith
         m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA"; 
         m.isOwner=sender.includes('239166265317') || global.db.sudo.includes(sender) || m.key.fromMe;
         m.reply=async(txt)=>await sock.sendMessage(from,{text:txt},{quoted:m});
@@ -217,13 +215,11 @@ async function startConnection(){
         console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]}`));
         
         if(plugin.isWolfStyle || typeof plugin === 'function' || plugin.execute.length===3 || global.wolfCommands[rawCmd]){
-          // Wolf style: (sock, m, {command, text...})
           const execFn = typeof plugin === 'function' ? plugin : (plugin.execute || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]);
           if(typeof execFn === 'function'){
             await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix});
           }
         } else {
-          // Zenith style
           await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup});
         }
       }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
@@ -235,7 +231,6 @@ async function startConnection(){
 module.exports={startConnection};
 module.exports.AlphaOmegaConnection=startConnection;
 
-// Auto start if run directly
 if(require.main===module){
   startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
-}
+    }

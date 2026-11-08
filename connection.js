@@ -1,4 +1,4 @@
-// 🐺 WOLF XMD TITAN - FIXED FOR WAITING MESSAGE - SAME LOGIC
+// 🐺 WOLF XMD TITAN - FIXED FOR WAITING MESSAGE - SAME LOGIC - FAST EDITION
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -47,9 +47,10 @@ config.sessionName = "session";
 
 global.sock = null; global.isConnected = false; global.connectionStatus = '⚠️ NOT LINKED'; global.pairingCode = null; global.currentPairingNumber = null; global.lastPairTime = 0; global.appStarted = false;
 
+// FIX: Auto ALL OFF for speed - this is the REAL auto, not settings.js
 global.db = global.db || {};
 global.db.groups = global.db.groups || {};
-global.db.settings = global.db.settings || { prefix: ".", mode: "public", autoread: false, autostatus: true, autovv: true, autolike: false, autoreact: false, autotyping: false, autopresence: false, autoreply: false, anticall: true };
+global.db.settings = global.db.settings || { prefix: ".", mode: "public", autoread: false, autostatus: false, autovv: false, autolike: false, autoreact: false, autotyping: false, autopresence: false, autoreply: false, anticall: false };
 global.db.banned = global.db.banned || [];
 global.db.warnings = global.db.warnings || {};
 global.db.messages = global.db.messages || {};
@@ -57,7 +58,8 @@ global.db.spam = global.db.spam || {};
 global.db.sudo = global.db.sudo || [config.ownerNumber + '@s.whatsapp.net', "239166265317@s.whatsapp.net"];
 
 function getGroup(jid){
-  global.db.groups[jid] = global.db.groups[jid] || { antilink:false, antibot:false, antispam:false, antiviewonce:true, antidelete:true, welcome:false, goodbye:false, welcomeText:"", goodbyeText:"" };
+  // FIX: antiviewonce + antidelete OFF by default
+  global.db.groups[jid] = global.db.groups[jid] || { antilink:false, antibot:false, antispam:false, antiviewonce:false, antidelete:false, welcome:false, goodbye:false, welcomeText:"", goodbyeText:"" };
   return global.db.groups[jid];
 }
 
@@ -100,9 +102,11 @@ function loadPlugins(){
             } else if(pl&&pl.command&&pl.execute){
               for(const cmd of pl.command){
                 const clean=cmd.toLowerCase();
-                global.plugins.set(clean, pl);
-                global.wolfCommands[clean]=pl.execute;
-                global.wolfCommands[clean.replace(/[^a-z0-9]/g,'')]=pl.execute;
+                // FIX: count once only - comot clean.replace double line
+                if(!global.wolfCommands[clean]){
+                  global.plugins.set(clean, pl);
+                  global.wolfCommands[clean]=pl.execute;
+                }
               }
               t++;
             }
@@ -112,7 +116,7 @@ function loadPlugins(){
     } 
   } 
   rd(pPath); 
-  console.log(chalk.green(`✅ WOLF WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS from ${pPath}`)); 
+  console.log(chalk.green(`✅ WOLF WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS REAL from ${pPath}`)); 
 }
 loadPlugins();
 
@@ -123,6 +127,8 @@ async function getCachedMeta(sock,jid){
 }
 
 async function startConnection(){
+  if(global.__wolfStarting) return;
+  global.__wolfStarting = true;
   if(!global.appStarted){
     const app=express(); 
     app.use(express.json()); 
@@ -170,7 +176,7 @@ async function startConnection(){
       }catch(e){ console.log('Pair fail',e.message); res.json({success:false,message:e.message}); }
     });
 
-    app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); fs.rmSync(`./auth`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
+    app.post('/api/logout',async(req,res)=>{ try{ if(global.sock) await global.sock.logout().catch(()=>{}); }catch{} try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); fs.rmSync(`./auth`,{recursive:true,force:true}); }catch{} global.sock=null; global.isConnected=false; global.__wolfStarting=false; res.json({success:true}); setTimeout(()=>initBaileys(),2000); });
     
     const PORT=config.PORT||process.env.PORT||10000; 
     app.listen(PORT,'0.0.0.0',()=>console.log(chalk.cyan(`🌐 WOLF Dashboard ${PORT} | ${Object.keys(global.wolfCommands).length} CMDS`))); 
@@ -198,7 +204,7 @@ async function startConnection(){
       syncFullHistory:false, 
       retryRequestDelayMs:2000,
       msgRetryCounterCache,
-      getMessage, // FIX 1 ONLY: was async () => undefined - now real store
+      getMessage,
       generateHighQualityLinkPreview: false,
       shouldSyncHistoryMessage: () => false
     });
@@ -212,37 +218,30 @@ async function startConnection(){
       if(connection==='connecting') global.connectionStatus='Connecting WOLF...';
       if(connection==='open'){
         global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`));
-        // FIX 2 ONLY: removed loadPlugins() here - e don already run once for top, 2nd run na wetin dey freeze bot on reconnect
-        try{ 
-          const jid=sock.user.id; 
-          await new Promise(r=>setTimeout(r,2000));
-          await sock.sendMessage(jid,{text:`✅ *WOLF XMD TITAN LINKED*\n\n👤 ${sock.user.name||'ALPHA'}\n🔣 Prefix: .\n⚡ ${Object.keys(global.wolfCommands).length} CMDS\n\nType .menu - Owner 239166265317`}).catch(()=>{}); 
-        }catch{}
+        // FIX: no 2 sec delay, no self message - instant ONLINE
       }
       if(connection==='close'){
-        const code=lastDisconnect?.error?.output?.statusCode; console.log(chalk.red(`❌ Closed ${code}`)); global.isConnected=false; global.sock=null; groupCache.clear();
+        const code=lastDisconnect?.error?.output?.statusCode; console.log(chalk.red(`❌ Closed ${code}`)); global.isConnected=false; global.sock=null; global.__wolfStarting=false; groupCache.clear();
         if([DisconnectReason.loggedOut,401,440,405].includes(code)){ try{ fs.rmSync(`./${config.sessionName}`,{recursive:true,force:true}); }catch{} global.connectionStatus='LOGGED OUT'; setTimeout(()=>initBaileys(),3000); }
         else{ global.connectionStatus='Reconnecting WOLF...'; setTimeout(()=>initBaileys(),5000); }
       }
     });
 
-    // === FIX 2 ONLY: SLOW - PROCESS ALL MESSAGES, NO BLOCKING AWAIT ===
     sock.ev.on('messages.upsert',async({messages,type})=>{
       try{
         if(type!=='notify') return;
-        for(const m of messages){ // FIX 2: was const m = messages[0] - e dey throway other messages
+        for(const m of messages){
           try{
             if(!m?.message) continue;
-            storeMsg(m); // FIX 1: save for retry
+            storeMsg(m);
             const from=m.key.remoteJid;
-            if(from==='status@broadcast'){ if(global.db.settings.autostatus){ sock.readMessages([m.key]).catch(()=>{}); } continue; } // FIX 2: no await
+            if(from==='status@broadcast'){ if(global.db.settings.autostatus){ sock.readMessages([m.key]).catch(()=>{}); } continue; }
             const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us'); const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
             if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
-            if(global.db.settings.autoread) sock.readMessages([m.key]).catch(()=>{}); // FIX 2: no await
+            if(global.db.settings.autoread) sock.readMessages([m.key]).catch(()=>{});
             if(isGroup){
               const g=getGroup(from);
               if((global.db.settings.autovv||g.antiviewonce)&&(m.message.viewOnceMessage||m.message.viewOnceMessageV2||m.message.viewOnceMessageV2Extension)){
-                // FIX 2: run for background, no await - no block command
                 (async()=>{ try{ const q=m.message.viewOnceMessage||m.message.viewOnceMessageV2Extension; const inner=q?.message||q; if(inner?.imageMessage) await sock.sendMessage(from,{image:inner.imageMessage},{quoted:m}).catch(()=>{}); else if(inner?.videoMessage) await sock.sendMessage(from,{video:inner.videoMessage},{quoted:m}).catch(()=>{}); else await sock.sendMessage(from,{forward:q},{quoted:m}).catch(()=>{}); }catch{} })();
               }
             }
@@ -276,7 +275,6 @@ async function startConnection(){
         }
       }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
     });
-    // === END FIX 2 ===
   }
   await initBaileys();
 }

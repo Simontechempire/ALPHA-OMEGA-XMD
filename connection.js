@@ -23,6 +23,19 @@ const msgRetryCounterCache = {
   has(k){ return this._cache.has(k); }
 };
 
+// === FIX 1 ONLY: WAITING MESSAGE - REAL MESSAGE STORE ===
+const msgStore = new Map();
+function storeMsg(m){
+  if(!m?.key?.id) return;
+  msgStore.set(m.key.id, m.message);
+  if(msgStore.size > 500) msgStore.delete(msgStore.keys().next().value);
+}
+async function getMessage(key){
+  if(!key?.id) return undefined;
+  return msgStore.get(key.id);
+}
+// === END FIX 1 ===
+
 // WOLF CONFIG - YOUR NUMBER
 let config;
 try { config = require('./settings'); } catch {
@@ -173,21 +186,20 @@ async function startConnection(){
     }catch(e){}
     const {state,saveCreds}=await useMultiFileAuthState(`./${config.sessionName}`); 
     const {version}=await fetchLatestBaileysVersion();
-    // FIX 2: ADDED CACHE + FIXED WAITING MESSAGE
     const sock=makeWASocket({ 
       version, 
       logger:pino({level:'silent'}), 
       printQRInTerminal:false, 
       browser:Browsers.macOS('Safari'), 
       auth:{creds:state.creds,keys:makeCacheableSignalKeyStore(state.keys,pino({level:'silent'}))}, 
-      markOnlineOnConnect:false, // FIXED: was true
+      markOnlineOnConnect:false,
       connectTimeoutMs:60000, 
       keepAliveIntervalMs:10000, 
       syncFullHistory:false, 
       retryRequestDelayMs:2000,
-      msgRetryCounterCache, // FIXED
-      getMessage: async () => undefined, // FIXED
-      generateHighQualityLinkPreview: false, // FIXED
+      msgRetryCounterCache,
+      getMessage, // FIX 1 ONLY: was async () => undefined - now real store
+      generateHighQualityLinkPreview: false,
       shouldSyncHistoryMessage: () => false
     });
     global.sock=sock; sock.ev.on('creds.update',saveCreds);
@@ -199,7 +211,8 @@ async function startConnection(){
       const {connection,lastDisconnect}=update;
       if(connection==='connecting') global.connectionStatus='Connecting WOLF...';
       if(connection==='open'){
-        global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`)); loadPlugins();
+        global.isConnected=true; global.connectionStatus='ONLINE ✅ WOLF'; console.log(chalk.green.bold(`\n✅ WOLF ONLINE! ${Object.keys(global.wolfCommands).length} CMDS\n`));
+        // FIX 2 ONLY: removed loadPlugins() here - e don already run once for top, 2nd run na wetin dey freeze bot on reconnect
         try{ 
           const jid=sock.user.id; 
           await new Promise(r=>setTimeout(r,2000));
@@ -213,47 +226,57 @@ async function startConnection(){
       }
     });
 
+    // === FIX 2 ONLY: SLOW - PROCESS ALL MESSAGES, NO BLOCKING AWAIT ===
     sock.ev.on('messages.upsert',async({messages,type})=>{
       try{
-        if(type!=='notify') return; const m=messages[0]; if(!m?.message) return; const from=m.key.remoteJid;
-        if(from==='status@broadcast'){ if(global.db.settings.autostatus){ await sock.readMessages([m.key]).catch(()=>{}); } return; }
-        const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us'); const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
-        if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
-        if(global.db.settings.autoread) await sock.readMessages([m.key]).catch(()=>{});
-        if(isGroup){
-          const g=getGroup(from);
-          if((global.db.settings.autovv||g.antiviewonce)&&(m.message.viewOnceMessage||m.message.viewOnceMessageV2||m.message.viewOnceMessageV2Extension)){
-            try{ const q=m.message.viewOnceMessage||m.message.viewOnceMessageV2Extension; const inner=q?.message||q; if(inner?.imageMessage) await sock.sendMessage(from,{image:inner.imageMessage},{quoted:m}).catch(()=>{}); else if(inner?.videoMessage) await sock.sendMessage(from,{video:inner.videoMessage},{quoted:m}).catch(()=>{}); else await sock.sendMessage(from,{forward:q},{quoted:m}).catch(()=>{}); }catch{}
-          }
-        }
-        if(!body) return; const prefix=global.db.settings.prefix||config.prefix||'.'; if(!body.trim().startsWith(prefix)) return;
-        const args=body.trim().slice(prefix.length).trim().split(/ +/); const rawCmd=args.shift()?.toLowerCase(); if(!rawCmd) return;
-        const cmdName=rawCmd.replace(/[^a-z0-9]/g,'')||rawCmd;
-        let plugin = global.plugins.get(rawCmd) || global.plugins.get(cmdName) || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
-        if(!plugin){
-          const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
-          if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
-        }
-        if(!plugin) return; 
-        if(global.db.banned.includes(sender)) return;
-        
-        m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA"; 
-        m.isOwner=sender.includes('239166265317') || global.db.sudo.includes(sender) || m.key.fromMe;
-        m.reply=async(txt)=>await sock.sendMessage(from,{text:txt},{quoted:m});
-        m.download=async()=>await downloadMediaMessage(m,'buffer',{},{logger:pino({level:"silent"}),reuploadRequest:sock.updateMediaMessage});
-        
-        console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]}`));
-        
-        if(plugin.isWolfStyle || typeof plugin === 'function' || plugin.execute.length===3 || global.wolfCommands[rawCmd]){
-          const execFn = typeof plugin === 'function' ? plugin : (plugin.execute || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]);
-          if(typeof execFn === 'function'){
-            await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix});
-          }
-        } else {
-          await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup});
+        if(type!=='notify') return;
+        for(const m of messages){ // FIX 2: was const m = messages[0] - e dey throway other messages
+          try{
+            if(!m?.message) continue;
+            storeMsg(m); // FIX 1: save for retry
+            const from=m.key.remoteJid;
+            if(from==='status@broadcast'){ if(global.db.settings.autostatus){ sock.readMessages([m.key]).catch(()=>{}); } continue; } // FIX 2: no await
+            const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us'); const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
+            if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
+            if(global.db.settings.autoread) sock.readMessages([m.key]).catch(()=>{}); // FIX 2: no await
+            if(isGroup){
+              const g=getGroup(from);
+              if((global.db.settings.autovv||g.antiviewonce)&&(m.message.viewOnceMessage||m.message.viewOnceMessageV2||m.message.viewOnceMessageV2Extension)){
+                // FIX 2: run for background, no await - no block command
+                (async()=>{ try{ const q=m.message.viewOnceMessage||m.message.viewOnceMessageV2Extension; const inner=q?.message||q; if(inner?.imageMessage) await sock.sendMessage(from,{image:inner.imageMessage},{quoted:m}).catch(()=>{}); else if(inner?.videoMessage) await sock.sendMessage(from,{video:inner.videoMessage},{quoted:m}).catch(()=>{}); else await sock.sendMessage(from,{forward:q},{quoted:m}).catch(()=>{}); }catch{} })();
+              }
+            }
+            if(!body) continue; const prefix=global.db.settings.prefix||config.prefix||'.'; if(!body.trim().startsWith(prefix)) continue;
+            const args=body.trim().slice(prefix.length).trim().split(/ +/); const rawCmd=args.shift()?.toLowerCase(); if(!rawCmd) continue;
+            const cmdName=rawCmd.replace(/[^a-z0-9]/g,'')||rawCmd;
+            let plugin = global.plugins.get(rawCmd) || global.plugins.get(cmdName) || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
+            if(!plugin){
+              const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
+              if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
+            }
+            if(!plugin) continue;
+            if(global.db.banned.includes(sender)) continue;
+            
+            m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA"; 
+            m.isOwner=sender.includes('239166265317') || global.db.sudo.includes(sender) || m.key.fromMe;
+            m.reply=async(txt)=>await sock.sendMessage(from,{text:txt},{quoted:m});
+            m.download=async()=>await downloadMediaMessage(m,'buffer',{},{logger:pino({level:"silent"}),reuploadRequest:sock.updateMediaMessage});
+            
+            console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]}`));
+            
+            if(plugin.isWolfStyle || typeof plugin === 'function' || plugin.execute.length===3 || global.wolfCommands[rawCmd]){
+              const execFn = typeof plugin === 'function' ? plugin : (plugin.execute || global.wolfCommands[rawCmd] || global.wolfCommands[cmdName]);
+              if(typeof execFn === 'function'){
+                await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, prefix});
+              }
+            } else {
+              await plugin.execute(m,{sock,prefix,args,command:cmdName,config,plugins:global.plugins,from,sender,getGroup});
+            }
+          }catch(e){ console.log(chalk.red(`Exec err one msg: ${e.message}`)); }
         }
       }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
     });
+    // === END FIX 2 ===
   }
   await initBaileys();
 }
@@ -263,4 +286,4 @@ module.exports.AlphaOmegaConnection=startConnection;
 
 if(require.main===module){
   startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
-            }
+}

@@ -1,4 +1,4 @@
-// 🐺 WOLF XMD TITAN - FAST EDITION V2 - FIX MENU / KICK / ANTILINK / OFFLINE
+// 🐺 WOLF XMD TITAN - V3 - FIX ADMIN + DISPATCH + ANTILINK STATE
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -33,6 +33,10 @@ async function getMessage(key){
   return msgStore.get(key.id);
 }
 
+// FIX: bare JID - comot :device suffix
+function bare(jid){ if(!jid) return ''; return String(jid).split(':')[0].split('@')[0]; }
+function isAdminFlag(p){ return p && (p.admin==='admin'||p.admin==='superadmin'||p.isAdmin===true); }
+
 let config;
 try { config = require('./settings'); } catch {
   config = { botName: "ALPHA AND OMEGA WOLF XMD", ownerName: "ALPHA", ownerNumber: "239166265317", prefix: ".", sessionName: "session", PORT: process.env.PORT || 10000 };
@@ -51,11 +55,30 @@ global.db.warnings = global.db.warnings || {};
 global.db.messages = global.db.messages || {};
 global.db.spam = global.db.spam || {};
 global.db.sudo = global.db.sudo || [config.ownerNumber + '@s.whatsapp.net', "239166265317@s.whatsapp.net"];
+// FIX 3: share same group store with plugins that use different names
+global.db.data = global.db.data || {};
+global.db.data.groups = global.db.groups;
+global.groupSettings = global.db.groups;
 
 function getGroup(jid){
   global.db.groups[jid] = global.db.groups[jid] || { antilink:false, antibot:false, antispam:false, antiviewonce:false, antidelete:false, welcome:false, goodbye:false, welcomeText:"", goodbyeText:"" };
   return global.db.groups[jid];
 }
+// FIX 3: check antilink from EVERYWHERE plugin fit save am
+function isAntilinkOn(jid){
+  try{
+    if(global.db.groups?.[jid]?.antilink) return true;
+    if(global.db.groups?.[jid]?.antilink === 'on') return true;
+    if(global.db.data?.groups?.[jid]?.antilink) return true;
+    if(global.groupSettings?.[jid]?.antilink) return true;
+    // plugins wey save as { antilink: { status: true } }
+    if(global.db.groups?.[jid]?.antilink?.status) return true;
+    if(global.db.groups?.[jid]?.settings?.antilink) return true;
+  }catch{}
+  return false;
+}
+global.getGroup = getGroup;
+global.isAntilinkOn = isAntilinkOn;
 
 global.plugins=new Map();
 global.wolfCommands={};
@@ -85,6 +108,14 @@ function loadPlugins(){
           const d=require(full);
           const arr=Array.isArray(d)?d:[d];
           for(const pl of arr){
+            // FIX: also support plugins wey export function directly: module.exports = async (sock,m)=>{}
+            if(typeof pl === 'function'){
+              const nm = pl.name || pl.command || it.replace('.js','');
+              const obj = { name: String(nm).toLowerCase(), command:[String(nm).toLowerCase()], execute: pl };
+              global.plugins.set(String(nm).toLowerCase(), obj);
+              global.wolfCommands[String(nm).toLowerCase()] = pl;
+              t++; continue;
+            }
             if(pl&&pl.name&&pl.execute){
               global.plugins.set(pl.name.toLowerCase(),pl);
               global.wolfCommands[pl.name.toLowerCase()]=pl.execute;
@@ -94,11 +125,16 @@ function loadPlugins(){
               }
               t++;
             } else if(pl&&pl.command&&pl.execute){
-              for(const cmd of pl.command){
-                const clean=cmd.toLowerCase();
+              const cmds = Array.isArray(pl.command) ? pl.command : [pl.command];
+              for(const cmd of cmds){
+                const clean=String(cmd).toLowerCase();
                 global.plugins.set(clean, pl);
                 global.wolfCommands[clean]=pl.execute;
               }
+              t++;
+            } else if(pl && pl.execute && pl.cmd){
+              const cmds = Array.isArray(pl.cmd) ? pl.cmd : [pl.cmd];
+              for(const cmd of cmds){ global.plugins.set(String(cmd).toLowerCase(), pl); global.wolfCommands[String(cmd).toLowerCase()]=pl.execute; }
               t++;
             }
           }
@@ -108,6 +144,7 @@ function loadPlugins(){
   }
   rd(pPath);
   console.log(chalk.green(`✅ WOLF WIRED ${t} files | ${Object.keys(global.wolfCommands).length} CMDS from ${pPath}`));
+  console.log(chalk.cyan(`CMDS: ${Object.keys(global.wolfCommands).join(', ')}`));
 }
 loadPlugins();
 
@@ -132,7 +169,7 @@ async function startConnection(){
       res.send(`<h1>🐺 WOLF XMD TITAN</h1><p>Owner: 239166265317</p><p>CMDS: ${Object.keys(global.wolfCommands).length}</p><p><a href="/api/status">Status</a> | <a href="/getcode?number=239166265317">Get Code</a></p>`);
     });
     app.get('/health',(req,res)=>res.send('WOLF LIVE'));
-    app.get('/api/status',(req,res)=>res.json({ botName:"WOLF XMD TITAN", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length }));
+    app.get('/api/status',(req,res)=>res.json({ botName:"WOLF XMD TITAN", owner:"239166265317", status:global.connectionStatus, isConnected:global.isConnected, pairingCode:global.pairingCode, plugins:Object.keys(global.wolfCommands).length, cmds:Object.keys(global.wolfCommands) }));
     app.post('/api/pair',async(req,res)=>{
       try{
         let phone=(req.body.phone||req.body.number||'').replace(/[^0-9]/g,'');
@@ -216,37 +253,39 @@ async function startConnection(){
             const from=m.key.remoteJid;
             if(from==='status@broadcast'){ if(global.db.settings.autostatus){ sock.readMessages([m.key]).catch(()=>{}); } continue; }
             const sender=m.key.participant||from; const isGroup=from.endsWith('@g.us');
-            const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||"";
+            const body=m.message.conversation||m.message.extendedTextMessage?.text||m.message.imageMessage?.caption||m.message.videoMessage?.caption||m.message.extendedTextMessage?.contextInfo?.quotedMessage?.conversation||"";
             if(m.key.id){ global.db.messages[m.key.id]={text:body,sender,from,time:Date.now(), message:m.message}; if(Object.keys(global.db.messages).length>150) delete global.db.messages[Object.keys(global.db.messages)[0]]; }
             if(global.db.settings.autoread) sock.readMessages([m.key]).catch(()=>{});
 
-            // === FIX 2: REAL ADMIN CHECK ===
+            // FIX 1: REAL ADMIN CHECK with bare JID
             let meta=null, isAdmin=false, isBotAdmin=false, participants=[];
             if(isGroup){
               meta=await getCachedMeta(sock,from);
               participants=meta?.participants||[];
-              const me=participants.find(p=>p.id===sock.user.id);
-              const senderP=participants.find(p=>p.id===sender);
-              isBotAdmin=!!(me?.admin==='admin'||me?.admin==='superadmin');
-              isAdmin=!!(senderP?.admin==='admin'||senderP?.admin==='superadmin');
+              const botBare = bare(sock.user.id);
+              const senderBare = bare(sender);
+              const me=participants.find(p=>bare(p.id)===botBare);
+              const senderP=participants.find(p=>bare(p.id)===senderBare);
+              isBotAdmin=isAdminFlag(me);
+              isAdmin=isAdminFlag(senderP);
             }
-            const isOwner=sender.includes('239166265317')||global.db.sudo.includes(sender)||m.key.fromMe;
+            const isOwner=bare(sender)==='239166265317'||global.db.sudo.includes(sender)||global.db.sudo.some(s=>bare(s)==='239166265317')||m.key.fromMe;
             const isSenderAdmin=isAdmin||isOwner;
 
-            // === FIX 4: REAL ANTILINK / ANTIBOT ===
+            // FIX 3: ANTILINK - check all DBs
             if(isGroup && !m.key.fromMe){
-              const g=getGroup(from);
-              if(g.antilink && !isSenderAdmin){
-                const hasLink=/(https?:\/\/|www\.|chat\.whatsapp\.com|wa\.me\/|t\.me\/|instagram\.com|youtube\.com)/i.test(body);
+              if(isAntilinkOn(from) && !isSenderAdmin){
+                const hasLink=/(https?:\/\/|www\.|chat\.whatsapp\.com|wa\.me\/|t\.me\/|instagram\.com|youtube\.com|discord\.gg)/i.test(body);
                 if(hasLink){
                   if(isBotAdmin){
-                    try{ await sock.sendMessage(from,{delete:m.key}).catch(()=>{}); await sock.sendMessage(from,{text:`⚠️ @${sender.split('@')[0]} links not allowed!`,mentions:[sender]}).catch(()=>{}); }catch{}
+                    try{ await sock.sendMessage(from,{delete:m.key}).catch(()=>{}); await sock.sendMessage(from,{text:`⚠️ @${bare(sender)} links not allowed!`,mentions:[sender]}).catch(()=>{}); }catch{}
                   } else {
-                    await sock.sendMessage(from,{text:`⚠️ @${sender.split('@')[0]} link detected but I'm not admin, make me admin to delete!`,mentions:[sender]}).catch(()=>{});
+                    await sock.sendMessage(from,{text:`⚠️ @${bare(sender)} link detected but I'm not admin, make me admin to delete!`,mentions:[sender]}).catch(()=>{});
                   }
                   continue;
                 }
               }
+              const g=getGroup(from);
               if(g.antibot && !isSenderAdmin && m.key.id && m.key.id.startsWith('BAE5')){
                 if(isBotAdmin){ try{ await sock.sendMessage(from,{delete:m.key}).catch(()=>{}); }catch{} }
                 continue;
@@ -265,38 +304,51 @@ async function startConnection(){
               const fn = global.wolfCommands[rawCmd] || global.wolfCommands[cmdName];
               if(fn && typeof fn === 'function'){ plugin = { execute: fn, isWolfStyle: true }; }
             }
-            if(!plugin) continue;
+            if(!plugin) { console.log(chalk.yellow(`No plugin for .${rawCmd} | loaded: ${Object.keys(global.wolfCommands).slice(0,10).join(',')}`)); continue; }
             if(global.db.banned.includes(sender)) continue;
 
             m.body=body; m.text=args.join(' '); m.args=args; m.sender=sender; m.chat=from; m.from=from; m.isGroup=isGroup; m.fromMe=m.key.fromMe; m.pushName=m.pushName||"ALPHA";
             m.isOwner=isOwner;
-            m.isAdmin=isSenderAdmin; m.isBotAdmin=isBotAdmin; m.isGroupAdmin=isSenderAdmin;
+            m.isAdmin=isSenderAdmin; m.isBotAdmin=isBotAdmin; m.isGroupAdmin=isSenderAdmin; m.isBotGroupAdmin=isBotAdmin;
             m.groupMetadata=meta; m.participants=participants; m.metadata=meta;
             m.botNumber=sock.user.id; m.botJid=sock.user.id;
+            m.sock=sock; m.conn=sock; m.client=sock;
             m.reply=async(txt)=>await sock.sendMessage(from,{text:typeof txt==='string'?txt:String(txt)},{quoted:m});
             m.download=async()=>await downloadMediaMessage(m,'buffer',{},{logger:pino({level:"silent"}),reuploadRequest:sock.updateMediaMessage});
 
-            console.log(chalk.green(`▶️ ${rawCmd} ${sender.split('@')[0]} admin:${isSenderAdmin} botAdmin:${isBotAdmin}`));
+            console.log(chalk.green(`▶️ ${rawCmd} ${bare(sender)} admin:${isSenderAdmin} botAdmin:${isBotAdmin}`));
 
-            // === FIX 1: CORRECT DISPATCH ===
+            // FIX 2: DETECT STYLE BY FIRST PARAM NAME, NOT LENGTH
             const execFn = typeof plugin === 'function' ? plugin : plugin.execute;
             if(typeof execFn !== 'function') continue;
-            try{
-              if(plugin.isWolfStyle || execFn.length===3){
-                await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, isAdmin:m.isAdmin, isBotAdmin:m.isBotAdmin, prefix, sock, from, sender, getGroup, groupMetadata:meta});
-              } else {
-                await execFn(m, {sock, prefix, args, command:cmdName, text:args.join(' '), config, plugins:global.plugins, from, sender, getGroup, isOwner:m.isOwner, isAdmin:m.isAdmin, isBotAdmin:m.isBotAdmin, groupMetadata:meta, participants, reply:m.reply});
-              }
-            }catch(dispatchErr){
-              console.log(chalk.yellow(`Retry other style ${rawCmd}: ${dispatchErr.message}`));
+            const fnSrc = String(execFn).slice(0,300);
+            const firstParamMatch = fnSrc.match(/^\s*(?:async\s+)?(?:\(?\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)/);
+            const firstParam = (firstParamMatch ? firstParamMatch[1] : '').toLowerCase();
+            const isMFirst = ['m','msg','message','mek','chat','ctx','messa','msginfo'].includes(firstParam);
+            const isSockFirst = ['sock','client','conn','alpha','bot','wolf','s'].includes(firstParam);
+
+            // ctx that works for BOTH (m,{sock}) and (m,sock) - sock object with .sock = itself
+            const ctx = { sock, conn: sock, client: sock, prefix, args, command:cmdName, text:args.join(' '), config, plugins:global.plugins, from, sender, getGroup, isOwner:m.isOwner, isAdmin:m.isAdmin, isBotAdmin:m.isBotAdmin, groupMetadata:meta, participants, reply:m.reply };
+            // make sock destructurable as {sock}
+            try{ sock.sock = sock; sock.prefix = prefix; sock.args = args; sock.command = cmdName; sock.text = args.join(' '); }catch{}
+
+            const tries = [];
+            if(plugin.isWolfStyle || isSockFirst || execFn.length===3) tries.push('wolf');
+            if(isMFirst) tries.push('m-ctx');
+            if(!tries.includes('wolf')) tries.push('wolf');
+            if(!tries.includes('m-ctx')) tries.push('m-ctx');
+            tries.push('m-sock');
+
+            let ok=false, lastErr=null;
+            for(const style of tries){
               try{
-                if(plugin.isWolfStyle || execFn.length===3){
-                  await execFn(m, {sock, prefix, args, command:cmdName, text:args.join(' '), config, plugins:global.plugins, from, sender, getGroup, isOwner:m.isOwner, isAdmin:m.isAdmin, isBotAdmin:m.isBotAdmin, groupMetadata:meta, reply:m.reply});
-                } else {
-                  await execFn(sock, m, {command:cmdName, text:args.join(' '), args, reply:m.reply, isOwner:m.isOwner, isAdmin:m.isAdmin, isBotAdmin:m.isBotAdmin, prefix});
-                }
-              }catch(e2){ console.log(chalk.red(`Exec err ${rawCmd}: ${e2.message}`)); }
+                if(style==='wolf') await execFn(sock, m, ctx);
+                else if(style==='m-ctx') await execFn(m, ctx);
+                else await execFn(m, sock);
+                ok=true; break;
+              }catch(e){ lastErr=e; }
             }
+            if(!ok) console.log(chalk.red(`Exec err ${rawCmd}: ${lastErr?.message} | firstParam=${firstParam} len=${execFn.length}`));
           }catch(e){ console.log(chalk.red(`Exec err one msg: ${e.message}`)); }
         }
       }catch(e){ console.log(chalk.red(`Exec err: ${e.message} ${e.stack}`)); }
@@ -310,4 +362,4 @@ module.exports.AlphaOmegaConnection=startConnection;
 
 if(require.main===module){
   startConnection().catch(e=>{ console.log(e.message); setTimeout(()=>startConnection(), 3000); });
-                                                  }
+}
